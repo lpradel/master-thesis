@@ -1,0 +1,140 @@
+% ---------------------------------------
+% -------------- Preamble ---------------
+% ---------------------------------------
+\documentclass[a4paper,12pt,twoside,numbers=noenddot]{scrartcl}
+
+% Dokument-bezogene Packages
+\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{setspace}
+\onehalfspacing
+\setstretch{1.2}								% Zeilenabstandsfaktor
+
+% Kopf- und Fußzeilen, Ränder
+\setlength{\headheight}{2\baselineskip}			% Kopfzeile breiter für 2 Zeilen
+\usepackage[a4paper,bottom=3.5cm,top=3cm]{geometry}
+\usepackage{scrpage2}
+
+% Abschnitts-Überschriften/-Styles
+\renewcommand*\sectfont{\normalfont\rmfamily\bfseries}
+
+% Text-Darstellung
+\usepackage[protrusion=true,expansion=true]{microtype}
+
+% Mathe-Pakete
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+% Links
+\usepackage{hyperref}
+
+% Enumerationen
+\usepackage{enumerate}
+
+% Theoreme
+\usepackage[amsmath,hyperref,thmmarks]{ntheorem}
+\theoremseparator{.}
+\theorembodyfont{\normalfont}
+\newtheorem{definition}{Definition}[subsection]	% Definition
+\newtheorem{lemma}{Lemma}[subsection]			% Lemma
+\newtheorem{theorem}{Theorem}[subsection]		% Theorem
+\newtheorem{example}{Beispiel}					% Beispiel
+\theoremstyle{nonumberplain}
+\newtheorem{remark}{Bemerkung}					% Bemerkung
+\theoremsymbol{\ensuremath{\square}}
+\newtheorem{proof}{Beweis}						% Beweis
+
+% Grafiken
+\usepackage{graphicx}
+\graphicspath{{./images/}}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{patterns}
+\usepackage{pgfplots} % Plots
+\pgfplotsset{compat=1.7}
+
+% Tabellen
+\usepackage{booktabs}
+\usepackage{tabu}
+
+% Algorithmen
+\usepackage[ruled,noline,commentsnumbered,linesnumbered,noend,german]{algorithm2e}
+\let\chapter\section % Kompatibilität mit KOMA
+
+% Literatur
+\usepackage[square]{natbib}
+\renewcommand*{\bibfont}{\interlinepenalty 10000\relax}	% Kein Seitenumbruch innerhalb von Bib-Eintrag
+
+% Eigene Befehle
+\newcommand{\absatz}{\\[\baselineskip]}
+\newcommand{\emptypage}{\clearpage\thispagestyle{empty}\mbox{}\newpage}
+\newcommand{\emptypagenumbered}{\clearpage\thispagestyle{scrheadings}\mbox{}\newpage}
+
+% Sonstige Konfiguration
+\usepackage{etoolbox}
+\let\stdsection\section
+\renewcommand\section{\newpage\stdsection}		% Neue Seite pro Kapitel
+
+% Flag für Erklärung
+\newtoggle{erklaerung}
+\toggletrue{erklaerung}
+%\togglefalse{erklaerung}
+
+% ---------------------------------------
+% -------------- Document ---------------
+% ---------------------------------------
+\begin{document}
+
+\lefthyphenmin=3								% Nicht weniger als 3 Buchstaben trennen
+
+\pagenumbering{roman}
+% Titel-Seite
+\input{sections/0-title}
+
+% Danksagung
+\thispagestyle{empty}
+\section*{}
+\vfill
+Hier kommt eine Danksagung hin!
+\emptypagenumbered
+\emptypagenumbered
+
+% Inhaltsverzeichnis
+%\pagestyle{empty}
+\pagestyle{scrheadings}
+\tableofcontents
+\emptypagenumbered
+
+% Page-Style für Kapitel
+\pagestyle{scrheadings}
+
+%\automark[subsection]{section}
+
+\pagenumbering{arabic}
+%\setcounter{page}{1}	% hier neu zählen
+
+% Kapitel
+
+% Anhänge
+
+% Literatur
+\emptypagenumbered
+\addcontentsline{toc}{section}{Literatur}
+%\bibliographystyle{ba}
+\bibliography{bib}
+\nocite{*}
+
+% Erklärung
+\iftoggle{erklaerung}{
+	\emptypagenumbered
+	\emptypagenumbered
+	%\markboth{}{ERKLÄRUNG}
+	\addcontentsline{toc}{section}{Erklärung}
+	\input{sections/5-statement}
+}
+
+\emptypagenumbered
+
+\end{document}
