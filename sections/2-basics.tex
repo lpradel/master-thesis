@@ -1,0 +1,46 @@
+\section{Grundlegende Definitionen und Algorithmen}
+\label{section:basics}
+
+In diesem Kapitel definieren wir die für unsere Zwecke relevanten Begriffe im Kontext der Clusteranalyse und führen die
+populärsten grundlegenden Algorithmen ein, deren Ideen für uns im Folgenden noch von Bedeutung sein werden. Wir gehen dabei
+nach Themengebieten geordnet vor: In Abschnitt~\ref{subsection:basics:clustering} skizzieren wir kurz das
+Themengebiet der Clusteranalyse, definieren die wichtigsten Zielfunktionen und stellen zwei wichtige Algorithmen vor.
+Abschnitt~\ref{subsection:basics:graphs} führt kurz in die Graphentheorie sowie die Clusteranalyse von Graphen ein. In diesem
+Abschnitt werden wir zudem die von der klassischen Clusteranalyse sehr unterschiedlichen Optimierungskritierien für die
+Clusteranalyse von Graphen herausstellen. Schließlich fassen wir in Abschnitt~\ref{subsection:basics:kernel-spectral} die
+wichtigsten Methoden und Algorithmen aus dem Bereich der spektralen Clusteranalyse zusammen und stellen zudem die wichtigsten
+Konzepte von Kernel-Methoden vor.
+
+\subsection{Clustering und \texorpdfstring{$k$}{k}-means}
+\label{subsection:basics:clustering}
+
+Clusteranalyse oder "`Clustering"' beschäftigt sich mit der Einteilung von Objekten in Gruppen ("`Cluster"'), sodass
+sich die Objekte innerhalb eines Clusters gemäß eines bestimmten Optimierungskriteriums ähnlich sind und von Objekten eines
+anderen Clusters unterscheiden. Es existieren zahlreiche grundsätzlich verschiedene Ansätze, Clusteringprobleme zu lösen.
+Wir beschränken uns in dieser Arbeit auf \emph{partitionierende} Clusteringprobleme und -verfahren. Bei diesen
+soll eine Menge von $d$-dimensionalen Punkten, welche der erste Teil der Eingabe ist, gemäß einer Cluster-Zielfunktion möglichst
+optimal in genau $k$ Cluster unterteilt werden, wobei $k$ der ganzzahlige zweite Teil der Eingabe ist.
+
+Für die Zielfunktion, welche die Nähe oder Ferne von Punkten zueinander quantifiziert, sind bei Eingabepunkten aus
+$\Rd$ Metriken naheliegend. Intuitiv ist dabei die euklidische Distanz, welche als Zielfunktion für die beiden bekanntesten
+Clustering-Problemstellungen dient.
+
+\begin{definition}[$k$-median und $k$-means]
+Sei $P \subset \Rd$ und $k \in \mathbb{N}^{+}$. Das $k$-median-Problem besteht darin, eine Menge von $k$ (Cluster-)\emph{Zentren}
+$C = \{ c_1, \dots, c_k \}$ mit $c_i \in \Rd$ zu finden, sodass der folgende Term minimal wird:
+\[ \sum_{p \in P} \min_{c_i \in C} \Euclid{p}{c} \]
+Das $k$-means-Problem unterscheidet sich nur darin, dass bei diesem die Summe der \emph{quadrierten} euklidischen Distanzen
+zum jeweils nächstgelegenen Zentrum minimiert werden soll, das heißt, dass der folgende Term minimiert werden soll:
+\[ \sum_{p \in P} \min_{c_i \in C} \EuclidSquared{p}{c} \]
+Beim \emph{gewichteten} $k$-means-Problem werden den Eingabepunkten zusätzlich mit einer Funktion $w : P \rightarrow \mathbb{R}$
+Gewichte zugewiesen. Die zu minimierende Zielfunktion lautet dann entsprechend
+\[ \sum_{p \in P} \min_{c_i \in C} w(p) \EuclidSquared{p}{c} \]
+\end{definition}
+Sowohl das $k$-Median-Problem~\cite{MegiddoS84} als auch das $k$-means-Problem~\cite{AloiseDHP09} sind optimal NP-schwer lösbar.
+Typischerweise werden zur Lösung daher approximative oder heuristische Algorithmen eingesetzt.
+
+\subsection{Graphen und Clusteranalyse von Graphen}
+\label{subsection:basics:graphs}
+
+\subsection{Kernel-Methoden und spektrales Clustering}
+\label{subsection:basics:kernel-spectral}

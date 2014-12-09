@@ -1,7 +1,7 @@
 % ---------------------------------------
 % -------------- Preamble ---------------
 % ---------------------------------------
-\documentclass[a4paper,12pt,twoside,numbers=noenddot]{scrartcl}
+\documentclass[a4paper,12pt,twoside,numbers=noenddot,ngerman]{scrartcl}
 
 % Dokument-bezogene Packages
 \usepackage[utf8]{inputenc}
@@ -64,13 +64,16 @@
 \let\chapter\section % Kompatibilität mit KOMA
 
 % Literatur
-\usepackage[square]{natbib}
+\usepackage[numbers]{natbib}
 \renewcommand*{\bibfont}{\interlinepenalty 10000\relax}	% Kein Seitenumbruch innerhalb von Bib-Eintrag
 
 % Eigene Befehle
 \newcommand{\absatz}{\\[\baselineskip]}
 \newcommand{\emptypage}{\clearpage\thispagestyle{empty}\mbox{}\newpage}
 \newcommand{\emptypagenumbered}{\clearpage\thispagestyle{scrheadings}\mbox{}\newpage}
+\newcommand{\Rd}{\ensuremath{\mathbb{R}^{d}}}
+\newcommand{\Euclid}[2]{\ensuremath{\lVert {#1} - {#2} \rVert}}
+\newcommand{\EuclidSquared}[2]{\ensuremath{\lVert {#1} - {#2} \rVert^2}}
 
 % Sonstige Konfiguration
 \usepackage{etoolbox}
@@ -116,13 +119,15 @@ Hier kommt eine Danksagung hin!
 %\setcounter{page}{1}	% hier neu zählen
 
 % Kapitel
+\input{sections/1-introduction}
+\input{sections/2-basics}
 
 % Anhänge
 
 % Literatur
 \emptypagenumbered
 \addcontentsline{toc}{section}{Literatur}
-%\bibliographystyle{ba}
+\bibliographystyle{alphadin}
 \bibliography{bib}
 \nocite{*}
 
