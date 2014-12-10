@@ -2,13 +2,13 @@
 \label{section:basics}
 
 In diesem Kapitel definieren wir die für unsere Zwecke relevanten Begriffe im Kontext der Clusteranalyse und führen die
-populärsten grundlegenden Algorithmen ein, deren Ideen für uns im Folgenden noch von Bedeutung sein werden. Wir gehen dabei
+wichtigen grundlegenden Algorithmen ein, deren Ideen für uns im Folgenden noch von Bedeutung sein werden. Wir gehen dabei
 nach Themengebieten geordnet vor: In Abschnitt~\ref{subsection:basics:clustering} skizzieren wir kurz das
-Themengebiet der Clusteranalyse, definieren die wichtigsten Zielfunktionen und stellen zwei wichtige Algorithmen vor.
+Themengebiet der Clusteranalyse, definieren die üblichen Zielfunktionen und stellen zwei bedeutende Algorithmen vor.
 Abschnitt~\ref{subsection:basics:graphs} führt kurz in die Graphentheorie sowie die Clusteranalyse von Graphen ein. In diesem
 Abschnitt werden wir zudem die von der klassischen Clusteranalyse sehr unterschiedlichen Optimierungskritierien für die
 Clusteranalyse von Graphen herausstellen. Schließlich fassen wir in Abschnitt~\ref{subsection:basics:kernel-spectral} die
-wichtigsten Methoden und Algorithmen aus dem Bereich der spektralen Clusteranalyse zusammen und stellen zudem die wichtigsten
+wichtigsten Methoden und Algorithmen aus dem Bereich der spektralen Clusteranalyse zusammen und stellen zudem die wesentlichen
 Konzepte von Kernel-Methoden vor.
 
 \subsection{Clustering und \texorpdfstring{$k$}{k}-means}
@@ -37,7 +37,71 @@ Gewichte zugewiesen. Die zu minimierende Zielfunktion lautet dann entsprechend
 \[ \sum_{p \in P} \min_{c_i \in C} w(p) \EuclidSquared{p}{c} \]
 \end{definition}
 Sowohl das $k$-Median-Problem~\cite{MegiddoS84} als auch das $k$-means-Problem~\cite{AloiseDHP09} sind optimal NP-schwer lösbar.
-Typischerweise werden zur Lösung daher approximative oder heuristische Algorithmen eingesetzt.
+Typischerweise werden zur Lösung daher approximative oder heuristische Algorithmen eingesetzt. Die bekannteste und bis
+heute sehr erfolgreiche Heuristik für das $k$-means-Problem ist der Algorithmus von Lloyd~\cite{Lloyd82}.
+Der Algorithmus wählt initial $k$ zufällige Punkte aus der Eingabemenge oder sogar beliebige Punkte aus $\Rd$ als initiale
+Clusterzentren. Anschließend wird jedem Punkt das am nächsten gelegene Zentrum zugewiesen. Dadurch entstehen die initialen Cluster
+mit ihren jeweiligen Zentren. Im zweiten Schritt wird das neue Zentrum eines jeden Clusters als der geometrische Zentroid
+des Clusters gewählt. Die Zuweisung von Punkten zum nächstgelegenen Cluster und die Neuberechnung der neuen Zentren werden
+solange alterniert, bis die Lösung konvergiert, also wenn sich die Zuordnungen der Punkte nicht mehr ändern. In der Praxis
+wird gelegentlich auch nach einer festen Anzahl von Iterationen terminiert.
+
+\begin{algorithm}[H]
+\label{algo:lloyd}
+\caption{Algorithmus von Lloyd}
+	% Optionen
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Eingabe:}
+	\SetKwInOut{Output}{Ausgabe:}
+	
+	% Input/Output
+	\Input{$P \subseteq \Rd, k \in \mathbb{N}^{+}$}
+	\Output{$k$-means-Clustering von $P$}
+	\BlankLine
+	
+	% Algo
+	Wähle zufällig $k$ Zentren $c_1^{(0)}, \dots, c_k^{(0)}$ aus $P$ oder $\Rd$\;
+	$S_i^{(0)} \leftarrow \{ p \in P : \EuclidSquared{p}{c_i^{(0)}} \leq \EuclidSquared{p}{c_{i'}^{(0)}} \, \forall \, i' \in \{ 1, \dots, k \} \}$\;
+	\Repeat{$S_i^{(t)} = S_i^{(t-1)}$}{
+		$c_i^{(t)} \leftarrow \frac{1}{|S_i^{(t-1)}|} \sum_{p_j \in S_i^{(t-1)}} p_j $\;
+		$S_i^{(t)} \leftarrow \{ p \in P : \EuclidSquared{p}{c_i^{(t)}} \leq \EuclidSquared{p}{c_{i'}^{(t)}} \, \forall \, i' \in \{ 1, \dots, k \} \}$\;
+	}
+\end{algorithm}
+
+Die asymptotische Laufzeit des Algorithmus beträgt $\BigO{nkdi}$, wobei $i$ die Anzahl an durchgeführten Iterationen ist.
+Wenn der Algorithmus konvergiert und nicht durch eine feste Anzahl von Iterationen terminiert wird, wurde ein lokales
+Optimum gefunden, welches jedoch im Allgemeinen kein globales Optimum oder eine Approximation eines globalen Optimums ist.
+Die Güte des berechneten Clusterings hängt maßgeblich von der initialen Wahl der Cluster ab. Der Algorithmus
+\kmpp~\cite{ArthurV07} setzt genau an dieser Stelle an: er berechnet auf einfache, aber dennoch geschickte Art und Weise
+die initialen Cluster und führt anschließend mit diesen die übrigen Schritte von Lloyds Algorithmus durch.
+Der Algorithmus wählt zunächst ein einzelnes Clusterzentrum $c_1$ zufällig gleichverteilt aus der Eingabe-Punktmenge $P$ und
+wählt alle weiteren Clusterzentren sukzessive nach der folgenden Vorschrift, bis insgesamt $k$ Zentren gewählt wurden.
+Im Weiteren bezeichnen wir mit $D(x)$ für einen Punkt $x$ aus der Eingabe-Punktmenge $P$ die geringste Distanz von $x$ zum
+nächstgelegenen bereits gewählten Zentrum. In jeder Iteration wird als nächstes Zentrum $c_i$ der Punkt
+$x' \in P \setminus \{ c_1, \dots, c_{i-1} \}$ mit Wahrscheinlichkeit $\frac{D(x')^2}{\sum_{x \in P} D(x)}$ gewählt.
+
+\begin{algorithm}[H]
+\label{algo:kmeanspp}
+\caption{\kmpp}
+	% Optionen
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Eingabe:}
+	\SetKwInOut{Output}{Ausgabe:}
+	
+	% Input/Output
+	\Input{$P \subseteq \Rd, k \in \mathbb{N}^{+}$}
+	\Output{$k$ initiale Clusterzentren für $P$}
+	\BlankLine
+	
+	% Algo
+	Wähle $c_1$ zufällig gleichverteilt aus $P$\;
+	\For{$i \leftarrow 1$ \KwTo $k$}{
+		Wähle den Punkt $x' \in P \setminus \{ c_1, \dots, c_{i-1} \}$ als Zentrum $c_i$ mit Wahrscheinlichkeit $\frac{D(x')^2}{\sum_{x \in P} D(x)}$\;
+	}
+	Führe Lloyds Algorithmus mit den initialen Clusterzentren $c_1, \dots, c_k$ aus.
+\end{algorithm}
+Die $k$ Zentren, die von \kmpp{} ausgewählt werden, sind eine $\BigO{\log k}$-Approximation für das $k$-means-Problem, die durch
+die anschließende Ausführung von Lloyds Algorithmus noch zu einem lokalen Optimum verbessert werden.
 
 \subsection{Graphen und Clusteranalyse von Graphen}
 \label{subsection:basics:graphs}
