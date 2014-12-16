@@ -102,9 +102,87 @@ $x' \in P \setminus \{ c_1, \dots, c_{i-1} \}$ mit Wahrscheinlichkeit $\frac{D(x
 \end{algorithm}
 Die $k$ Zentren, die von \kmpp{} ausgewählt werden, sind eine $\BigO{\log k}$-Approximation für das $k$-means-Problem, die durch
 die anschließende Ausführung von Lloyds Algorithmus noch zu einem lokalen Optimum verbessert werden.
+\absatz
+Im nächsten Abschnitt betrachten wir eine konkrete Anwendung partitionierender Clusteringverfahren.
 
 \subsection{Graphen und Clusteranalyse von Graphen}
 \label{subsection:basics:graphs}
+
+Gerade im Umgang mit großen Datenmengen hat sich in der Informatik der \emph{Graph} als geeignete Datenstruktur erwiesen. Er
+ist wie folgt definiert.
+
+\begin{definition}[Graph]
+\label{def:graph}
+	Sei $V$ eine endliche Menge und $E \subseteq \{ \{ u,v \} \mid u, v \in V, u \neq v \}$.
+	Dann heißt das Tupel $G = (V, E)$ ein (endlicher) \emph{Graph} mit \emph{Knotenmenge} $V$ und
+	\emph{Kantenmenge} $E$. Ist $e = \{ u,v \} \in E$, dann sagen wir, dass die Kante $e$ des Graphen $G$
+	die Knoten $u$ und $v$ \emph{verbindet}. In diesem Fall sind $u$ und $v$ die \emph{Endknoten}
+	von $e$.
+	Ein Knoten $u \in V$ und eine Kante $e \in V$ heißen \emph{inzident}
+	genau dann, wenn $u \in e$. Wir sagen, dass $u$ und ein weiterer Knoten $v \in V$ \emph{adjazent}
+	sind genau dann, wenn es eine Kante $e' = \{ u,v \}$ in $E$ gibt.
+	Typischerweise bezeichnet $n = \left|V\right|$ die \emph{Knotenzahl} von $G$ und
+	$m = \left|E\right|$ die \emph{Kantenzahl} von $G$.
+	
+	Bei einem 3-Tupel $G' = (V', E', w')$ mit $w' : E \rightarrow \mathbb{N}$ spricht man von einem \emph{gewichteten} Graphen,
+	dessen Kanten über ein Gewicht verfügen, das von der Gewichtsfunktion $w'$ abgebildet wird.
+\end{definition}
+Für die konkrete Datenhaltung von Graphen haben sich im Wesentlichen zwei Ansätze als praktikabel erwiesen: Bei den sogenannten
+\emph{Adjazenzlisten} wird für jeden Knoten $v$ im Graphen eine Liste $Adj_v$ gehalten, in der für jeden zu $v$ inzidenten
+Knoten ein Eintrag in $Adj_v$ enthalten ist, der den entsprechenden adjazenten Knoten referenziert, sowie gegebenenfalls das
+Gewicht der Kante zwischen den beiden Knoten.
+Alternativ wird in einer
+\emph{Adjazenzmatrix} $Adj^G$ der Größe $\left|V\right| \times \left|V\right|$ an der Stelle $Adj^G_{u,v}$ das Gewicht der Kante
+zwischen den Knoten $u$ und $v$ eingetragen, sofern die beiden Knoten durch eine Kante miteinander verbunden sind.
+Anderenfalls wird zumeist $-1$ oder $0$ eingetragen. Bei ungewichteten Graphen wird dementsprechend lediglich $0$ oder $1$
+eingetragen.
+\absatz
+Wenn die Eingabe keine Punktmenge, sondern ein (gewichteter) Graph ist, können wir die Ideen partitionierender Clusteringverfahren
+übertragen. Wir interessieren uns in diesem Fall für die "`Ähnlichkeit"' von Knotenmengen im Graphen.
+
+\begin{definition}[Graph-Schnitt]
+	Sei $G=(V,E,w)$ ein gewichteter Graph. Ein \emph{Schnitt} $C=(S,T)$ von $G$ ist eine Partitionierung von $V$ in die beiden
+	Mengen $S$ und $T$, das heißt, dass $V = S \cup T$. Die \emph{Schnittmenge} von $C$ sind die Kanten in $E$, die einen
+	Endpunkt in $S$ und den anderen Endpunkt in $T$ haben, das heißt formal ist die Schnittmenge definiert als
+	\[ \{ (u,v) \in E \mid u \in S, v \in T \}. \]
+	Das Gewicht oder der Wert eines Schnittes ist die Summe der Kantengewichte der Schnittmenge. Wir verwenden die folgende
+	Notation:
+	\[ w_{cut}(S,T) = \sum_{u \in S, v \in T} w((u,v)) \]
+	Falls der Graph in Form einer Adjazenzmatrix $Adj^G$ vorliegt, lautet die Berechnungsvorschrift entsprechend:
+	\[ w_{cut}(S,T) = \sum_{u \in S, v \in T} Adj^G_{u,v} \]
+\end{definition}
+Für eine direkte Analogie zum $k$-means-Problem wäre ein Schnitt- beziehungsweise Paritionierungs-Begriff wünschenswert,
+der eine $k$-fache Partitionierung der Knotenmenge erlaubt. Diese lautet wie folgt.
+
+\begin{definition}[$k$-Graphpartitionierung]
+	Sei $G=(V,E,w)$ ein gewichteter Graph. Für zwei Mengen $A, B \subseteq V$ definieren wir:
+	\[ w(A,B) = \sum_{u \in A, v \in B} w((u,v)) \]
+	Das $k$-Graphpartitionierungsproblem besteht darin, eine Partitionierung der Knotenmenge $V$ in $k$ disjunkte Teilmengen
+	$V_1, \dots, V_k$ mit $\bigcup_{i \in \{1, \dots, k \}} V_i = V$ zu ermitteln, sodass sich die Knoten innerhalb einer
+	Partition bezüglich einer Ähnlichkeitsrelation möglichst ähnlich sind und die Knoten unterschiedlicher Partitionen
+	bezüglich der Ähnlichkeitsrelation möglichst stark voneinander unterscheiden.
+	
+	Beim Clustering von Punktmengen lagen für die Ähnlichkeitsrelation Metriken nahe, im Falle der Graphpartitionierung
+	existiert eine Reihe von Optimierungskriterien, von denen wir im Folgenden die verbreitetsten einführen.
+	
+	\begin{enumerate}
+		\item 	\textbf{Ratio Association}. Bei der Ratio Association sollen die Intra-Clusterabstände relativ zur jeweiligen
+				Clustergröße maximiert werden:
+				\[ \max_{V_1, \dots, V_k} \sum_{c=1}^{k} \frac{w(V_c, V_c)}{\left|V_c\right|} \]
+		\item 	\textbf{Ratio Cut}. Beim Ratio Cut wird der Schnitt zwischen jeweils einem Cluster und allen anderen Punkten
+				im Graphen minimiert:
+				\[ \min_{V_1, \dots, V_k} \sum_{c=1}^{k} \frac{w(V_c, V \setminus V_c)}{\left|V_c\right|} \]
+		\item 	\textbf{Kernighan-Lin}. Bei dem in~\cite{KernighanL70} vorgestellten Optimierungskriterium werden die
+				Intra-Clusterabstände ähnlich der Ratio Association minimiert, allerdings müssen alle Partition hier zusätzlich
+				die selbe Größe haben:
+				\[ \min_{V_1, \dots, V_k} \sum_{c=1}^{k} \frac{w(V_c, V_c)}{\left|V_c\right|} \textrm{ subject to } 
+				   \left|V_c\right| = \frac{\left|V\right|}{k} \, \forall \, c \in \{ 1, \dots, k \} \]
+		\item 	\textbf{Normalized Cut}. Ziel des Normalized Cut ist wie beim Ratio Cut die Minimierung des Schnitts von einem
+				Cluster mit den übrigen Punkten im Graphen, jedoch relativ 
+		\item 	\textbf{}. 
+		\item 	\textbf{}. 
+	\end{enumerate}
+\end{definition}
 
 \subsection{Kernel-Methoden und spektrales Clustering}
 \label{subsection:basics:kernel-spectral}
