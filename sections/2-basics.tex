@@ -174,15 +174,18 @@ der eine $k$-fache Partitionierung der Knotenmenge erlaubt. Diese lautet wie fol
 				\[ \min_{V_1, \dots, V_k} \sum_{c=1}^{k} \frac{w(V_c, V \setminus V_c)}{\left|V_c\right|} \]
 		\item 	\textbf{Kernighan-Lin}. Bei dem in~\cite{KernighanL70} vorgestellten Optimierungskriterium werden die
 				Intra-Clusterabstände ähnlich der Ratio Association minimiert, allerdings müssen alle Partition hier zusätzlich
-				die selbe Größe haben:
+				die selbe Größe haben. Die hier vorgestellte Zielfunktion ist von $2$ auf $k$ Partitionen verallgemeinert:
 				\[ \min_{V_1, \dots, V_k} \sum_{c=1}^{k} \frac{w(V_c, V_c)}{\left|V_c\right|} \textrm{ subject to } 
 				   \left|V_c\right| = \frac{\left|V\right|}{k} \, \forall \, c \in \{ 1, \dots, k \} \]
 		\item 	\textbf{Normalized Cut}. Ziel des Normalized Cut ist wie beim Ratio Cut die Minimierung des Schnitts von einem
-				Cluster mit den übrigen Punkten im Graphen, jedoch relativ 
-		\item 	\textbf{}. 
-		\item 	\textbf{}. 
+				Cluster mit den übrigen Punkten im Graphen, jedoch relativ zum Schnitt des Clusters mit \emph{allen}
+				Knoten im Graphen. Der Normalized Cut oder kurz NCut ist in der Bild-Segmentierung recht verbreitet~\cite{ShiM00}.
+				Wir betrachten hier ebenfalls die auf $k$ Partitionen verallgemeinerte Zielfunktion.
+				\[ \min_{V_1, \dots, V_k} \sum_{c=1}^{k} \frac{w(V_c, V \setminus V_c)}{w(V_c, V)} \]
 	\end{enumerate}
 \end{definition}
+Im nächsten Abschnitt betrachten wir zwei Techniken, mit denen Limitierungen hinsichtlich der Qualität der erzielten Clusterings
+sowie der Komplexität der Berechnungen verbessert werden können.
 
 \subsection{Kernel-Methoden und spektrales Clustering}
 \label{subsection:basics:kernel-spectral}
