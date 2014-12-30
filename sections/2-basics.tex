@@ -26,6 +26,7 @@ $\Rd$ Metriken naheliegend. Intuitiv ist dabei die euklidische Distanz, welche a
 Clustering-Problemstellungen dient.
 
 \begin{definition}[$k$-median und $k$-means]
+\label{def:kmeans-kmedian}
 Sei $P \subset \Rd$ und $k \in \mathbb{N}^{+}$. Das $k$-median-Problem besteht darin, eine Menge von $k$ (Cluster-)\emph{Zentren}
 $C = \{ c_1, \dots, c_k \}$ mit $c_i \in \Rd$ zu finden, sodass der folgende Term minimal wird:
 \[ \sum_{p \in P} \min_{c_i \in C} \Euclid{p}{c} \]
@@ -38,7 +39,8 @@ Gewichte zugewiesen. Die zu minimierende Zielfunktion lautet dann entsprechend
 \end{definition}
 Sowohl das $k$-Median-Problem~\cite{MegiddoS84} als auch das $k$-means-Problem~\cite{AloiseDHP09} sind optimal NP-schwer lösbar.
 Typischerweise werden zur Lösung daher approximative oder heuristische Algorithmen eingesetzt. Die bekannteste und bis
-heute sehr erfolgreiche Heuristik für das $k$-means-Problem ist der Algorithmus von Lloyd~\cite{Lloyd82}.
+heute sehr erfolgreiche Heuristik für das $k$-means-Problem ist der Algorithmus von Lloyd~\cite{Lloyd82}. Wegen seiner
+großen Popularität wird der Algorithmus häufig auch als "`$k$-means-Algorithmus"' bezeichnet.
 Der Algorithmus wählt initial $k$ zufällige Punkte aus der Eingabemenge oder sogar beliebige Punkte aus $\Rd$ als initiale
 Clusterzentren. Anschließend wird jedem Punkt das am nächsten gelegene Zentrum zugewiesen. Dadurch entstehen die initialen Cluster
 mit ihren jeweiligen Zentren. Im zweiten Schritt wird das neue Zentrum eines jeden Clusters als der geometrische Zentroid
@@ -175,7 +177,7 @@ der eine $k$-fache Partitionierung der Knotenmenge erlaubt. Diese lautet wie fol
 		\item 	\textbf{Kernighan-Lin}. Bei dem in~\cite{KernighanL70} vorgestellten Optimierungskriterium werden die
 				Intra-Clusterabstände ähnlich der Ratio Association minimiert, allerdings müssen alle Partition hier zusätzlich
 				die selbe Größe haben. Die hier vorgestellte Zielfunktion ist von $2$ auf $k$ Partitionen verallgemeinert:
-				\[ \min_{V_1, \dots, V_k} \sum_{c=1}^{k} \frac{w(V_c, V_c)}{\left|V_c\right|} \textrm{ subject to } 
+				\[ \min_{V_1, \dots, V_k} \sum_{c=1}^{k} \frac{w(V_c, V_c)}{\left|V_c\right|} \textrm{ s.t. } 
 				   \left|V_c\right| = \frac{\left|V\right|}{k} \, \forall \, c \in \{ 1, \dots, k \} \]
 		\item 	\textbf{Normalized Cut}. Ziel des Normalized Cut ist wie beim Ratio Cut die Minimierung des Schnitts von einem
 				Cluster mit den übrigen Punkten im Graphen, jedoch relativ zum Schnitt des Clusters mit \emph{allen}
@@ -189,3 +191,52 @@ sowie der Komplexität der Berechnungen verbessert werden können.
 
 \subsection{Kernel-Methoden und spektrales Clustering}
 \label{subsection:basics:kernel-spectral}
+
+Legt man die $k$-means Zielfunktion zu Grunde, können im Ursprungsraum $\Rd$ nur Cluster berechnet werden, die \emph{linear
+separierbar} sind. Ein illustratives Beispiel im $\mathbb{R}^2$ sind zwei konzentrisch angeordnete ringförmige Punktmengen.
+Die gemäß der $k$-means Zielfunktion optimalen Cluster sind die beiden jeweiligen Ringe, es ist jedoch im $\mathbb{R}^2$ nicht
+möglich Clusterzentren anzugeben, die den zweidimensionalen Raum in Ringe partitionieren. Die Beschränkung liegt darin, dass
+wir die Partitionierung oder Separierung durch Hyperebenen vornehmen. Im Ursprungsraum können wir daher nur linear separierbare
+Cluster bestimmen. Wir betrachten nun ein Verfahren, um diese Beschränkung zu umgehen.
+
+\subsubsection{Kernel-\texorpdfstring{$k$}{k}-means}
+
+Unsere fundamentale Motivation für diesen Abschnitt ist Covers Theorem~\cite{Cover65}, welches informell zusammengefasst besagt,
+dass eine zufällige Eingabepunktmenge im $d$-dimensionalen Raum mit hoher Wahrscheinlichkeit in einen höherdimensionalen
+Raum (zum Beispiel der Dimension $D \gg d$) abgebildet linear separierbar ist.
+
+Für Klassifizierungs- und insbesondere Clusteringprobleme benötigen wir sowohl im Ursprungsraum als auch im abgebildeten Raum
+ein algebraisches Maß für Ähnlichkeit. Üblicherweise wird dabei das \emph{Skalarprodukt} eingesetzt. Dabei beziehen wir uns
+im Weiteren auf die folgende Definition von \emph{euklidischen Vektorräumen}, also Vektorräumen mit einem reellen
+Skalarprodukt.
+
+\begin{definition}[Euklidischer Vektorraum]
+\label{def:innerproductspace}
+	Sei $V$ ein $\mathbb{R}$-Vektorraum. Ein reelles Skalarprodukt auf $V$ ist eine Abbildung
+	$\innerproduct{\cdot}{\cdot} : V \times V \rightarrow \mathbb{R}$, die den folgenden Eigenschaften genügt:
+	\begin{enumerate}
+		\item 	$\innerproduct{a}{b} = \innerproduct{b}{a} \, \forall \, a, b \in V$
+		\item 	$\innerproduct{\lambda a + \mu b}{c} = \lambda \innerproduct{a}{c} + \mu \innerproduct{b}{c} \,
+				\forall \, a,b,c \in V \textrm{ und } \lambda, \mu \in \mathbb{R}$
+		\item 	$\innerproduct{a}{a} \geq 0 \textrm{ und } \innerproduct{a}{a} = 0 \Leftrightarrow a = 0 \, \forall \, a \in V$
+	\end{enumerate}
+	Ein $\mathbb{R}$-Vektorraum mit einem reellen Skalarprodukt heißt \emph{euklidischer Vektorraum}.
+\end{definition}
+Die $k$-means-Zielfunktion kann auf euklidische Vektorräume erweitert werden, indem wir für einen euklidischen Vektorraum
+$\mathcal{V}$ eine Norm $\lVert \cdot \rVert : \mathcal{V} \rightarrow \mathbb{R}$ über das Skalarprodukt gemäß der folgenden
+Abbildungsvorschrift für ein $\mathpzc{x} \in \mathcal{V}$ definieren:
+$\lVert \mathpzc{x} \rVert = \sqrt{\innerproduct{\mathpzc{x}}{\mathpzc{x}}}$.
+Das auf Skalarprodukten basierte Analog zu Definition~\ref{def:kmeans-kmedian} des $k$-means-Problems lautet dann wie folgt:
+
+\begin{definition}[$k$-means in euklidischen Vektorräumen]
+\label{def:kmeans-kmedian-innerproduct}
+Sei $\mathcal{V}$ ein euklidischer Vektorraum mit der Norm $\lVert \cdot \rVert : \mathcal{V} \rightarrow \mathbb{R}$
+und sei $\mathcal{P} \subset \mathcal{V}$ sowie $k \in \mathbb{N}^{+}$.
+Das $k$-means-Problem in $\mathcal{V}$ besteht darin, eine Menge von $k$ (Cluster-)Zentren
+$\mathcal{C} = \{ \mathpzc{c}_1, \dots, \mathpzc{c}_k \}$ mit $\mathpzc{c}_i \in V$ zu finden, sodass der folgende Term
+minimal wird:
+\[ \sum_{\mathpzc{p} \in \mathcal{P}} \min_{\mathpzc{c}_i \in \mathcal{C}} \EuclidSquared{\mathpzc{p}}{\mathpzc{c}} \]
+Beim \emph{gewichteten} $k$-means-Problem werden den Eingabepunkten zusätzlich mit einer Funktion $w : P \rightarrow \mathbb{R}$
+Gewichte zugewiesen. Die zu minimierende Zielfunktion lautet dann entsprechend
+\[ \sum_{p \in P} \min_{c_i \in C} w(p) \EuclidSquared{p}{c} \]
+\end{definition}

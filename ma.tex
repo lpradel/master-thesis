@@ -27,6 +27,9 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 
+% Kalligraphische Kleinbuchstaben
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
 % Links
 \usepackage{hyperref}
 
@@ -76,6 +79,7 @@
 \newcommand{\EuclidSquared}[2]{\ensuremath{\lVert {#1} - {#2} \rVert^2}}
 \newcommand{\BigO}[1]{\ensuremath{\mathcal{O}(#1)}}
 \newcommand{\kmpp}{$k$-means\texttt{++}}
+\newcommand{\innerproduct}[2]{\ensuremath{\langle #1, #2 \rangle}}
 
 % Sonstige Konfiguration
 \usepackage{etoolbox}
