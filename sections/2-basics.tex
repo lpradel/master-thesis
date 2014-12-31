@@ -29,13 +29,13 @@ Clustering-Problemstellungen dient.
 \label{def:kmeans-kmedian}
 Sei $P \subset \Rd$ und $k \in \mathbb{N}^{+}$. Das $k$-median-Problem besteht darin, eine Menge von $k$ (Cluster-)\emph{Zentren}
 $C = \{ c_1, \dots, c_k \}$ mit $c_i \in \Rd$ zu finden, sodass der folgende Term minimal wird:
-\[ \sum_{p \in P} \min_{c_i \in C} \Euclid{p}{c} \]
+\[ \sum_{p \in P} \min_{c \in C} \Euclid{p}{c} \]
 Das $k$-means-Problem unterscheidet sich nur darin, dass bei diesem die Summe der \emph{quadrierten} euklidischen Distanzen
 zum jeweils nächstgelegenen Zentrum minimiert werden soll, das heißt, dass der folgende Term minimiert werden soll:
-\[ \sum_{p \in P} \min_{c_i \in C} \EuclidSquared{p}{c} \]
+\[ \sum_{p \in P} \min_{c \in C} \EuclidSquared{p}{c} \]
 Beim \emph{gewichteten} $k$-means-Problem werden den Eingabepunkten zusätzlich mit einer Funktion $w : P \rightarrow \mathbb{R}$
 Gewichte zugewiesen. Die zu minimierende Zielfunktion lautet dann entsprechend
-\[ \sum_{p \in P} \min_{c_i \in C} w(p) \EuclidSquared{p}{c} \]
+\[ \sum_{p \in P} \min_{c \in C} w(p) \EuclidSquared{p}{c} \]
 \end{definition}
 Sowohl das $k$-Median-Problem~\cite{MegiddoS84} als auch das $k$-means-Problem~\cite{AloiseDHP09} sind optimal NP-schwer lösbar.
 Typischerweise werden zur Lösung daher approximative oder heuristische Algorithmen eingesetzt. Die bekannteste und bis
@@ -235,8 +235,53 @@ und sei $\mathcal{P} \subset \mathcal{V}$ sowie $k \in \mathbb{N}^{+}$.
 Das $k$-means-Problem in $\mathcal{V}$ besteht darin, eine Menge von $k$ (Cluster-)Zentren
 $\mathcal{C} = \{ \mathpzc{c}_1, \dots, \mathpzc{c}_k \}$ mit $\mathpzc{c}_i \in V$ zu finden, sodass der folgende Term
 minimal wird:
-\[ \sum_{\mathpzc{p} \in \mathcal{P}} \min_{\mathpzc{c}_i \in \mathcal{C}} \EuclidSquared{\mathpzc{p}}{\mathpzc{c}} \]
-Beim \emph{gewichteten} $k$-means-Problem werden den Eingabepunkten zusätzlich mit einer Funktion $w : P \rightarrow \mathbb{R}$
-Gewichte zugewiesen. Die zu minimierende Zielfunktion lautet dann entsprechend
-\[ \sum_{p \in P} \min_{c_i \in C} w(p) \EuclidSquared{p}{c} \]
+\[ \sum_{\mathpzc{p} \in \mathcal{P}} \min_{\mathpzc{c} \in \mathcal{C}} \EuclidSquared{\mathpzc{p}}{\mathpzc{c}} \]
+Die gewichtete Variante des $k$-means-Problems in euklidischen Vektorräumen lautet entsprechend wie folgt:
+\[ \sum_{\mathpzc{p} \in \mathcal{P}} \min_{\mathpzc{c} \in \mathcal{C}} w(\mathpzc{p})
+	\EuclidSquared{\mathpzc{p}}{\mathpzc{c}} \]
 \end{definition}
+Damit ist es nun möglich, ein intuitives Verfahren zum Bestimmen von Clusterings mit nicht-linearen Separatoren anzugeben.
+Wir bilden zunächst mit einer Abbildung $\phi : \mathcal{X} \rightarrow \mathcal{V}$ unsere Eingabepunkte aus ihrem Ursprungsraum
+$\mathcal{X}$ (also beispielsweise $\Rd$) auf einen $D$-dimensionalen (üblicherweise $D \gg d$) euklidischen
+Vektorraum $\mathcal{V}$ ab, und berechnen in diesem mit Lloyds Algorithmus oder einem anderen Clusteringverfahren ein
+Clustering, welches im Ursprungsraum $\mathcal{X}$ im Allgemeinen nicht-linear separierten Clustern entspricht.
+Bei diesem Verfahren wird entsprechend der folgende Term minimiert:
+\[ \sum_{p \in P} \min_{c \in C} \EuclidSquared{\phi(p)}{c} \]
+Ein Clusterzentrum $c_i$ ist dementsprechend definiert durch
+\[ c_i = \frac{\sum_{p \in S_i} \phi(p)}{\left|S_i\right|} \]
+wobei $S_i$ die Menge aller dem Cluster $c_i$ zugeordneten Punkte ist. Zunächst haben wir uns damit nicht-linear separierte
+Cluster "`erkauft"', der Preis, den wir dafür zahlen, besteht jedoch in höherem Rechenaufwand, da wir einerseits die Punkte
+in den jeweils höherdimensionalen Raum abbilden müssen und andererseits die Berechnung der (euklidischen) Distanzen aufwändiger
+wird; diese benötigt im Ursprungsraum Zeit $\mathcal{O}(d)$ und im höherdimensionalen Raum $\mathcal{O}(D)$. Der Mehraufwand
+für die Distanzberechnung fällt dabei stärker ins Gewicht, da wir die Distanzberechnung beispielsweise bei Lloyds Algorithmus
+in jeder Schleifeniteration durchführen.
+\absatz
+Dieses Problem wurde erstmals im Zusammenhang mit \emph{Support Vector Machines} (kurz SVMs) gelöst~\cite{BoserGV92}.
+Wir übertragen die Lösung mittels des sogenannten \emph{Kernel-Tricks} in den Clustering-Kontext und skizzieren diese kurz.
+Zunächst halten wir eine wichtige Beobachtung hinsichtlich der (quadrierten) euklidischen Distanz $\EuclidSquared{\phi(p)}{c}$
+zwischen dem abgebildeten Punkt und einem Clusterzentrum fest. Diese lässt sich wie folgt ausschließlich über Skalarprodukte
+berechnen (wobei auch hier wieder $S_c$ die dem Clusterzentrum $c$ zugeordnete Punktmenge ist):
+\begin{align}
+\label{formula:kmeans-innerproduct}
+	\EuclidSquared{\phi(p)}{c} &= \bigg\lVert \phi(p) - \frac{1}{\left|S_c\right|} \sum_{x \in S_c} \phi(x) \bigg\rVert \notag \\
+	&= \bigg\langle \phi(p) - \frac{1}{\left|S_c\right|} \sum_{x \in S_c} \phi(x),
+		\phi(p) - \frac{1}{\left|S_c\right|} \sum_{x \in S_c} \phi(x) \bigg\rangle \notag \\
+	&= \innerproduct{\phi(p)}{\phi(p)} - \frac{1}{\left|S_c\right|} \sum_{x \in S_c} \innerproduct{\phi(p)}{\phi(x)}
+		- \frac{1}{\left|S_c\right|} \sum_{x \in S_c} \innerproduct{\phi(x)}{\phi(p)} \notag \\
+		& \hspace{0.4cm} + \frac{1}{\left|S_c\right|^2} \sum_{x,y \in S_c} \innerproduct{\phi(x)}{\phi(y)}
+\end{align}
+Diese Beobachtung allein hilft uns noch nicht weiter, da auch die Berechnung des Skalarproduktes im höherdimensionalen
+Raum einen asymptotischen Aufwand von $\mathcal{O}(D)$ hätte. An dieser Stelle kommt nun der in~\cite{BoserGV92} vorgestellte
+\emph{Kernel-Trick} zum Tragen. Durch den Einsatz von sogenannten \emph{Kernelfunktionen} lässt sich dieser Mehraufwand
+umgehen. Dabei handelt es sich um positiv definite Abbildungen $\kappa : X \times X \rightarrow \mathbb{R}$, die bei Eingabe von
+zwei Punkten aus dem Ursprungsraum $X$ das Skalarprodukt der in den höherdimensionalen Raum abgebildeten Punkte berechnen:
+\[ \kappa(x,y) = \innerproduct{\phi(x)}{\phi(y)} \]
+Der Kernel-Trick besteht also darin, eine Kernelfunktion zur Berechnung der Skalarprodukte im höherdimensionalen Raum zu
+verwenden, für die keine explizite Kenntnis der Abbildung $\phi$ oder der abgebildeten Punkte $\phi(p)$ nötig ist.
+Mit der Kernelfunktion $\kappa$ können wir nun die Distanzberechnung aus ~\ref{formula:kmeans-innerproduct} weiter vereinfachen:
+\begin{align}
+\label{formula:kernel-kmeans}
+	\EuclidSquared{\phi(p)}{c} = \kappa(p,p) - \frac{1}{\left|S_c\right|} \sum_{x \in S_c} \kappa(p, x)
+		- \frac{1}{\left|S_c\right|} \sum_{x \in S_c} \kappa(x, p)
+		+ \frac{1}{\left|S_c\right|^2} \sum_{x,y \in S_c} \kappa(x, y)
+\end{align}
