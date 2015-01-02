@@ -153,7 +153,7 @@ Wenn die Eingabe keine Punktmenge, sondern ein (gewichteter) Graph ist, können 
 	Falls der Graph in Form einer Adjazenzmatrix $Adj^G$ vorliegt, lautet die Berechnungsvorschrift entsprechend:
 	\[ w_{cut}(S,T) = \sum_{u \in S, v \in T} Adj^G_{u,v} \]
 \end{definition}
-Für eine direkte Analogie zum $k$-means-Problem wäre ein Schnitt- beziehungsweise Paritionierungs-Begriff wünschenswert,
+Für eine direkte Analogie zum $k$-means-Problem wäre ein Schnitt- beziehungsweise Partitionierungs-Begriff wünschenswert,
 der eine $k$-fache Partitionierung der Knotenmenge erlaubt. Diese lautet wie folgt.
 
 \begin{definition}[$k$-Graphpartitionierung]
@@ -197,7 +197,7 @@ separierbar} sind. Ein illustratives Beispiel im $\mathbb{R}^2$ sind zwei konzen
 Die gemäß der $k$-means Zielfunktion optimalen Cluster sind die beiden jeweiligen Ringe, es ist jedoch im $\mathbb{R}^2$ nicht
 möglich Clusterzentren anzugeben, die den zweidimensionalen Raum in Ringe partitionieren. Die Beschränkung liegt darin, dass
 wir die Partitionierung oder Separierung durch Hyperebenen vornehmen. Im Ursprungsraum können wir daher nur linear separierbare
-Cluster bestimmen. Wir betrachten nun ein Verfahren, um diese Beschränkung zu umgehen.
+Cluster bestimmen. Wir betrachten nun ein Verfahren, mit dem sich diese Beschränkung umgehen lässt.
 
 \subsubsection{Kernel-\texorpdfstring{$k$}{k}-means}
 
@@ -285,3 +285,58 @@ Mit der Kernelfunktion $\kappa$ können wir nun die Distanzberechnung aus ~\ref{
 		- \frac{1}{\left|S_c\right|} \sum_{x \in S_c} \kappa(x, p)
 		+ \frac{1}{\left|S_c\right|^2} \sum_{x,y \in S_c} \kappa(x, y)
 \end{align}
+
+\begin{table}[t]
+\centering
+\begin{tabular}{@{}lr@{}} \toprule
+	\textbf{Linear-Kernel} & $\kappa(x_i, x_j) = x_i \cdot x_j + \gamma $ \\
+	\textbf{Polynom-Kernel} & $\kappa(x_i, x_j) = \left( x_i \cdot x_j + \gamma \right)^\delta$ \\
+	\textbf{Gauss-/RBF-Kernel} & $\kappa(x_i, x_j) = \exp \left( - \frac{\EuclidSquared{x_i}{x_j}}{2 \sigma^2} \right)$ \\
+	\textbf{Sigmoid-Kernel} & $\kappa(x_i, x_j) = \tanh(\alpha(x_i \cdot x_j) + \theta) $ \\ \bottomrule
+\end{tabular}
+\caption{Beispiele für häufig eingesetzte Kernelfunktionen.}
+\label{tbl:kernel-functions}
+\end{table}
+Tabelle~\ref{tbl:kernel-functions} bietet eine Übersicht über die am häufigsten eingesetzten Kernelfunktionen. Insbesondere
+die Gauss-Kernelfunktion und die Polynom-Kernelfunktion werden auch bei Support-Vektor-Machines gerne verwendet.
+\absatz
+Eine auf Kernelfunktionen basierende Variante von (Lloyds) Algorithmus~\ref{algo:lloyd} folgt mit \ref{formula:kernel-kmeans}
+unmittelbar. Der Algorithmus wird üblicherweise kurz "`Kernel-$k$-means-Algorithmus"' genannt.
+
+\begin{algorithm}[H]
+\label{algo:kernel-lloyd}
+\caption{Kernel-$k$-means}
+	% Optionen
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Eingabe:}
+	\SetKwInOut{Output}{Ausgabe:}
+	
+	% Input/Output
+	\Input{$P \subseteq \Rd, k \in \mathbb{N}^{+}, \kappa : X \times X \rightarrow \mathbb{R}$}
+	\Output{$k$-means-Clustering von $P$}
+	\BlankLine
+	
+	% Algo
+	Wähle zufällig $k$ Zentren $c_1^{(0)}, \dots, c_k^{(0)}$ aus $P$ oder $\Rd$\;
+	$t \leftarrow 0$\;
+	\Repeat{\textnormal{Konvergenz oder} $t > t_{max}$}{
+		Berechne $\EuclidSquared{\phi(p)}{c_i^{(t)}}$ für alle $p \in P$ und $i \in \{1, \dots, k\}$ mit~\ref{formula:kernel-kmeans}\;
+		\ForEach{$p \in P$}{
+			$c^*(p) \leftarrow \argmin_i\left( \bigg\lVert \phi(p) - c_i^{(t)} \bigg\rVert \right)$\;
+		}
+		$t \leftarrow t + 1$\;
+		\For{$i \leftarrow 1$ \KwTo $k$}{
+			$S_i^{(t)} \leftarrow \{ p \mid c^*(p) = i \}$\;
+			$c_i^{(t)} \leftarrow \frac{1}{|S_i^{(t)}|} \sum_{p_j \in S_i^{(t)}} p_j $\;
+		}
+	}
+\end{algorithm}
+Der Vorfaktor für gewichtetes $k$-means hat auf die Berechnungsvorschriften keine weiteren Auswirkungen,
+Algorithmus~\ref{algo:kernel-lloyd} kann dementsprechend für gewichtetes $k$-means erweitert werden. Der Algorithmus
+lässt sich mit einer asymptotischen Laufzeit von $\mathcal{O}(n^2 (\tau + d))$ implementieren~\cite{DhillonGK04}, wobei
+$\tau$ die Anzahl an Iterationen der äußeren Schleife ist.
+\absatz
+Im nächsten Unterabschnitt führen wir Verfahren ein, die mit Techniken aus der linearen Algebra das Graphclusteringproblem
+lösen und in Kombination mit dem hier vorgestellten Algorithmus eine robuste Grundlage für unsere Zwecke bilden.
+
+\subsubsection{Spektrale Clustering Methoden}
