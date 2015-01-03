@@ -340,3 +340,58 @@ Im nächsten Unterabschnitt führen wir Verfahren ein, die mit Techniken aus der
 lösen und in Kombination mit dem hier vorgestellten Algorithmus eine robuste Grundlage für unsere Zwecke bilden.
 
 \subsubsection{Spektrale Clustering Methoden}
+
+Beim spektralen Clustering wird die Eingabe von zu clusternden Objekten in Knoten eines Graphen aufgefasst. Informationen
+über die "`Ähnlichkeit"' von Objekten werden in Form eines Kantengewichts der Kante zwischen den jeweiligen Objekten
+realisiert. Wenn $G$ der Graph ist, durch den die Eingabemenge repräsentiert wird, dann ist die Adjazenzmatrix $Adj^G$ des
+Graphen der Ausgangspunkt der spektralen Clusteranalyse. Bevor wir mit konkreten Verfahren der spektralen Clusteranalyse
+beginnen können, benötigen wir einige grundlegende Definitionen der (spektralen) Graphentheorie.
+
+\begin{definition}[Grad-Matrix]
+\label{def:degree-matrix}
+	Sei $G = (V,E)$ ein Graph mit $\left| V \right| = n$ Knoten. Die \emph{Grad-Matrix} von $G$ ist die
+	$n \times n$-Diagonalmatrix $D$, die folgendermaßen definiert ist:
+	\[ D_{i,j} = 	\begin{cases}
+						\deg(v_i) & \textrm{falls } i = j, \\
+						0 & \textrm{sonst}
+					\end{cases}
+	\]
+	Dabei ist $\deg(v_i)$ die Anzahl an Kanten ist, die zum Knoten $v_i$ inzident sind. Diese Anzahl wird auch
+	\emph{Grad} des Knoten $v_i$ genannt.
+\end{definition}
+
+Mit Hilfe der Grad-Matrix eines Graphen lässt sich die sogenannte \emph{Laplace-Matrix} des Graphen berechnen, welche eine
+Matrix-Repräsentation von Graphen ist, die aufschlussreiche Informationen über die Struktur und Beschaffenheit des Graphen
+erlaubt. Sie ist wie folgt definiert:
+
+\begin{definition}[Laplace-Matrix~\cite{Luxburg07}]
+\label{def:laplace-matrix}
+	Sei $G=(V,E)$ ein Graph ohne Schleifen mit Grad-Matrix $D$ und (gewichteter) Adjazenzmatrix $Adj^G$.
+	Die (nicht-normalisierte) \emph{Laplace-Matrix} $L$ von $G$ ist definiert als:
+	\[ L = D - Adj^G \]
+	Die Einträge der Matrix sind dementsprechend folgendermaßen definiert:
+	\[ L_{i,j} = 	\begin{cases}
+						\deg(v_i) & \textrm{falls } i = j, \\
+						-1 & \textrm{falls } i \neq j \textrm{ und $v_i$ inzident zu $v_j$ ist}, \\
+						0 & \textrm{sonst}
+					\end{cases}
+	\]
+	Es existieren zwei normalisierte Formen der Laplace-Matrix die \emph{normalisierte} Laplace-Matrizen genannt werden.
+	Sie sind wie folgt definiert:
+	\begin{align*}
+		\mathcal{L}_{sym} &= D^{-\frac{1}{2}} L D^{-\frac{1}{2}} \\
+		\mathcal{L}_{rw} &= D^{-1} L
+	\end{align*}
+\end{definition}
+Die Eigenwerte der Laplace-Matrizen eines Graphen geben beispielsweise Aufschluss über die \emph{Zusammenhangskomponenten} eines
+Graphen, wobei eine Zusammenhangskomponente definiert ist als Teilgraph, in dem zwei beliebige Knoten über einen Pfad
+miteinander verbunden sind. Das folgende Lemma illustriert die Zusammenhangsinformationen, die sich aus der Laplace-Matrix
+ablesen lassen:
+
+\begin{lemma}[Zusammenhang und Laplace-Matrix~\cite{Luxburg07}]
+\label{lemma:connectivity-laplace-spectrum}
+	Gegeben sei $G=(V,E)$ ein schleifenloser Graph mit nicht-negativen Gewichten und Laplace-Matrix $L$. Die Anzahl an
+	Zusammenhangskomponenten von $G$ ist gleich der Anzahl an Eigenwerten von $L$, die gleich Null sind.
+\end{lemma}
+Da die Eigenwerte einer Matrix auch "`Spektrum"' genannt werden und man bei der spektralen Clusteranalyse die Eigenwerte
+der Laplace-Matrix nutzt, wird diese Technik "`spektrale Clusteranalyse"' genannt.
