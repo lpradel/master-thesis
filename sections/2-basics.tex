@@ -395,3 +395,86 @@ ablesen lassen:
 \end{lemma}
 Da die Eigenwerte einer Matrix auch "`Spektrum"' genannt werden und man bei der spektralen Clusteranalyse die Eigenwerte
 der Laplace-Matrix nutzt, wird diese Technik "`spektrale Clusteranalyse"' genannt.
+\absatz
+Die wichtigsten Algorithmen, die auf dem Spektrum der Laplace-Matrix der Eingabe basieren, wollen wir im Folgenden vorstellen.
+
+\begin{algorithm}[H]
+\label{algo:non-normalized-spectral-clustering}
+\caption{Nicht-normalisiertes spektrales Clustering~\cite{Luxburg07}}
+	% Optionen
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Eingabe:}
+	\SetKwInOut{Output}{Ausgabe:}
+	
+	% Input/Output
+	\Input{Gewichtete Adjazenzmatrix $Adj^G \in \mathbb{R}^{n \times n}, k \in \mathbb{N}^{+}$}
+	\Output{$k$ Cluster $C_1, \dots, C_k$}
+	\BlankLine
+	
+	% Algo
+	Berechne die nicht-normalisierte Laplace-Matrix $L$ des Graphen $G$ mit $Adj^G$\;
+	Bestimme die Eigenvektoren $u_1, \dots, u_k$ zu den $k$ kleinsten Eigenwerten von $L$\;
+	Sei $U \in \mathbb{R}^{n \times k}$ die Matrix mit $u_1, \dots u_k$ als Spaltenvektoren\;
+	Für $i \leftarrow \{ 1, \dots, n \}$ sei $y_i \in \mathbb{R}^k$ der Vektor der $i$-ten Reihe von $U$\;
+	Clustere die Punkte $(y_i)_{i \in \{1, \dots, n\}}$ mit einem $k$-means-Algorithmus in Cluster $C_1, \dots, C_k$
+\end{algorithm}
+Die beiden folgenden Algorithmen verwenden die normalisierten Laplace-Matrizen und wurden in den jeweils zitierten Papieren
+vorgestellt.
+
+\begin{algorithm}[H]
+\label{algo:normalized-spectral-clustering-shi-malik}
+\caption{Normalisiertes spektrales Clustering~\cite{ShiM00}}
+	% Optionen
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Eingabe:}
+	\SetKwInOut{Output}{Ausgabe:}
+	
+	% Input/Output
+	\Input{Gewichtete Adjazenzmatrix $Adj^G \in \mathbb{R}^{n \times n}, k \in \mathbb{N}^{+}$}
+	\Output{$k$ Cluster $C_1, \dots, C_k$}
+	\BlankLine
+	
+	% Algo
+	Berechne die normalisierte Laplace-Matrix $\mathcal{L}_{rw}$ des Graphen $G$ mit $Adj^G$\;
+	Bestimme die Eigenvektoren $u_1, \dots, u_k$ zu den $k$ kleinsten Eigenwerten von $\mathcal{L}_{rw}$\;
+	Sei $U \in \mathbb{R}^{n \times k}$ die Matrix mit $u_1, \dots u_k$ als Spaltenvektoren\;
+	Für $i \leftarrow \{ 1, \dots, n \}$ sei $y_i \in \mathbb{R}^k$ der Vektor der $i$-ten Reihe von $U$\;
+	Clustere die Punkte $(y_i)_{i \in \{1, \dots, n\}}$ mit einem $k$-means-Algorithmus in Cluster $C_1, \dots, C_k$
+\end{algorithm}
+Der in~\cite{ShiM00} vorgestellte Algorithmus sieht in seiner ursprünglichen Form zunächst eine Bipartitionierung anhand des
+Eigenvektors mit dem zweitkleinsten Eigenwert vor (dies entspricht einer Approximation des \emph{sparsest cut}),
+die anschließend gegebenenfalls weiter partitioniert wird. Dieses Vorgehen ist jedoch analog zu dem hier vor uns angegebenen
+Algorithmus.
+
+\begin{algorithm}[H]
+\label{algo:normalized-spectral-clustering-ng-jordan-weis}
+\caption{Normalisiertes spektrales Clustering~\cite{NgJW01}}
+	% Optionen
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Eingabe:}
+	\SetKwInOut{Output}{Ausgabe:}
+	
+	% Input/Output
+	\Input{Gewichtete Adjazenzmatrix $Adj^G \in \mathbb{R}^{n \times n}, k \in \mathbb{N}^{+}$}
+	\Output{$k$ Cluster $C_1, \dots, C_k$}
+	\BlankLine
+	
+	% Algo
+	Berechne die normalisierte Laplace-Matrix $\mathcal{L}_{sym}$ des Graphen $G$ mit $Adj^G$\;
+	Bestimme die Eigenvektoren $u_1, \dots, u_k$ zu den $k$ kleinsten Eigenwerten von $\mathcal{L}_{sym}$\;
+	Sei $U \in \mathbb{R}^{n \times k}$ die Matrix mit $u_1, \dots u_k$ als Spaltenvektoren\;
+	Sei $T \in \mathbb{R}^{n \times k}$ die Matrix mit den Einträgen
+	\[ T_{i,j} = \frac{U_{i,j}}{\left(\sum_k U_{i,k}^2\right)^{\frac{1}{2}}} \] \;
+	Für $i \leftarrow \{ 1, \dots, n \}$ sei $y_i \in \mathbb{R}^k$ der Vektor der $i$-ten Reihe von $T$\;
+	Clustere die Punkte $(y_i)_{i \in \{1, \dots, n\}}$ mit einem $k$-means-Algorithmus in Cluster $C_1, \dots, C_k$
+\end{algorithm}
+Der Algorithmus aus~\cite{NgJW01} ist dem von~\cite{ShiM00} sehr ähnlich, verwendet jedoch die normalisierte Laplace-Matrix
+$\mathcal{L}_{sym}$. Außerdem ist für diesen Algorithmus eine zusätzliche Normalisierung nötig, deren Details in~\cite{Luxburg07}
+erläutert werden.
+\absatz
+Das Berechnen aller Eigenvektoren benötigt asymptotischen Rechenaufwand von $\mathcal{O}(n^3)$, was für viele Anwendungen
+deutlich zu viel Rechenzeit ist. Beschränkt man sich auf die Berechnung von wenigen oder sogar nur einem einzelnen Eigenvektor,
+lässt sich die Komplexität signifikant verringern, beispielsweise unter Einsatz von Lanczos Algorithmus~\cite{Lanczos50}.
+Da für viele spektrale Clusteringalgorithmen die Berechnung der Eigenvektoren jedoch nach wie vor ein großer Flaschenhals ist,
+betrachten wir im nächsten Kapitel einen Ansatz, mit dem die Berechnung von Eigenvektoren für Graphclusterings prinzipiell
+vermieden werden kann.
