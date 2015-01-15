@@ -175,7 +175,7 @@ der eine $k$-fache Partitionierung der Knotenmenge erlaubt. Diese lautet wie fol
 				im Graphen minimiert:
 				\[ \min_{V_1, \dots, V_k} \sum_{c=1}^{k} \frac{w(V_c, V \setminus V_c)}{\left|V_c\right|} \]
 		\item 	\textbf{Kernighan-Lin}. Bei dem in~\cite{KernighanL70} vorgestellten Optimierungskriterium werden die
-				Intra-Clusterabstände ähnlich der Ratio Association minimiert, allerdings müssen alle Partition hier zusätzlich
+				Intra-Clusterabstände ähnlich der Ratio Association minimiert, allerdings müssen alle Partitionen hier zusätzlich
 				die selbe Größe haben. Die hier vorgestellte Zielfunktion ist von $2$ auf $k$ Partitionen verallgemeinert:
 				\[ \min_{V_1, \dots, V_k} \sum_{c=1}^{k} \frac{w(V_c, V_c)}{\left|V_c\right|} \textrm{ s.t. } 
 				   \left|V_c\right| = \frac{\left|V\right|}{k} \, \forall \, c \in \{ 1, \dots, k \} \]
@@ -263,7 +263,7 @@ zwischen dem abgebildeten Punkt und einem Clusterzentrum fest. Diese lässt sich
 berechnen (wobei auch hier wieder $S_c$ die dem Clusterzentrum $c$ zugeordnete Punktmenge ist):
 \begin{align}
 \label{formula:kmeans-innerproduct}
-	\EuclidSquared{\phi(p)}{c} &= \bigg\lVert \phi(p) - \frac{1}{\left|S_c\right|} \sum_{x \in S_c} \phi(x) \bigg\rVert \notag \\
+	\EuclidSquared{\phi(p)}{c} &= \bigg\lVert \phi(p) - \frac{1}{\left|S_c\right|} \sum_{x \in S_c} \phi(x) \bigg\rVert^2 \notag \\
 	&= \bigg\langle \phi(p) - \frac{1}{\left|S_c\right|} \sum_{x \in S_c} \phi(x),
 		\phi(p) - \frac{1}{\left|S_c\right|} \sum_{x \in S_c} \phi(x) \bigg\rangle \notag \\
 	&= \innerproduct{\phi(p)}{\phi(p)} - \frac{1}{\left|S_c\right|} \sum_{x \in S_c} \innerproduct{\phi(p)}{\phi(x)}
@@ -356,8 +356,8 @@ beginnen können, benötigen wir einige grundlegende Definitionen der (spektrale
 						0 & \textrm{sonst}
 					\end{cases}
 	\]
-	Dabei ist $\deg(v_i)$ die Anzahl an Kanten ist, die zum Knoten $v_i$ inzident sind. Diese Anzahl wird auch
-	\emph{Grad} des Knoten $v_i$ genannt.
+	Dabei ist $\deg(v_i)$ die Anzahl an Kanten, die zum Knoten $v_i$ inzident sind. Diese Anzahl wird auch
+	\emph{Grad} des Knotens $v_i$ genannt.
 \end{definition}
 
 Mit Hilfe der Grad-Matrix eines Graphen lässt sich die sogenannte \emph{Laplace-Matrix} des Graphen berechnen, welche eine
@@ -376,7 +376,7 @@ erlaubt. Sie ist wie folgt definiert:
 						0 & \textrm{sonst}
 					\end{cases}
 	\]
-	Es existieren zwei normalisierte Formen der Laplace-Matrix die \emph{normalisierte} Laplace-Matrizen genannt werden.
+	Es existieren zwei normalisierte Formen der Laplace-Matrix, die \emph{normalisierte} Laplace-Matrizen genannt werden.
 	Sie sind wie folgt definiert:
 	\begin{align*}
 		\mathcal{L}_{sym} &= D^{-\frac{1}{2}} L D^{-\frac{1}{2}} \\
