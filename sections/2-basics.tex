@@ -6,7 +6,7 @@ wichtigen grundlegenden Algorithmen ein, deren Ideen für uns im Folgenden noch 
 nach Themengebieten geordnet vor: In Abschnitt~\ref{subsection:basics:clustering} skizzieren wir kurz das
 Themengebiet der Clusteranalyse, definieren die üblichen Zielfunktionen und stellen zwei bedeutende Algorithmen vor.
 Abschnitt~\ref{subsection:basics:graphs} führt kurz in die Graphentheorie sowie die Clusteranalyse von Graphen ein. In diesem
-Abschnitt werden wir zudem die von der klassischen Clusteranalyse sehr unterschiedlichen Optimierungskritierien für die
+Abschnitt werden wir zudem verschiedene Optimierungskritierien für die
 Clusteranalyse von Graphen herausstellen. Schließlich fassen wir in Abschnitt~\ref{subsection:basics:kernel-spectral} die
 wichtigsten Methoden und Algorithmen aus dem Bereich der spektralen Clusteranalyse zusammen und stellen zudem die wesentlichen
 Konzepte von Kernel-Methoden vor.
@@ -19,11 +19,11 @@ sich die Objekte innerhalb eines Clusters gemäß eines bestimmten Optimierungsk
 anderen Clusters unterscheiden. Es existieren zahlreiche grundsätzlich verschiedene Ansätze, Clusteringprobleme zu lösen.
 Wir beschränken uns in dieser Arbeit auf \emph{partitionierende} Clusteringprobleme und -verfahren. Bei diesen
 soll eine Menge von $d$-dimensionalen Punkten, welche der erste Teil der Eingabe ist, gemäß einer Cluster-Zielfunktion möglichst
-optimal in genau $k$ Cluster unterteilt werden, wobei $k$ der ganzzahlige zweite Teil der Eingabe ist.
+optimal in genau $k$ Cluster unterteilt werden. Dabei ist $k$ der ganzzahlige zweite Teil der Eingabe.
 
 Für die Zielfunktion, welche die Nähe oder Ferne von Punkten zueinander quantifiziert, sind bei Eingabepunkten aus
-$\Rd$ Metriken naheliegend. Intuitiv ist dabei die euklidische Distanz, welche als Zielfunktion für die beiden bekanntesten
-Clustering-Problemstellungen dient.
+$\Rd$ Metriken naheliegend. Intuitiv ist dabei die euklidische Distanz, auf der die beiden bekanntesten
+Clustering-Problemstellungen basieren.
 
 \begin{definition}[$k$-median und $k$-means]
 \label{def:kmeans-kmedian}
@@ -44,7 +44,7 @@ großen Popularität wird der Algorithmus häufig auch als "`$k$-means-Algorithm
 Der Algorithmus wählt initial $k$ zufällige Punkte aus der Eingabemenge oder sogar beliebige Punkte aus $\Rd$ als initiale
 Clusterzentren. Anschließend wird jedem Punkt das am nächsten gelegene Zentrum zugewiesen. Dadurch entstehen die initialen Cluster
 mit ihren jeweiligen Zentren. Im zweiten Schritt wird das neue Zentrum eines jeden Clusters als der geometrische Zentroid
-des Clusters gewählt. Die Zuweisung von Punkten zum nächstgelegenen Cluster und die Neuberechnung der neuen Zentren werden
+des Clusters gewählt. Die Zuweisung von Punkten zum nächstgelegenen Clusterzentrum und die Berechnung der neuen Zentroiden werden
 solange alterniert, bis die Lösung konvergiert, also wenn sich die Zuordnungen der Punkte nicht mehr ändern. In der Praxis
 wird gelegentlich auch nach einer festen Anzahl von Iterationen terminiert.
 
@@ -73,7 +73,7 @@ wird gelegentlich auch nach einer festen Anzahl von Iterationen terminiert.
 Die asymptotische Laufzeit des Algorithmus beträgt $\BigO{nkdi}$, wobei $i$ die Anzahl an durchgeführten Iterationen ist.
 Wenn der Algorithmus konvergiert und nicht durch eine feste Anzahl von Iterationen terminiert wird, wurde ein lokales
 Optimum gefunden, welches jedoch im Allgemeinen kein globales Optimum oder eine Approximation eines globalen Optimums ist.
-Die Güte des berechneten Clusterings hängt maßgeblich von der initialen Wahl der Cluster ab. Der Algorithmus
+Die Güte des berechneten Clusterings hängt maßgeblich von der initialen Wahl der Clusterzentren ab. Der Algorithmus
 \kmpp~\cite{ArthurV07} setzt genau an dieser Stelle an: er berechnet auf einfache, aber dennoch geschickte Art und Weise
 die initialen Cluster und führt anschließend mit diesen die übrigen Schritte von Lloyds Algorithmus durch.
 Der Algorithmus wählt zunächst ein einzelnes Clusterzentrum $c_1$ zufällig gleichverteilt aus der Eingabe-Punktmenge $P$ und
@@ -105,13 +105,14 @@ $x' \in P \setminus \{ c_1, \dots, c_{i-1} \}$ mit Wahrscheinlichkeit $\frac{D(x
 Die $k$ Zentren, die von \kmpp{} ausgewählt werden, sind eine $\BigO{\log k}$-Approximation für das $k$-means-Problem, die durch
 die anschließende Ausführung von Lloyds Algorithmus noch zu einem lokalen Optimum verbessert werden.
 \absatz
-Im nächsten Abschnitt betrachten wir eine konkrete Anwendung partitionierender Clusteringverfahren.
+Im nächsten Abschnitt betrachten wir das Clusteringproblem auf Graphen, das wir im später noch genauer untersuchen wollen.
 
 \subsection{Graphen und Clusteranalyse von Graphen}
 \label{subsection:basics:graphs}
 
-Gerade im Umgang mit großen Datenmengen hat sich in der Informatik der \emph{Graph} als geeignete Datenstruktur erwiesen. Er
-ist wie folgt definiert.
+Der \emph{Graph} ist in der Informatik eine vielseitig einsetzbare und gut erforschte Datenstruktur. Wir können diverse
+Clusteringprobleme nicht nur für eine Eingabepunktmenge formulieren, sondern auch für eine Eingabe, die aus einem Graphen
+besteht. Wir beginnen mit der folgenden Definition des Graphen.
 
 \begin{definition}[Graph]
 \label{def:graph}
@@ -164,15 +165,15 @@ der eine $k$-fache Partitionierung der Knotenmenge erlaubt. Diese lautet wie fol
 	Partition bezüglich einer Ähnlichkeitsrelation möglichst ähnlich sind und die Knoten unterschiedlicher Partitionen
 	bezüglich der Ähnlichkeitsrelation möglichst stark voneinander unterscheiden.
 	
-	Beim Clustering von Punktmengen lagen für die Ähnlichkeitsrelation Metriken nahe, im Falle der Graphpartitionierung
+	Beim Clustering von Punktmengen lagen für die Unähnlichkeitsrelation Metriken nahe, im Falle der Graphpartitionierung
 	existiert eine Reihe von Optimierungskriterien, von denen wir im Folgenden die verbreitetsten einführen.
 	
 	\begin{enumerate}
 		\item 	\textbf{Ratio Association}. Bei der Ratio Association sollen die Intra-Clusterabstände relativ zur jeweiligen
 				Clustergröße maximiert werden:
 				\[ \max_{V_1, \dots, V_k} \sum_{c=1}^{k} \frac{w(V_c, V_c)}{\left|V_c\right|} \]
-		\item 	\textbf{Ratio Cut}. Beim Ratio Cut wird der Schnitt zwischen jeweils einem Cluster und allen anderen Punkten
-				im Graphen minimiert:
+		\item 	\textbf{Ratio Cut}. Beim Ratio Cut wird das Gewicht des Schnitts zwischen jeweils einem Cluster und allen
+				anderen Punkten im Graphen minimiert:
 				\[ \min_{V_1, \dots, V_k} \sum_{c=1}^{k} \frac{w(V_c, V \setminus V_c)}{\left|V_c\right|} \]
 		\item 	\textbf{Kernighan-Lin}. Bei dem in~\cite{KernighanL70} vorgestellten Optimierungskriterium werden die
 				Intra-Clusterabstände ähnlich der Ratio Association minimiert, allerdings müssen alle Partitionen hier zusätzlich
@@ -206,9 +207,9 @@ dass eine zufällige Eingabepunktmenge im $d$-dimensionalen Raum mit hoher Wahrs
 Raum (zum Beispiel der Dimension $D \gg d$) abgebildet linear separierbar ist.
 
 Für Klassifizierungs- und insbesondere Clusteringprobleme benötigen wir sowohl im Ursprungsraum als auch im abgebildeten Raum
-ein algebraisches Maß für Ähnlichkeit. Üblicherweise wird dabei das \emph{Skalarprodukt} eingesetzt. Dabei beziehen wir uns
-im Weiteren auf die folgende Definition von \emph{euklidischen Vektorräumen}, also Vektorräumen mit einem reellen
-Skalarprodukt.
+ein algebraisches Maß für Unähnlichkeit. Üblicherweise wird dabei eine auf \emph{Skalarprodukten} basierende Metrik eingesetzt.
+Wir beziehen uns im Weiteren auf die folgende Definition von \emph{euklidischen Vektorräumen}, also Vektorräumen mit einem
+reellen Skalarprodukt.
 
 \begin{definition}[Euklidischer Vektorraum]
 \label{def:innerproductspace}
@@ -224,7 +225,7 @@ Skalarprodukt.
 \end{definition}
 Die $k$-means-Zielfunktion kann auf euklidische Vektorräume erweitert werden, indem wir für einen euklidischen Vektorraum
 $\mathcal{V}$ eine Norm $\lVert \cdot \rVert : \mathcal{V} \rightarrow \mathbb{R}$ über das Skalarprodukt gemäß der folgenden
-Abbildungsvorschrift für ein $\mathpzc{x} \in \mathcal{V}$ definieren:
+Abbildungsvorschrift für jedes $\mathpzc{x} \in \mathcal{V}$ definieren:
 $\lVert \mathpzc{x} \rVert = \sqrt{\innerproduct{\mathpzc{x}}{\mathpzc{x}}}$.
 Das auf Skalarprodukten basierte Analog zu Definition~\ref{def:kmeans-kmedian} des $k$-means-Problems lautet dann wie folgt:
 
@@ -249,7 +250,7 @@ Bei diesem Verfahren wird entsprechend der folgende Term minimiert:
 \[ \sum_{p \in P} \min_{c \in C} \EuclidSquared{\phi(p)}{c} \]
 Ein Clusterzentrum $c_i$ ist dementsprechend definiert durch
 \[ c_i = \frac{\sum_{p \in S_i} \phi(p)}{\left|S_i\right|} \]
-wobei $S_i$ die Menge aller dem Cluster $c_i$ zugeordneten Punkte ist. Zunächst haben wir uns damit nicht-linear separierte
+wobei $S_i$ die Menge aller dem Clusterzentrum $c_i$ zugeordneten Punkte ist. Zunächst haben wir uns damit nicht-linear separierte
 Cluster "`erkauft"', der Preis, den wir dafür zahlen, besteht jedoch in höherem Rechenaufwand, da wir einerseits die Punkte
 in den jeweils höherdimensionalen Raum abbilden müssen und andererseits die Berechnung der (euklidischen) Distanzen aufwändiger
 wird; diese benötigt im Ursprungsraum Zeit $\mathcal{O}(d)$ und im höherdimensionalen Raum $\mathcal{O}(D)$. Der Mehraufwand
@@ -302,8 +303,12 @@ die Gauss-Kernelfunktion und die Polynom-Kernelfunktion werden auch bei Support-
 \absatz
 Eine auf Kernelfunktionen basierende Variante von (Lloyds) Algorithmus~\ref{algo:lloyd} folgt mit \ref{formula:kernel-kmeans}
 unmittelbar. Der Algorithmus wird üblicherweise kurz "`Kernel-$k$-means-Algorithmus"' genannt.
-
-\begin{algorithm}[H]
+Der Vorfaktor für gewichtetes $k$-means hat auf die Berechnungsvorschriften keine weiteren Auswirkungen,
+Algorithmus~\ref{algo:kernel-lloyd} kann dementsprechend für gewichtetes $k$-means erweitert werden. Der Algorithmus
+lässt sich mit einer asymptotischen Laufzeit von $\mathcal{O}(n^2 (\tau + d))$ implementieren~\cite{DhillonGK04,DhillonGK07},
+wobei $\tau$ die Anzahl an Iterationen der äußeren Schleife ist.
+\absatz
+\begin{algorithm}[]
 \label{algo:kernel-lloyd}
 \caption{Kernel-$k$-means}
 	% Optionen
@@ -331,17 +336,12 @@ unmittelbar. Der Algorithmus wird üblicherweise kurz "`Kernel-$k$-means-Algorit
 		}
 	}
 \end{algorithm}
-Der Vorfaktor für gewichtetes $k$-means hat auf die Berechnungsvorschriften keine weiteren Auswirkungen,
-Algorithmus~\ref{algo:kernel-lloyd} kann dementsprechend für gewichtetes $k$-means erweitert werden. Der Algorithmus
-lässt sich mit einer asymptotischen Laufzeit von $\mathcal{O}(n^2 (\tau + d))$ implementieren~\cite{DhillonGK04,DhillonGK07},
-wobei $\tau$ die Anzahl an Iterationen der äußeren Schleife ist.
-\absatz
 Im nächsten Unterabschnitt führen wir Verfahren ein, die mit Techniken aus der linearen Algebra das Graphclusteringproblem
 lösen und in Kombination mit dem hier vorgestellten Algorithmus eine robuste Grundlage für unsere Zwecke bilden.
 
 \subsubsection{Spektrale Clustering Methoden}
 
-Beim spektralen Clustering wird die Eingabe von zu clusternden Objekten in Knoten eines Graphen aufgefasst. Informationen
+Beim spektralen Clustering besteht die Eingabe aus einem Graphen, dessen Knoten geclustert werden sollen. Informationen
 über die "`Ähnlichkeit"' von Objekten werden in Form eines Kantengewichts der Kante zwischen den jeweiligen Objekten
 realisiert. Wenn $G$ der Graph ist, durch den die Eingabemenge repräsentiert wird, dann ist die Adjazenzmatrix $Adj^G$ des
 Graphen der Ausgangspunkt der spektralen Clusteranalyse. Bevor wir mit konkreten Verfahren der spektralen Clusteranalyse
@@ -384,8 +384,8 @@ erlaubt. Sie ist wie folgt definiert:
 	\end{align*}
 \end{definition}
 Die Eigenwerte der Laplace-Matrizen eines Graphen geben beispielsweise Aufschluss über die \emph{Zusammenhangskomponenten} eines
-Graphen, wobei eine Zusammenhangskomponente definiert ist als Teilgraph, in dem zwei beliebige Knoten über einen Pfad
-miteinander verbunden sind. Das folgende Lemma illustriert die Zusammenhangsinformationen, die sich aus der Laplace-Matrix
+Graphen. Eine Zusammenhangskomponente definiert ist als Teilgraph, in dem jedes Paar von Knoten über einen Pfad
+miteinander verbunden ist. Das folgende Lemma illustriert die Zusammenhangsinformationen, die sich aus der Laplace-Matrix
 ablesen lassen:
 
 \begin{lemma}[Zusammenhang und Laplace-Matrix~\cite{Luxburg07}]
@@ -393,12 +393,15 @@ ablesen lassen:
 	Gegeben sei $G=(V,E)$ ein schleifenloser Graph mit nicht-negativen Gewichten und Laplace-Matrix $L$. Die Anzahl an
 	Zusammenhangskomponenten von $G$ ist gleich der Anzahl an Eigenwerten von $L$, die gleich Null sind.
 \end{lemma}
-Da die Eigenwerte einer Matrix auch "`Spektrum"' genannt werden und man bei der spektralen Clusteranalyse die Eigenwerte
+Da die Eigenwerte einer Matrix auch "`Spektrum"' genannt werden und man bei den hier vorgestellten Methoden die Eigenwerte
 der Laplace-Matrix nutzt, wird diese Technik "`spektrale Clusteranalyse"' genannt.
 \absatz
 Die wichtigsten Algorithmen, die auf dem Spektrum der Laplace-Matrix der Eingabe basieren, wollen wir im Folgenden vorstellen.
+Wir beginnen mit den Algorithmen~\ref{algo:non-normalized-spectral-clustering}
+und~\ref{algo:normalized-spectral-clustering-shi-malik} , welche die normalisierten Laplace-Matrizen verwenden und
+in den jeweils zitierten Papieren vorgestellt wurden.
 
-\begin{algorithm}[H]
+\begin{algorithm}[]
 \label{algo:non-normalized-spectral-clustering}
 \caption{Nicht-normalisiertes spektrales Clustering~\cite{Luxburg07}}
 	% Optionen
@@ -413,15 +416,13 @@ Die wichtigsten Algorithmen, die auf dem Spektrum der Laplace-Matrix der Eingabe
 	
 	% Algo
 	Berechne die nicht-normalisierte Laplace-Matrix $L$ des Graphen $G$ mit $Adj^G$\;
-	Bestimme die Eigenvektoren $u_1, \dots, u_k$ zu den $k$ kleinsten Eigenwerten von $L$\;
+	Bestimme Eigenvektoren $u_1, \dots, u_k$ zu den $k$ kleinsten Eigenwerten von $L$\;
 	Sei $U \in \mathbb{R}^{n \times k}$ die Matrix mit $u_1, \dots u_k$ als Spaltenvektoren\;
 	Für $i \leftarrow \{ 1, \dots, n \}$ sei $y_i \in \mathbb{R}^k$ der Vektor der $i$-ten Reihe von $U$\;
-	Clustere die Punkte $(y_i)_{i \in \{1, \dots, n\}}$ mit einem $k$-means-Algorithmus in Cluster $C_1, \dots, C_k$
+	Clustere die Punkte $(y_i)_{i \in \{1, \dots, n\}}$ mit einem $k$-means-Algorithmus in $C_1, \dots, C_k$
 \end{algorithm}
-Die beiden folgenden Algorithmen verwenden die normalisierten Laplace-Matrizen und wurden in den jeweils zitierten Papieren
-vorgestellt.
 
-\begin{algorithm}[H]
+\begin{algorithm}[]
 \label{algo:normalized-spectral-clustering-shi-malik}
 \caption{Normalisiertes spektrales Clustering~\cite{ShiM00}}
 	% Optionen
@@ -436,10 +437,10 @@ vorgestellt.
 	
 	% Algo
 	Berechne die normalisierte Laplace-Matrix $\mathcal{L}_{rw}$ des Graphen $G$ mit $Adj^G$\;
-	Bestimme die Eigenvektoren $u_1, \dots, u_k$ zu den $k$ kleinsten Eigenwerten von $\mathcal{L}_{rw}$\;
+	Bestimme Eigenvektoren $u_1, \dots, u_k$ zu den $k$ kleinsten Eigenwerten von $\mathcal{L}_{rw}$\;
 	Sei $U \in \mathbb{R}^{n \times k}$ die Matrix mit $u_1, \dots u_k$ als Spaltenvektoren\;
 	Für $i \leftarrow \{ 1, \dots, n \}$ sei $y_i \in \mathbb{R}^k$ der Vektor der $i$-ten Reihe von $U$\;
-	Clustere die Punkte $(y_i)_{i \in \{1, \dots, n\}}$ mit einem $k$-means-Algorithmus in Cluster $C_1, \dots, C_k$
+	Clustere die Punkte $(y_i)_{i \in \{1, \dots, n\}}$ mit einem $k$-means-Algorithmus in $C_1, \dots, C_k$
 \end{algorithm}
 Der in~\cite{ShiM00} vorgestellte Algorithmus sieht in seiner ursprünglichen Form zunächst eine Bipartitionierung anhand des
 Eigenvektors mit dem zweitkleinsten Eigenwert vor (dies entspricht einer Approximation des \emph{sparsest cut}),
@@ -461,12 +462,12 @@ Algorithmus.
 	
 	% Algo
 	Berechne die normalisierte Laplace-Matrix $\mathcal{L}_{sym}$ des Graphen $G$ mit $Adj^G$\;
-	Bestimme die Eigenvektoren $u_1, \dots, u_k$ zu den $k$ kleinsten Eigenwerten von $\mathcal{L}_{sym}$\;
+	Bestimme Eigenvektoren $u_1, \dots, u_k$ zu den $k$ kleinsten Eigenwerten von $\mathcal{L}_{sym}$\;
 	Sei $U \in \mathbb{R}^{n \times k}$ die Matrix mit $u_1, \dots u_k$ als Spaltenvektoren\;
 	Sei $T \in \mathbb{R}^{n \times k}$ die Matrix mit den Einträgen
-	\[ T_{i,j} = \frac{U_{i,j}}{\left(\sum_k U_{i,k}^2\right)^{\frac{1}{2}}} \] \;
+	$ T_{i,j} = \frac{U_{i,j}}{\left(\sum_k U_{i,k}^2\right)^{\frac{1}{2}}} $ \;
 	Für $i \leftarrow \{ 1, \dots, n \}$ sei $y_i \in \mathbb{R}^k$ der Vektor der $i$-ten Reihe von $T$\;
-	Clustere die Punkte $(y_i)_{i \in \{1, \dots, n\}}$ mit einem $k$-means-Algorithmus in Cluster $C_1, \dots, C_k$
+	Clustere die Punkte $(y_i)_{i \in \{1, \dots, n\}}$ mit einem $k$-means-Algorithmus in $C_1, \dots, C_k$
 \end{algorithm}
 Der Algorithmus aus~\cite{NgJW01} ist dem von~\cite{ShiM00} sehr ähnlich, verwendet jedoch die normalisierte Laplace-Matrix
 $\mathcal{L}_{sym}$. Außerdem ist für diesen Algorithmus eine zusätzliche Normalisierung nötig, deren Details in~\cite{Luxburg07}
