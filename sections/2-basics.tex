@@ -20,12 +20,13 @@ anderen Clusters unterscheiden. Es existieren zahlreiche grundsätzlich verschie
 Wir beschränken uns in dieser Arbeit auf \emph{partitionierende} Clusteringprobleme und -verfahren. Bei diesen
 soll eine Menge von Objekten, welche der erste Teil der Eingabe ist, gemäß einer Cluster-Zielfunktion möglichst
 optimal in genau $k$ Cluster unterteilt werden. Dabei ist $k$ der ganzzahlige zweite Teil der Eingabe, das heißt, die
-Anzahl an Clustern muss bei diesen Verfahren initial festgelegt werden. Die initial festgelegten $k$ Zentren werden dann iterativ
+Anzahl an Clustern muss bei diesen Verfahren vorab festgelegt werden. Die initial gewählten $k$ Zentren werden dann iterativ
 verschoben, bis ein gewisses Abbruchkriterium erfüllt ist.
 
 Für die Zielfunktion, welche die Nähe oder Ferne von Punkten zueinander quantifiziert, sind bei Eingabepunkten aus
 $\Rd$ Metriken naheliegend. Intuitiv ist dabei die euklidische Distanz, auf der die beiden bekanntesten
-Clustering-Problemstellungen basieren.
+Clustering-Problemstellungen basieren. Wir notieren die euklidische Distanz zwischen zwei Punkten $x, y \in \mathbb{R}^d$ mit
+$\Euclid{x}{y}$.
 
 \begin{definition}[$k$-median und $k$-means]
 \label{def:kmeans-kmedian}
@@ -220,7 +221,7 @@ reellen Skalarprodukt.
 
 \begin{definition}[Euklidischer Vektorraum]
 \label{def:innerproductspace}
-	Sei $V$ ein $\mathbb{R}$-Vektorraum. Ein reelles Skalarprodukt auf $V$ ist eine Abbildung
+	Sei $V$ ein Vektorraum über $\mathbb{R}$. Ein reelles Skalarprodukt auf $V$ ist eine Abbildung
 	$\innerproduct{\cdot}{\cdot} : V \times V \rightarrow \mathbb{R}$, die den folgenden Eigenschaften genügt:
 	\begin{enumerate}
 		\item 	$\innerproduct{a}{b} = \innerproduct{b}{a} \, \forall \, a, b \in V$
@@ -352,7 +353,18 @@ lösen und in Kombination mit dem hier vorgestellten Algorithmus eine robuste Gr
 
 Beim spektralen Clustering besteht die Eingabe aus einem Graphen, dessen Knoten geclustert werden sollen. Informationen
 über die "`Ähnlichkeit"' von Objekten werden in Form eines Kantengewichts der Kante zwischen den jeweiligen Objekten
-realisiert. Wenn $G$ der Graph ist, durch den die Eingabemenge repräsentiert wird, dann ist die Adjazenzmatrix $Adj^G$ des
+realisiert. Wir werden im Weiteren insbesondere Eigenvektoren und zugehörige Eigenwerte von Matrizen betrachten und rufen uns
+daher kurz die Definition dieser in Erinnerung.
+
+\begin{definition}[Eigenvektor und Eigenwert]
+\label{def:eigenvector-eigenvalue}
+	Sei $A$ eine quadratische Matrix. Das \emph{Eigenwertproblem} besteht darin, eine Zahl $\lambda$ und einen
+	dazugehörigen Vektor $\vec{x} \neq \vec{0}$ zu finden, für die gilt:
+	\[ A \vec{x} = \lambda \vec{x} \]
+	Die reelle oder komplexe Zahl $\lambda$ heißt \emph{Eigenwert} von $A$, der Vektor $\vec{x}$ heißt Eigenvektor von $A$.
+\end{definition}
+
+Wenn $G$ der Graph ist, durch den die Eingabemenge repräsentiert wird, dann ist die Adjazenzmatrix $Adj^G$ des
 Graphen der Ausgangspunkt der spektralen Clusteranalyse. Bevor wir mit konkreten Verfahren der spektralen Clusteranalyse
 beginnen können, benötigen wir einige grundlegende Definitionen der (spektralen) Graphentheorie.
 
