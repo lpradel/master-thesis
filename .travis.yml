@@ -3,7 +3,7 @@ before_install:
     - sudo apt-get update -q
 
 install:
-    - sudo apt-get install -y texlive texlive-lang-german texlive-latex-extra
+    - sudo apt-get install -y texlive texlive-lang-german texlive-latex-extra texlive-science
     - sudo apt-get install -y chktex
  
 script:
