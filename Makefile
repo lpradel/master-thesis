@@ -10,10 +10,10 @@ TEX:=$(shell ls *.tex)
 OTHER = *~ *.aux *.dvi *.toc *.bbl *.blg *.gz *.out *.thm *.ps *.idx *.ilg *.ind *.tdo *.cb *.cb2 *.lot *.soc *
 
 pdflatex: ma.tex
-    pdflatex --synctex=1 ma.tex
-    bibtex ma
-    pdflatex --synctex=1 ma.tex
-    pdflatex --synctex=1 ma.tex
-    pdflatex --synctex=1 ma.tex
+	pdflatex --synctex=1 ma.tex
+	bibtex ma
+	pdflatex --synctex=1 ma.tex
+	pdflatex --synctex=1 ma.tex
+	pdflatex --synctex=1 ma.tex
 clean:
-    git clean -x -f -e ma.pdf
+	git clean -x -f -e ma.pdf
