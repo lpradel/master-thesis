@@ -1,0 +1,221 @@
+\section{Kernel \texorpdfstring{$k$}{k}-means Methoden für spektrales Graphclustering}
+
+In diesem Kapitel wollen wir Verfahren zur spektralen Clusteranalyse von Graphen vorstellen und verbessern. Als Grundlage wollen
+wir den Kernel-$k$-means Algorithmus verwenden. Lloyds Algorithmus ist nach wie vor eine Heuristik, die in der Praxis mit geringen
+Ausführungszeiten Clusterings von akzeptabler Qualität berechnet. Unter Einsatz der Kernel Methode können wir die
+Qualität der berechneten Clusterings noch einmal steigern, ohne dabei signifikante Performanzeinbußen in Kauf nehmen zu müssen.
+Der Algorithmus ist zudem leicht zu implementieren. Gerade im Bereich der Clusteranalyse sollte dies nicht unterschätzt werden,
+da eine praktische Evaluation der Algorithmen in diesem anwendungsreichen Gebiet unerlässlich ist.
+\absatz
+Das Kapitel ist folgendermaßen gegliedert: in Abschnitt~\ref{subsection:wkkm-graphcut-graphclustering} diskutieren wir, wie wir
+mit dem Kernel-$k$-means Algorithmus Graphclusteringprobleme (und umgekehrt) lösen können. In Abschnitt~\ref{subsection:kernelkmpp}
+zeigen wir, wie sich die Kernel Methode auch auf den Algorithmus \kmpp{} anwenden lässt und wie wir damit den
+Kernel-$k$-means Algorithmus für Graphclustering verbessern können.
+
+\subsection{Graphschnitte und Graphclustering mit gewichtetem Kernel \texorpdfstring{$k$}{k}-means}
+\label{subsection:wkkm-graphcut-graphclustering}
+
+Um die Graphclusteringprobleme aus Definition~\ref{def:graphpartitioning} mit dem Kernel-$k$-means Algorithmus zu lösen,
+müssen wir uns zunächst überlegen, wie wir diese in eine Eingabe für den Algorithmus transformieren können. Dass eine solche
+Transformation (bidirektional) möglich ist, haben bereits Dhillon, Guan und Kulis gezeigt~\cite{DhillonGK04,DhillonGK07}. Wir
+fassen daher zunächst den für uns relevanten Teil ihrer Ergebnisse zusammen.
+\absatz
+Die grundlegende Idee besteht darin, zu zeigen, dass sowohl die Zielfunktion für Kernel-$k$-means als auch die (diversen)
+Zielfunktionen für Graphpartitionierungsprobleme als \emph{Spurmaximimerungsprobleme} formuliert werden können. Die
+\emph{Spur} (engl. \emph{trace}) einer quadratischen $n \times n$-Matrix $M$ ist dabei die Summe der Elemente auf der
+Hauptdiagonalen von $M$:
+\[ \tr{M} = \sum_{i=1}^{n} M_{i,i} \]
+Weiterhin gilt für zwei quadratische Matrizen $M,M'$:
+\begin{enumerate}
+	\item 	$\tr{MM'} = \tr{M'M}$
+	\item 	$\tr{M^TM} = \frobenius{M}^2$
+	\item 	$\tr{M+M'} = \tr{M} + \tr{M'}$
+\end{enumerate}
+Wir formen zunächst die Kernel-$k$-means Zielfunktion um und widmen uns dann den Graphpartitionierungsproblemen.
+
+\paragraph{Gewichtetes Kernel-$k$-means.} Für die Umformung des $k$-means-Problems legen wir das \emph{gewichtete}
+Kernel-$k$-means Problem (engl. \emph{weighted kernel $k$-means}, kurz WKKM) zu Grunde.
+Dieses lautet analog zu Definition~\ref{def:kmeans-kmedian-innerproduct} wie folgt.
+Unsere Eingabe besteht aus der gewichteten Punktmenge
+als $n \times d$-Matrix $A$, einer Gewichtsfunktion $w$, die einen Punkt-Zeilenvektor $\vect{p}$ aus $A$ auf ein reelles Gewicht
+abbildet, und der Clusteranzahl $k$. Die Zielfunktion besteht wie gewohnt darin, die quadrierten euklidischen Distanzen der
+Punkte eines Clusters zu ihrem Clusterzentrum zu minimieren:
+\begin{align}
+\label{formula:wkkm-objective}
+	\min D(\{S_i\}_{i=1}^{k}) = \sum_{i=1}^{k} \sum_{\vect{p} \in S_i} w(\vect{p}) \EuclidSquared{\phi(\vect{p})}{\vect{c}_i}
+\end{align}
+Dabei sind die $S_1, \dots, S_k$ die Cluster, wobei ein Cluster $S_i$ das Zentrum
+\[ \vect{c}_i = \frac{\sum_{\vect{p} \in S_i} w(\vect{p}) \phi(\vect{p})}{\sum_{\vect{p} \in S_i} w(\vect{p})} \]
+hat. Wir setzen auch hier wieder den Kernel-Trick für die Distanzberechnungen ein. Dazu berechnen wir initial $n^2$ viele
+Skalarprodukte $\innerproduct{\phi(\vect{p}_i)}{\phi(\vect{p}_j)}$ und speichern diese in einer
+$n \times n$-Kernelmatrix $K$ mit $K_{i,j} = \kappa(\vect{p}_i, \vect{p}_j) = \innerproduct{\phi(\vect{p}_i)}{\phi(\vect{p}_j)}$.
+Die Distanzberechnung von einem Punkt zu seinem Clusterzentrum
+können wir ebenfalls analog zu~\ref{formula:kernel-kmeans} mit Hilfe der Kernelmatrix umformulieren. Sie unterscheidet sich von
+dieser nur darin, dass die Punkte gewichtet sind:
+\begin{align}
+\label{formula:wkkm}
+	\EuclidSquared{\phi(\vect{p}_j)}{\vect{c}_i} =
+	K_{i,i} - \frac{2 \sum_{\vect{p}_j \in S_i} w(\vect{p}_j) K_{i,j}}{\sum_{\vect{p}_j \in S_i} w(\vect{p}_j)}
+	+ \frac{\sum_{\vect{p}_j, \vect{p}_l \in S_i} w(\vect{p}_j) w(\vect{p}_l) K_{j,l}}{\left(\sum_{\vect{p}_j \in S_i} w(\vect{p}_j)\right)^2}
+\end{align}
+Die Erweiterung von Algorithmus~\ref{algo:kernel-lloyd} zu Algorithmus~\ref{algo:wkkm} ergibt sich ebenfalls unmittelbar.
+\begin{algorithm}
+\label{algo:wkkm}
+\caption{Weighted Kernel-$k$-means}
+	% Optionen
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Eingabe:}
+	\SetKwInOut{Output}{Ausgabe:}
+	\SetKw{KwGoTo}{go to}
+	
+	% Input/Output
+	\Input{Kernel-Matrix $K$, $k \in \mathbb{N}^{+}$, Punktgewichte $w$}
+	\Output{$k$-means-Clustering der Eingabepunktmenge}
+	\BlankLine
+	
+	% Algo
+	Wähle $k$ initiale Cluster $S_1^{(0)}, \dots, S_k^{(0)}$;
+	$t \leftarrow 0$\;
+	\ForEach{$\vect{p}$}{\label{iter}
+		Bestimme $c^*(\vect{p}) \leftarrow \argmin_{i=1}^{k} \EuclidSquared{\phi(\vect{p})}{\vect{c_i}}$ mit~\ref{formula:wkkm}\;
+	}
+	\For{$i \leftarrow 1$ \KwTo $k$}{
+		$S_i^{(t+1)} \leftarrow \{ \vect{p} : c^*(\vect{p}) = i \}$\;
+	}
+	$t \leftarrow t+1$\;
+	\If{$t < t_{max}$ \textbf{and} nicht konvergiert}{
+		\KwGoTo \ref{iter}\;
+	}\Else{
+		\Return{$S_1^{(t)}, \dots, S_k^{(t)}$}
+	}
+\end{algorithm}
+\paragraph{Gewichtetes Kernel-$k$-means als Spurmaximierung.}
+Wir formen als nächstes die Zielfunktion des gewichteten Kernel-$k$-means Problems in ein Spurmaximierungsproblem um.
+Dazu gehen wir zunächst davon aus, dass die Punktgewichte in einer $n \times n$-Diagonalmatrix $W$ gespeichert sind, sodass
+$W_{l,l} = w(\vect{p}_j)$ für alle Punkte $\vect{p}_j$ und die Punktgewichte des Clusters $S_i$ in der Diagonalmatrix
+$W^i$ mit $W_{m,m}^j = w(\vect{p}_m)$ für alle Punkte $\vect{p}_m \in S_i$ gespeichert sind. 
+\absatz
+Sei nun $s_i$ die Summe der Gewichte der Punkte in Cluster $i$, also
+\[ s_i = \sum_{\vect{p}_j \in S_i} w(\vect{p}_j) = \sum_{\vect{p}_j \in S_i} W_{j,j}^i \]
+Wir betrachten die $n \times k$-Matrix $Z$ mit den Einträgen
+\[ Z_{j, i} = 	\begin{cases}
+					\frac{1}{\sqrt{s_i}}, & \textrm{ falls } \vect{p}_j \in S_i, \\
+					0 & \textrm{ sonst }
+				\end{cases} \]
+sowie die (nicht explizit berechnete) Matrix $\Phi_i = [\phi(\vect{p}_1), \dots, \phi(\vect{p}_m)]$ von abgebildeten Punkten
+des Clusters $S_i = \{ \vect{p}_1, \dots, \vect{p}_m \}$. Mit diesen können wir
+die Zielfunktion des gewichteten Kernel-$k$-means Problems~(\ref{formula:wkkm-objective}) umformen. Wir erinnern uns, dass diese
+die Minimierung der Summe der Intraclusterabstände ist. Notieren wir den Intraclusterabstand eines Clusters $S_i$ mit
+$d(S_i) = \sum_{\vect{p} \in S_i} w(\vect{p}) \EuclidSquared{\phi(\vect{p})}{\vect{c}_i}$, können wir für den Zielfunktionswert
+$D(\{S_i\}_{i=1}^{k})$ verkürzt schreiben:
+\[ D(\{S_i\}_{i=1}^{k}) = \sum_{i=1}^k d(S_i) \]
+Der Zentroidvektor $c_i$ des Clusters $S_i$ berechnet sich in unserer ursprünglichen Problemformulierung durch
+\[ \vect{c}_i = \frac{\sum_{\vect{p} \in S_i} w(\vect{p}) \phi(\vect{p})}{\sum_{\vect{p} \in S_i} w(\vect{p})} \]
+Diese Berechnungsvorschrift ist äquivalent zu
+\[ \vect{c}_i = \Phi_i \frac{W_j \vect{e}}{s_j}, \]
+wobei $\vect{e}$ der Einheitsvektor der passenden Dimension ist.
+Wir können alternativ unter Einsatz der Matrix $Z$ auch direkt eine Matrix $C$ aller Clusterzentren bestimmen,
+wenn wir für die gesamte Eingabepunktmenge die (ebenfalls nicht explizit berechnete) Abbildungsmatrix
+$\Phi = [\Phi_1, \dots, \Phi_k] = [\phi(\vect{p}_1), \dots, \phi(\vect{p}_n)]$ verwenden:
+\[ C = \Phi W Z Z^T \]
+In diesem Fall entspricht das Zentrum eines einzelnen Clusters $S_i$
+\[ \vect{c}_i = \left(\Phi W Z Z^T\right)_{\cdot i} \]
+wobei wir für eine Matrix $M$ mit $M_{\cdot i}$ die $i$-te Spalte von $M$ meinen. Damit ist es uns nun möglich, den
+Zielfunktionswert so zu formulieren, dass wir später eine Äquivalenz zur Graphpartitionierung sehen werden. Mit
+$Y = W^{\frac{1}{2}} Z$ gilt:
+\begin{align*}
+	D(\{S_i\}_{i=1}^{k}) &= \sum_{i=1}^{k} \sum_{\vect{p} \in S_i} w(\vect{p}) \EuclidSquared{\phi(\vect{p})}{\vect{c}_i} \\
+		&= \sum_{j=1}^{n} W_{j,j} \bigg\lVert \Phi_{\cdot j} - \left( \Phi W Z Z^T \right)_{\cdot j} \bigg\rVert^2 \\
+		&= \sum_{j=1}^{n} W_{j,j} \bigg\lVert \Phi_{\cdot j} - \left( \Phi W^{\frac{1}{2}} Y Y^T W^{-\frac{1}{2}} \right)_{\cdot j} \bigg\rVert^2 \\
+		&= \sum_{j=1}^{n} \bigg\lVert \Phi_{\cdot j} \left(W_{j,j}\right)^{\frac{1}{2}} - \left( \Phi W^{\frac{1}{2}} Y Y^T \right)_{\cdot j} \bigg\rVert^2 \\
+		&= \big\lVert \Phi W^{\frac{1}{2}} - \Phi W^{\frac{1}{2}} Y Y^T \big\rVert_F^2
+\end{align*}
+Der ursprüngliche Zielfunktionswert ist damit auf die (quadrierte) Frobenius-Norm von
+$\Phi W^{\frac{1}{2}} - \Phi W^{\frac{1}{2}} Y Y^T$ transformiert.
+Wir können nun die oben genannte Verbindung zwischen der Frobenius-Norm und der Matrix-Spur ausnutzen, um zur beabsichtigten
+Spur-Maximierung zu gelangen. Wir erinnern uns, dass für eine Matrix $M$ gilt, dass $\tr{M^TM} = \frobenius{M}^2$. Wir können
+somit weiter umformen:
+\begin{align*}
+	D(\{S_i\}_{i=1}^{k}) &= \tr{ W^{\frac{1}{2}} \Phi^T \Phi W^{\frac{1}{2}} - W^{\frac{1}{2}} \Phi^T \Phi W^{\frac{1}{2}} Y Y^T \\
+		& \; \; \; \; - Y Y^T W^{\frac{1}{2}} \Phi^T \Phi W^{\frac{1}{2}} + Y Y^T W^{\frac{1}{2}} \Phi^T \Phi W^{\frac{1}{2}} Y Y^T } \\
+		&= \tr{ W^{\frac{1}{2}} \Phi^T \Phi W^{\frac{1}{2}} } - \tr{ Y^T W^{\frac{1}{2}} \Phi^T \Phi W^{\frac{1}{2}} Y }
+\end{align*}
+In der Kernel-Matrix $K$ speichern wir sämtliche Skalarprodukte der projizierten Punkte, demnach ist per Definition
+$K = \Phi^T \Phi$.
+Die Kernel-Matrix ist genau wie die Gewichts-Matrix $W$ konstant, da beide Teil der Eingabe sind. Dementsprechend ist auch
+$\tr{ W^{\frac{1}{2}} K W^{\frac{1}{2}} }$ eine Konstante. Die Minimierungszielfunktion~\ref{formula:wkkm-objective} ist
+daher gleichzusetzen mit der Maximierungszielfunktion des folgenden Spurmaximierungsproblems:
+\begin{align}
+\label{formula:wkkm-tracemax}
+	\max_{Y}{} \tr{ Y^T W^{\frac{1}{2}} K W^{\frac{1}{2}} Y }
+\end{align}
+Da das eigentliche Clustering von Algorithmus~\ref{algo:wkkm} offenbar einer spurmaximierenden Wahl der Matrix $Y$ gleichkommt,
+wollen wir abschließend noch kurz einen genaueren Blick auf diese werden.
+Die Matrix $Y = W^{\frac{1}{2}} Z$ ist eine orthonormale Diagonalmatrix, das heißt $Y^T Y = I$. Ihre Einträge sehen
+dementsprechend wie folgt aus:
+\[ Y = 	\begin{pmatrix}
+			\frac{W_1^{\frac{1}{2}} \vect{e}}{\sqrt{s_1}} & & & \\
+			& \frac{W_2^{\frac{1}{2}} \vect{e}}{\sqrt{s_2}} & & \\
+			& & \dots & \\
+			& & & \frac{W_k^{\frac{1}{2}} \vect{e}}{\sqrt{s_k}}
+		\end{pmatrix} \]
+
+\paragraph{Graphpartitionierung als Spurmaximierung.}
+Es ist möglich, für alle in Definition~\ref{def:graphpartitioning} vorgestellten Problemstellungen ein äquivalentes
+Spurmaximierungsproblem anzugeben. Wir beschränken uns hier zunächst auf die beiden Zielfunktionen mit praktischer Relevanz
+für das Evaluations-Kapitel dieser Arbeit, nämlich die Ratio Association und den Normalized Cut. Wir beginnen mit der
+Ratio Association.
+
+Wir führen zunächst einen Indikator-Vektor $\vect{x}_c$ der Dimension $n$ für jede Partition beziehungsweise jedes Cluster $c$
+ein, sodass $\vect{x}_c(i) = 1$ genau dann, wenn das Cluster $c$ den Knoten $i$ enthält. Die Zielfunktion bei der Ratio
+Association lautet
+\[ \max \sum_{c=1}^{k} \frac{w(V_c, V_c)}{\left|V_c\right|} \]
+Wir nehmen an, dass $A$ die (gewichtete) Adjazenzmatrix des Eingabegraphen ist und definieren zusätzlich
+\[ \tilde{\vect{x}}_c = \frac{\vect{x}_c}{(\vect{x}_c^T \vect{x}_c)^\frac{1}{2}} \]
+Das Produkt $\vect{x}_c^T \vect{x}_c$ entspricht der Größe der Partition $c$:
+\[ \left|V_c\right| = \vect{x}_c^T \vect{x}_c \]
+Die Summe der Kantengewichte der Partition $w(V_c, V_c)$ können wir über folgendes Produkt abbilden:
+\[ w(V_c, V_c) = \vect{x}_c^T A \vect{x}_c \]
+Damit können wir eine erste Transformation der Zielfunktion vornehmen:
+\[ \max \sum_{c=1}^{k} \frac{w(V_c, V_c)}{\left|V_c\right|}
+	\Leftrightarrow \max \sum_{c=1}^{k} \frac{\vect{x}_c^T A \vect{x}_c}{\vect{x}_c^T \vect{x}_c}
+	\Leftrightarrow \max \sum_{c=1}^{k} \tilde{\vect{x}}_c^T A \tilde{\vect{x}}_c \]
+Betrachten wir $\tilde{X}$ als Matrix deren $c$-te Spalte der Vektor $\tilde{\vect{x}}_c$ ist, können wir die Zielfunktion
+umformen zu
+\begin{align}
+\label{formula:ratioassoc-tracemax}
+	\max_{\tilde{X}}{} \tr{ \tilde{X}^T A \tilde{X} }
+\end{align}
+Wenn wir in~\ref{formula:wkkm-tracemax} für die Gewichtsmatrix $W$ die Einheitsmatrix wählen, also $W = \mathbbm{1}_n$ und
+die Adjazenzmatrix als Kernel-Matrix setzen, sodass $K = A$, dann sind~\ref{formula:ratioassoc-tracemax}
+und~\ref{formula:wkkm-tracemax} äquivalent. Auf diese Weise können wir das Ratio Association Problem mit unserem Algorithmus
+für gewichtetest Kernel-$k$-means lösen.
+\absatz
+Für den Normalized Cut gehen wir ähnlich vor. Unsere ursprüngliche Zielfunktion lautet
+\[ \min \sum_{c=1}^{k} \frac{w(V_c, V \setminus V_c)}{w(V_c, V)} \]
+Zunächst wollen wir die Funktion in ein Maximierungsproblem umwandeln. Wir beobachten, dass die Zielfunktion äquivalent ist
+zu
+\[ \max \sum_{c=1}^{k} \frac{w(V_c, V_c)}{w(V_c, V)} \]
+Wir benötigen zur Umformung des Normalized Cut die diagonale Gradmatrix $D$ des Graphen, der der Adjazenzmatrix $A$ zu
+Grunde liegt. Wir verwenden wieder die Indikator-Vektoren und definieren zusätzlich
+\[ \hat{\vect{x}}_c = \frac{\vect{x}_c}{ (\vect{x}_c^T D \vect{x}_c)^{\frac{1}{2}} } \]
+Unter Verwendung der Gradmatrix können wir die Variante des Normalized Cut als Maximierungsproblem wie folgt umformen:
+\[ \max \sum_{c=1}^{k} \frac{w(V_c, V_c)}{w(V_c, V)}
+	\Leftrightarrow \max \sum_{c=1}^{k} \frac{\vect{x}_c^T A \vect{x}_c}{\vect{x}_c^T D \vect{x}_c} 
+	\Leftrightarrow \max \sum_{c=1}^{k} \hat{\vect{x}}_c^T A \hat{\vect{x}}_c \]
+Wir nehmen analog zur Ratio Association an, dass die Matrix $\hat{X}$ die Spaltenmatrix der Vektoren $\hat{\vect{x}}_c$ ist.
+Mit $\tilde{Y} = D^\frac{1}{2} \hat{X}$ lautet das Spurmaximierungsproblem für den Normalized Cut folgendermaßen:
+\begin{align}
+\label{formula:ncut-tracemax}
+	\max_{\tilde{Y}}{} \tr{ \tilde{Y}^T D^{-\frac{1}{2}} A D^{-\frac{1}{2}} \tilde{Y} }
+\end{align}
+Das Problem in~\ref{formula:ncut-tracemax} ist äquivalent zu~\ref{formula:wkkm-tracemax}, wenn wir als
+Gewichtsmatrix $W = D$ und als Kernel-Matrix $K = D^{-1} A D^{-1}$ setzen.
+\absatz
+Wir wollen abschließend noch anmerken, dass die Adjazenzmatrix $A$ positiv definit sein muss, damit sie als Kernel-Matrix in
+Algorithmus~\ref{algo:wkkm} garantiert zu einer iterativen Verringerung des gewichteten Kernel-$k$-means Zielfunktionswertes
+führt. Um dies in der Praxis sicherzustellen ist bei der Wahl der Kernel-Matrix gegebenenfalls das Aufaddieren einer
+"`Verschiebung"' auf die ursprüngliche Kernel-Matrix nötig. Wir gehen auf dieses Detail im Experimente-Kapitel noch genauer ein.
+
+\subsection{Die Kernel Methode für \texorpdfstring{$k$}{k}-means\texttt{++}}
+\label{subsection:kernelkmpp}

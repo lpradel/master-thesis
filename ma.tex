@@ -26,6 +26,7 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{bbm}
 
 % Kalligraphische Kleinbuchstaben
 \DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
@@ -85,6 +86,9 @@
 \newcommand{\innerproduct}[2]{\ensuremath{\langle #1, #2 \rangle}}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \newcommand{\vect}[1]{\ensuremath{\mathbf{#1}}}
+\DeclareMathOperator*{\Tr}{trace}
+\newcommand{\tr}[1]{\ensuremath{\Tr(#1)}}
+\newcommand{\frobenius}[1]{\ensuremath{\lVert{#1}\rVert}_F}
 
 % Sonstige Konfiguration
 \usepackage{etoolbox}
