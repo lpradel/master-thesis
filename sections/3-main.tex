@@ -219,3 +219,39 @@ führt. Um dies in der Praxis sicherzustellen ist bei der Wahl der Kernel-Matrix
 
 \subsection{Die Kernel Methode für \texorpdfstring{$k$}{k}-means\texttt{++}}
 \label{subsection:kernelkmpp}
+
+Ein wichtiges Merkmal von Algorithmus~\ref{algo:wkkm} ist, dass er grundsätzlich ohne Methoden der spektralen Clusteranalyse
+auskommt. Wir müssen uns jedoch wie auch bei Lloyds Algorithmus ohne die Kernel Methode mit der geeigneten initialen Wahl
+der Clusterzentren beschäftigen. Zunächst einmal wählen wir diese wie schon zuvor zufällig aus der Eingabepunktmenge.
+Diese Vorgehensweise ist durchaus praktikabel, die experimentelle Evaluation aus~\citep{DhillonGK04,DhillonGK07} zeigt jedoch,
+dass sich mit einer geschickteren Wahl die Qualität des letztlich berechneten Clusterings noch signifikant steigern lässt.
+Die Autoren verwenden für die Initialisierung die spektrale Clusteranalyse, was wiederum den Aufwand der Eigenvektor-Berechnung
+mit sich bringt.
+\absatz
+Konkret wird mit einem Verfahren aus~\cite{GolubL96} eine Problemrelaxion
+von~\ref{formula:wkkm-tracemax}/~\ref{formula:ratioassoc-tracemax} beziehungsweise
+von~\ref{formula:wkkm-tracemax}/~\ref{formula:ncut-tracemax} gelöst.
+Relaxieren wir die Wahl von $Y$ beziehungsweise $\tilde{Y}$ auf eine beliebige
+orthonormale Matrix, dann sind diese von der Form $Y = V_k Q$ beziehungsweise $\tilde{Y} = \tilde{V}_k Q$.
+Dabei ist $Q$ eine beliebige orthogonale $k \times k$-Matrix, $V_k$ die Matrix der $k$ größten Eigenvektoren von
+$W^{\frac{1}{2}} K W^{\frac{1}{2}}$ und $\tilde{V}_k$ die Matrix der $k$ größten Eigenvektoren von
+$D^{-\frac{1}{2}} A D^{-\frac{1}{2}}$.
+
+Die Berechnung der jeweiligen $k$ größten Eigenvektoren wird mit wachsender Clusteranzahl
+$k$ aufwändig, wie wir schon in Abschnitt~\ref{subsection:basics:kernel-spectral} beobachtet haben.
+Intuitiv ist daher die Fragestellung, ob es möglich ist, eine Initialisierung ohne Eigenvektor-Berechnungen vorzunehmen,
+die dennoch deutlich verbesserte Clusterings mit dem Kernel-$k$-means-Algorithmus ermöglicht.
+
+In Abschnitt~\ref{subsection:basics:clustering} haben wir bereits den Algorithmus \kmpp{} von Arthur und
+Vassilvitskii~\cite{ArthurV07} kennengelernt. Die initiale Wahl der Cluster erfolgt hier gemäß einer
+Wahrscheinlichkeitsverteilung der Punkte als mögliche Clusterzentren, die proportional zur quadrierten euklidischen Distanz
+zum jeweils nächstgelegenen bereits gewählten Zentrum ist. Wir zeigen nun, dass die Kernel Methode auch auf den Algorithmus
+\kmpp{} angewendet werden kann. Damit ist es uns möglich, Algorithmus~\ref{algo:kernel-lloyd} (und damit
+auch Algorithmus~\ref{algo:wkkm}) in eine Kernel-basierte Variante von \kmpp{} umzuwandeln, die wir \kkmpp{} nennen.
+\absatz
+Wir erinnern uns, dass wir im Zusammenhang mit \kmpp{} für einen Punkt $x$ aus der Eingabe-Punktmenge $P$ wir mit $D(x)$
+die geringste Distanz von $x$ zum nächstgelegenen bereits gewählten Zentrum notieren. Der Punkt $x$ wird als nächstes
+Zentrum mit der Wahrscheinlichkeit
+\[ \frac{D(x)^2}{\sum_{y \in P} D(y)} \]
+gewählt. Wir können demnach die Kernel Methode auf den Algorithmus \kmpp{} anwenden, wenn wir für jeden Eingabepunkt $x$ den
+Wert $D(\phi(x))$ beziehungsweise $D(\phi(x))^2$ berechnen können.
