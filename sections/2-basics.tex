@@ -87,7 +87,7 @@ Dazu wird zunächst ein einzelnes Clusterzentrum $c_1$ zufällig gleichverteilt 
 Alle weiteren Clusterzentren werden sukzessive nach der folgenden Vorschrift gewählt, bis insgesamt $k$ Zentren gewählt wurden.
 Im Weiteren bezeichnen wir mit $D(x)$ für einen Punkt $x$ aus der Eingabe-Punktmenge $P$ die geringste Distanz von $x$ zum
 nächstgelegenen bereits gewählten Zentrum. In jeder Iteration wird als nächstes Zentrum $c_i$ der Punkt
-$x' \in P \setminus \{ c_1, \dots, c_{i-1} \}$ mit Wahrscheinlichkeit $\frac{D(x')^2}{\sum_{x \in P} D(x)}$ gewählt.
+$x' \in P \setminus \{ c_1, \dots, c_{i-1} \}$ mit Wahrscheinlichkeit $\frac{D(x')^2}{\sum_{x \in P} D(x)^2}$ gewählt.
 
 \begin{algorithm}[H]
 \label{algo:kmeanspp}
@@ -104,8 +104,8 @@ $x' \in P \setminus \{ c_1, \dots, c_{i-1} \}$ mit Wahrscheinlichkeit $\frac{D(x
 	
 	% Algo
 	Wähle $c_1$ zufällig gleichverteilt aus $P$\;
-	\For{$i \leftarrow 1$ \KwTo $k$}{
-		Wähle den Punkt $x' \in P \setminus \{ c_1, \dots, c_{i-1} \}$ als Zentrum $c_i$ mit Wahrscheinlichkeit $\frac{D(x')^2}{\sum_{x \in P} D(x)}$\;
+	\For{$i \leftarrow 2$ \KwTo $k$}{
+		Wähle den Punkt $x' \in P \setminus \{ c_1, \dots, c_{i-1} \}$ als Zentrum $c_i$ mit Wahrscheinlichkeit $\frac{D(x')^2}{\sum_{x \in P} D(x)^2}$\;
 	}
 	Führe Lloyds Algorithmus mit den initialen Clusterzentren $c_1, \dots, c_k$ aus.
 \end{algorithm}
