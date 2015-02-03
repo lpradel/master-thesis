@@ -1,1 +1,69 @@
 \section{Einleitung}
+
+Die Clusteranalyse beschäftigt sich mit Verfahren, die Ähnlichkeitsstrukturen in (großen) Datenmengen identifizieren. Der englische
+Begriff \emph{cluster} lässt sich in diesem Kontext am ehesten mit Gruppe oder Ansammlung übersetzen. Dem Gebiet liegt die
+Annahme zu Grunde, dass in gegebenen Datenmengen typischerweise Strukturen existieren, die mit einem geeigneten Ähnlichkeitsmaß
+erkannt werden können. Diese grundlegende Annahme ist insofern plausibel, als dass die zu analysierenden Datenmengen in der Praxis
+in der Regel aus einem konkreten Anwendungsfall gesammelt oder aufgezeichnet werden, in dem bestimmte Muster oder sich wiederholende
+Prozesse existieren. Bei der Analyse von Daten aus natürlichen Prozessen, sind diese beispielsweise oft gemäß einer bestimmten
+Wahrscheinlichkeitsverteilung verteilt.
+Sind die vorhandenen Strukturen einmal erkannt, kann der gesamte Datensatz in Gruppen oder \emph{Cluster}
+gegliedert werden, sodass innerhalb eines Clusters große Ähnlichkeit zwischen Objekten besteht, während Objekte, die
+unterschiedlichen Clustern zugeordnet sind, geringe Ähnlichkeit aufweisen. Anhand der Cluster, die mit Verfahren der Clusteranalyse
+gebildet wurden, lassen sich dann häufig aufschlussreiche Aussagen über die Eingabedaten treffen, die beim bloßen Anblick der
+gesamten unstrukturierten Datenmenge nicht möglich gewesen wären. In manchen Anwendungen ist es auch hilfreich, die Teilmengen
+der Eingabe zu verarbeiten, wenn zusätzliche Informationen oder Annahmen über die Eingabe vorliegen.
+\absatz
+Wir betrachten dazu einleitend ein einfaches Beispiel der Gegenwart: die Analyse von Strukturen in sozialen Netzwerken.
+Die Eingabeobjektmenge besteht in diesem Fall aus Objekten, die Informationen über Beziehungen und Aktivitäten zwischen
+Nutzern des sozialen Netzwerks enthalten. Mit Hilfe der Clusteranalyse können beispielsweise Gruppen von Benutzern
+identifiziert werden, die viel miteinander interagieren und somit eine soziale Community, also eine Gruppe von Freunden
+oder Bekannten, bilden. In diesem Beispiel kann es auch aufschlussreich sein, sogenannte "`schwarze Löcher"' zu identifizieren,
+also Benutzer, die eine große Menge von eingehenden Aktivitäten zahlreicher anderer Benutzer haben, selbst aber nur selten
+mit einzelnen Benutzern interagieren. Bei Benutzern mit diesem Verhalten handelt es sich häufig um Prominente mit einer großen
+Fangemeinde. Auch Benutzer, die keine eingehenden oder ausgehenden Aktivitäten haben, können interessant sein. Dabei handelt es sich
+um "`Einzelgänger"', die gegebenenfalls gezielt angesprochen werden können. Unabhängig vom konkreten verfolgten Ziel wird schnell
+klar, dass entsprechende Aussagen gerade bei Netzwerken mit einer großen Nutzeranzahl, wie beispielsweise Facebook, nur dann
+möglich sind, wenn Verfahren der Clusteranalyse eingesetzt werden. Würde man lediglich die unstrukturierte gesamte Datenmenge
+betrachten, ließen sich nur sehr schwer Informationen gewinnen, die keine Aussagen über das globale Netzwerk treffen. Es wird
+ebenso klar, dass es nötig ist, Verfahren zu entwickeln, die innerhalb der Grenzen gegenwärtiger Hardware Ergebnisse liefern, wenn
+die Eingabedatenmenge sehr große bis gigantische Größenordnungen annimmt.
+\absatz
+In dieser Arbeit beschäftigen wir uns mit einem weit verbreiteten Clusteringmodell, in dem das Ähnlichkeitsmaß die
+(quadrierte) geometrische Distanz ist. Die Eingabe besteht demnach aus einer Menge $P$ von Punkten aus dem euklidischen Raum
+$\Rd$. Neben der Punktmenge $P$ enthält unsere Eingabe zusätzlich eine positive ganze Zahl $k$, welche die Anzahl an Clustern
+angibt, in welche die Punkte unterteilt werden sollen. Dieses Modell ist unter dem Namen "`$k$-means-Problem"' bekannt. Den
+Algorithmen für das $k$-means-Problem, die wir betrachten wollen, ist gemein, dass sie eine initiale Auswahl
+von Clustern und zugehörigen \emph{Zentren} iterativ weiter verbessern, bis eine zumindest lokal optimale Lösung ermittelt wurde.
+Der Idee, jedem Cluster ein Zentrum zuzuordnen, liegt die nützliche Erkenntnis zugrunde, dass die optimale Lösung des
+$1$-means-Problems der geometrische Zentroid der Punktmenge ist. Die eigentliche Aufgabe besteht dann darin, die Summe der
+(quadrierten) Distanzen der Punkte eines Clusters zu ihrem Clusterzentrum zu minimieren.
+
+Da das $k$-means-Problem bekanntermaßen schon für $k = 2$ NP-hart ist~\cite{AloiseDHP09}, sind für praktische Zwecke insbesondere
+Heuristiken, also Algorithmen ohne feste Schranken für Laufzeit oder Qualität der Lösung) und
+Approximationsalgorithmen, die eine nicht-optimale Lösung berechnen, welche jedoch garantiert nur um einen gewissen
+Faktor von der optimalen Lösung abweichen, interessant. Wir betrachten in dieser Hinsicht die Konstruktion von \emph{Kernmengen}.
+Bei Eingabe einer Punktmenge $P$ für das $k$-means-Problem handelt es sich bei einer Kernmenge um eine kleinere gewichtete
+Punktmenge $S$ mit der Eigenschaft, dass für jede Wahl von $k$ Clusterzentren die Summe der quadrierten Distanzen der Punkte in
+$P$ zu den Zentren in etwa so groß ist, wie die Summe der quadrierten Distanzen der Punkte in $S$ zu den Zentren. Effektiv ist
+eine Kernmenge also ein hinsichtlich der Clusteringzielfunktion repräsentatives, (teilweise deutlich) kleineres Abbild der
+ursprünglichen Punktmenge. Üblicherweise bieten Kernmengenkonstruktionen Garantieren einer $(1 + \epsilon)$-Approximation,
+das heißt, dass ein $k$-means-Clustering auf der Kernmenge höchstens um einen Faktor $(1 + \epsilon)$ schlechter ist, als das
+selbe Clustering auf der Ursprungsmenge $P$. Neben der Approximation des $k$-means-Problems können Kernmengen auch ein
+effektives Mittel im Umgang mit großen Datenmengen sein. Wenn die Größe der Kernmenge $S$ nur ein kleiner Anteil an der Größe der
+von $P$ ist, können Clustering-Algorithmen auf $S$ deutlich schneller ausgeführt werden als auf $P$.
+\absatz
+Schließlich betrachten wir in dieser Arbeit noch eine weitere Modellierung von Clusteringproblemen, die mit der geometrischen
+Auffassung verwandt ist. Für einige Anwendungen ist es sinnvoll, die zu clusternden Objekte als Knoten eines gewichteten
+Graphen zu betrachten. Das Ähnlichkeitsmaß ist dann nicht mehr die euklidische Distanz sondern das Gewicht der Kanten zwischen
+den Objekten beziehungsweise Knoten. Stellt man sich den gezeichneten Graphen vor, kommt das Kantengewicht der "`Distanz"'
+zwischen den Knoten gleich. Bei der Clusteranalyse von Graphen können wir unter anderem auf diverse Ergebnisse aus der
+Graphentheorie zurückgreifen und zudem Techniken aus der linearen Algebra anwenden, wie wir später aufzeigen werden.
+
+\paragraph{Anwendungen.} Die Clusteranalyse war in der Vergangenheit bereits Gegenstand intensiver Forschung, die bis heute
+regelmäßig neue theoretische Erkenntnisse liefert. Es handelt sich aber um ein Gebiet mit hoher praktischer Relevanz, da
+Clustering in zahlreichen Anwendungen entweder selbst angewandt werden muss, oder als Teilproblem in einem übergeordneten Kontext
+auftritt. Wir wollen an dieser Stelle einen kurzen und sicherlich unvollständigen Überblick über einige wichtige Anwendungen
+der bisher vorgestellten Clusteringmodelle geben.
+
+\paragraph{Verwandte Arbeiten.} Blabla
