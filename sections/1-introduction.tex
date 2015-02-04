@@ -62,8 +62,59 @@ Graphentheorie zurückgreifen und zudem Techniken aus der linearen Algebra anwen
 
 \paragraph{Anwendungen.} Die Clusteranalyse war in der Vergangenheit bereits Gegenstand intensiver Forschung, die bis heute
 regelmäßig neue theoretische Erkenntnisse liefert. Es handelt sich aber um ein Gebiet mit hoher praktischer Relevanz, da
-Clustering in zahlreichen Anwendungen entweder selbst angewandt werden muss, oder als Teilproblem in einem übergeordneten Kontext
-auftritt. Wir wollen an dieser Stelle einen kurzen und sicherlich unvollständigen Überblick über einige wichtige Anwendungen
+Clustering in zahlreichen Anwendungen entweder selbst durchgeführt werden muss, oder als Teilproblem in einem übergeordneten
+Kontext auftritt.
+Wir wollen an dieser Stelle einen kurzen und sicherlich unvollständigen Überblick über einige wichtige Anwendungen
 der bisher vorgestellten Clusteringmodelle geben.
+
+Eine gegenwärtige Anwendung für $k$-means-Clustering haben wir mit der Analyse sozialer Netzwerke bereits erwähnt. Eine weitere
+Anwendung, die gerade heute im Bereich der Online-Shops relevant ist, findet das $k$-means-Clustering in der Marktforschung.
+Hier sollen Informationen über das Einkaufsverhalten von Kunden genutzt werden, um diese beispielsweise den Marktsegmenten nach
+zu unterteilen. Je nachdem, wie detailliert die gesammelten Informationen sind, können diese auch genutzt werden, um
+Produktplatzierung zu optimieren, die Nachfrage nach neuen Produkten abzuschätzen, oder potenzielle neue Märkte zu
+erkennen. Neben den wirtschafts- und sozialwissenschaftlichen Anwendungsfällen, kommt die Clusteranalyse auch häufig in
+geographischen und geologischen Zusammenhängen zum Einsatz. Konkret werden hier chemische Eigenschaften von gesammelten
+Proben geclustert, um geographische Profile der untersuchten Substanzen zu erstellen.
+\absatz
+Kernmengen werden aktuell hauptsächlich in drei Anwendungen eingesetzt. Wie bereits erwähnt bieten viele Kernmengenkonstruktionen
+eine garantierte Approximationsgüte, das heißt das anhand der Kernmenge berechnete Clustering weicht für jede beliebige
+Wahl der Zentren aus $\Rd$ um beispielsweise einen Faktor von höchstens $1 + \epsilon$ von einem Clustering mit den
+selben Zentren auf der Ursprungsmenge ab. Man spricht in diesem Zusammenhang auch von \emph{starken} Kernmengen.
+Ist diese Eigenschaft erfüllt, können wir mit einer Kernmenge, die eine deutlich kleinere Größe hat, als die Ursprungsmenge,
+für Approximationsalgorithmen für das $k$-means-Problem einen signifikanten \emph{Speedup}, also eine Beschleunigung der
+Ausführungszeiten, erzielen. Dabei muss selbstverständlich beachtet werden, dass die Konstruktion der Kernmenge selbst
+ebenfalls Zeit in Anspruch nimmt und nicht zu aufwändig sein darf, wenn ein Speedup beabsichtigt wird. 
+
+Ein relativ neues Modell für Algorithmen sind sogenannte \emph{Datenströme}, bei denen die Eingabe nicht initial vollständig
+vorliegt, sondern kontinuierlich in einem Datenstrom geliefert wird. Algorithmen für Datenströme, also
+\emph{Datenstromalgorithmen} dürfen die Daten des Stroms nur genau einmal einlesen und sind zusätzlich polylogarithmisch
+bezüglich der Eingabegröße platzbeschränkt, das heißt es ist nicht möglich die gesamte Eingabe zu protokollieren. Kernmengen
+können bei Clustering in Datenströmen insofern hilfreich sein, als dass in bestimmten Intervallen für einen Teil der Eingabe
+eine Kernmenge berechnet wird. Sobald der Speicherplatzverbrauch zu groß wird, wird eine einzelne Kernmenge für die Vereinigung
+aller bisher berechneten Kernmengen bestimmt und mit dieser weitergearbeitet. Die Anwendung von Kernmengen im Bereich von
+Datenstromalgorithmen ist Gegenstand gegenwärtiger Forschung und hat bereits erste Ergebnisse erbracht, wie wir später noch
+sehen werden.
+
+Schließlich können wir Kernmengen mit der selben Idee einsetzen, um Clusteringalgorithmen zu parallelisieren oder zu verteilen.
+Dazu partitionieren wir die Eingabepunktmenge, berechnen auf den Teilen verteilt oder parallel Kernmengen, übermitteln die
+berechneten Kernmengen an eine zentrale Instanz und vereinen diese dort zu einer gesamten Kernmenge.
+\absatz
+Die Clusteranalyse von Graphen findet ihre vielleicht wichtigste Anwendung in der Bildsegmentierung. Sie wird in diesem
+Kontext eingesetzt, um bei digitalen Bildern Kanten und insbesondere Objekte zu erkennen. Die Kantenerkennung ist eine
+fundamentale Technik in der digitalen Bildverarbeitung, die als Vorverarbeitung für speziellere Verfahren nötig ist. Das Erkennen
+von Objekten macht beispielsweise die Erkennung von Gesichtern, Personen oder Orten auf Fotos möglich.
+
+Darüber hinaus ergibt sich eine natürliche Anwendung in der Identifikation relevanter Strukturen und insbesondere der
+Konnektivitätsanalyse in Netzwerken. Auch die Entdeckung von häufigen Anrufmustern in der Telekommunikation kann hier
+von Interesse sein. Schließlich kann es in Netzwerken mit dynamischer Topologie, wie beispielsweise \emph{ad-hoc-Netzwerken},
+wie sie beispielsweise in intelligenten Umgebungen mit vielen wechselnden mobilen Geräten vorkommen. Lokales Clustering
+wird hier unter anderem eingesetzt, um Routing-Algorithmen zu verbessern.
+
+Zudem kann die Clusteranalyse von Graphen eingesetzt werden, um Caching-Mechanismen in Datenbanken zu optimieren.
+Konkret werden in Datenbanksystemen die einzelnen Einträge in Form von \emph{Seiten} auf dem Speichermedium abgelegt,
+von denen einige im Hauptspeicher gecached werden. Ein gutes Clustering führt in diesem Kontext dazu, dass das Laden eines
+Clusters, dem ein angefragtes Datum zugeordnet ist, zudem relevante Daten liefert, die für ähnliche zukünftige Anfragen
+erforderlich sind.
+
 
 \paragraph{Verwandte Arbeiten.} Blabla
