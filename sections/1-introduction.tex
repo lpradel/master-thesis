@@ -47,15 +47,15 @@ Bei Eingabe einer Punktmenge $P$ für das $k$-means-Problem handelt es sich bei 
 Punktmenge $S$ mit der Eigenschaft, dass für jede Wahl von $k$ Clusterzentren die Summe der quadrierten Distanzen der Punkte in
 $P$ zu den Zentren in etwa so groß ist, wie die Summe der quadrierten Distanzen der Punkte in $S$ zu den Zentren. Effektiv ist
 eine Kernmenge also ein hinsichtlich der Clusteringzielfunktion repräsentatives, (teilweise deutlich) kleineres Abbild der
-ursprünglichen Punktmenge. Üblicherweise bieten Kernmengenkonstruktionen Garantieren einer $(1 + \epsilon)$-Approximation,
+ursprünglichen Punktmenge. Üblicherweise bieten Kernmengenkonstruktionen Garantien einer $(1 + \epsilon)$-Approximation,
 das heißt, dass ein $k$-means-Clustering auf der Kernmenge höchstens um einen Faktor $(1 + \epsilon)$ schlechter ist, als das
 selbe Clustering auf der Ursprungsmenge $P$. Neben der Approximation des $k$-means-Problems können Kernmengen auch ein
-effektives Mittel im Umgang mit großen Datenmengen sein. Wenn die Größe der Kernmenge $S$ nur ein kleiner Anteil an der Größe der
+effektives Mittel im Umgang mit großen Datenmengen sein. Wenn die Größe der Kernmenge $S$ nur ein kleiner Anteil an der Größe
 von $P$ ist, können Clustering-Algorithmen auf $S$ deutlich schneller ausgeführt werden als auf $P$.
 \absatz
 Schließlich betrachten wir in dieser Arbeit noch eine weitere Modellierung von Clusteringproblemen, die mit der geometrischen
 Auffassung verwandt ist. Für einige Anwendungen ist es sinnvoll, die zu clusternden Objekte als Knoten eines gewichteten
-Graphen zu betrachten. Das Ähnlichkeitsmaß ist dann nicht mehr die euklidische Distanz sondern das Gewicht der Kanten zwischen
+Graphen zu betrachten. Das Ähnlichkeitsmaß ist dann nicht mehr die euklidische Distanz, sondern das Gewicht der Kanten zwischen
 den Objekten beziehungsweise Knoten. Stellt man sich den gezeichneten Graphen vor, kommt das Kantengewicht der "`Distanz"'
 zwischen den Knoten gleich. Bei der Clusteranalyse von Graphen können wir unter anderem auf diverse Ergebnisse aus der
 Graphentheorie zurückgreifen und zudem Techniken aus der linearen Algebra anwenden, wie wir später aufzeigen werden.
@@ -107,7 +107,7 @@ von Objekten macht beispielsweise die Erkennung von Gesichtern, Personen oder Or
 Darüber hinaus ergibt sich eine natürliche Anwendung in der Identifikation relevanter Strukturen und insbesondere der
 Konnektivitätsanalyse in Netzwerken. Auch die Entdeckung von häufigen Anrufmustern in der Telekommunikation kann hier
 von Interesse sein. Schließlich kann es in Netzwerken mit dynamischer Topologie, wie beispielsweise \emph{ad-hoc-Netzwerken},
-wie sie beispielsweise in intelligenten Umgebungen mit vielen wechselnden mobilen Geräten vorkommen. Lokales Clustering
+die in intelligenten Umgebungen mit vielen wechselnden mobilen Geräten vorkommen. Lokales Clustering
 wird hier unter anderem eingesetzt, um Routing-Algorithmen zu verbessern.
 
 Zudem kann die Clusteranalyse von Graphen eingesetzt werden, um Caching-Mechanismen in Datenbanken zu optimieren.
