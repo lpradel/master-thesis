@@ -116,5 +116,17 @@ von denen einige im Hauptspeicher gecached werden. Ein gutes Clustering führt i
 Clusters, dem ein angefragtes Datum zugeordnet ist, zudem relevante Daten liefert, die für ähnliche zukünftige Anfragen
 erforderlich sind.
 
+\paragraph{Verwandte Arbeiten.} Der Algorithmus von Lloyd~\cite{Lloyd82} ist eine schon früh entwickelte Heuristik für das
+$k$-means-Problem, die bis heute von praktischer Relevanz ist, da sie im Allgemeinen gute Clusterings produziert, obwohl
+der Algorithmus keine Approximationsgüte garantiert. Wir betrachten in dieser Arbeit insbesondere die Verbesserung von
+Lloyds Algorithmus durch Arthur und Vassilvitskii~\citep{ArthurV07}, die eine $\BigO{\log k}$-Approximation für das
+$k$-means-Problem ist.
 
-\paragraph{Verwandte Arbeiten.} Blabla
+Konstruktionen für Kernmengen wurden erstmals in~\cite{HarPeledM04} vorgestellt. Wir beschäftigen uns in dieser Arbeit
+hauptsächlich mit der Konstruktion aus~\cite{Schmidt14}.
+
+Das Clusteringmodell in Graphen kann bis zu~\cite{KernighanL70} zurückverfolgt werden. Die erste Anwendung von sogenannten
+\emph{spektralen} Methoden für die Clusteranalyse von Graphen und insbesondere die Anwendung im Bereich der Bildsegmentierung
+stammt von~\cite{ShiM00}. Eine wichtige Weiterentwicklung des Ansatzes geht zurück auf~\cite{NgJW01}. Die unmittelbare
+Äquivalenz zum geometrischen $k$-means-Problem wurde in~\cite{DhillonGK04,DhillonGK07} gezeigt. Wir werden sehen, dass diese
+für unsere Zwecke besonders wichtig ist.
