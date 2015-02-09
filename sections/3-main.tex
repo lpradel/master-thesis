@@ -263,16 +263,16 @@ Wir nehmen zunächst an, dass die Zentren $c_1, \dots, c_l$ mit $l \in \{ 1, \do
 Dann können wir $D(x)$ formal notieren als das Minimum über alle quadrierten euklidischen Distanzen von $x$ zu jedem der bisher
 gewählten Zentren $c_i$:
 \[ D(x) = \min_{i = 1 \dots l} \EuclidSquared{x}{c_i} \]
-Wenden wir die Kernel Methode an, berechnet sich $D(x)$ dementsprechend folgendermaßen:
-\[ D(x) = \min_{i = 1 \dots l} \EuclidSquared{\phi(x)}{\phi(c_i)} \]
+Wenden wir die Kernel Methode an, berechnet sich $D(\phi(x))$ dementsprechend folgendermaßen:
+\[ D(\phi(x)) = \min_{i = 1 \dots l} \EuclidSquared{\phi(x)}{\phi(c_i)} \]
 Demnach genügt es zu zeigen, dass wir $\EuclidSquared{\phi(x)}{\phi(c_i)}$ ausschließlich mit der Kernelfunktion berechnen
 können. Wir haben bereits gesehen, dass die Kernelfunktion gerade dafür gedacht ist. Es gilt:
 \begin{align}
 	\EuclidSquared{\phi(x)}{\phi(c_i)} = \kappa(x,x) - 2 \kappa(x,c_i) + \kappa(c_i,c_i)
 \end{align}
-Mit den selben Überlegungen können wir auch zeigen, dass sich der Wert von $D(x)^2$ mit der Kernel Methode berechnen lässt.
-Zunächst lässt sich auch $D(x)^2$ als Minimum formulieren:
-\[ D(x)^2 = \left( \min_{i = 1 \dots l} \EuclidSquared{\phi(x)}{\phi(c_i)} \right)^2 \]
+Mit den selben Überlegungen können wir auch zeigen, dass sich der Wert von $D(\phi(x))^2$ mit der Kernel Methode berechnen lässt.
+Zunächst lässt sich auch $D(\phi(x))^2$ als Minimum formulieren:
+\[ D(\phi(x))^2 = \left( \min_{i = 1 \dots l} \EuclidSquared{\phi(x)}{\phi(c_i)} \right)^2 \]
 Dazu müssen wir effektiv $\left( \EuclidSquared{\phi(x)}{\phi(c_i)} \right)^2$ berechnen. Auch dies lässt sich mit der
 Kernelfunktion umsetzen:
 \begin{align}
@@ -299,9 +299,104 @@ Der Algorithmus \kkmpp{} wird damit die logische Weiterentwicklung von \kmpp{} a
 	% Algo
 	Wähle $c_1$ zufällig gleichverteilt aus $P$\;
 	\For{$i \leftarrow 2$ \KwTo $k$}{
-		Berechne $D(x')^2$ mit~\ref{formula:kkmpp} für alle $x' \in P \setminus \{ c_1, \dots, c_{i-1} \}$\;
-		Wähle den Punkt $x' \in P \setminus \{ c_1, \dots, c_{i-1} \}$ als Zentrum $c_i$ mit Wahrscheinlichkeit $\frac{D(x')^2}{\sum_{x \in P} D(x)^2}$\;
+		Berechne $D(\phi(x'))^2$ mit~\ref{formula:kkmpp} für alle $x' \in P \setminus \{ c_1, \dots, c_{i-1} \}$\;
+		Wähle den Punkt $x' \in P \setminus \{ c_1, \dots, c_{i-1} \}$ als Zentrum $c_i$ mit Wahrscheinlichkeit $\frac{D(\phi(x'))^2}{\sum_{x \in P} D(\phi(x))^2}$\;
 	}
 	Führe den Kernel-$k$-means-Algorithmus mit den initialen Clusterzentren $c_1, \dots, c_k$ aus.
 \end{algorithm}
-Wir zeigen nun, dass auch \kkmpp{} eine $\BigO{\log k}$-Approximation für das $k$-means-Problem ist.
+Wir zeigen nun, dass auch \kkmpp{} eine $\BigO{\log k}$-Approximation für das $k$-means-Problem ist. Strukturell gehen
+wir dabei analog zu dem Papier von Arthur und Vassilvitskii~\cite{ArthurV07} vor, da sich durch die Kernel Methode keine
+wesentlichen Änderungen ergeben. Für ein Clustering $C = \{ C_1, \dots, C_k \}$ mit den jeweiligen Clusterzentren
+$c_1, \dots, c_k$ bezeichnen wir mit dem \emph{Potenzial} $\theta$ den Zielfunktionswert des Clusterings bezüglich der
+$k$-means-Zielfunktion, das heißt
+\[ \theta(C) = \sum_{i=1}^k \theta(C_i) = \sum_{i=1}^k \sum_{p \in C_i} \EuclidSquared{p}{c_i} \]
+Das Potenzial des optimalen Clusterings $C_\textrm{OPT}$ notieren wir mit $\optpot$. Bevor wir mit der Analyse beginnen,
+benötigen wir folgendes Lemma, das einen beliebigen Punkt mit einer Punktmenge und ihrem Zentroiden in Relation setzt:
+
+\begin{lemma}
+\label{lemma:point-centroid}
+	Sei $S$ eine Punktmenge mit dem geometrischen Zentroiden $z(S)$. Weiterhin sei $\vect{q}$ ein beliebiger Punkt. Es gilt:
+	\[ \sum_{\vect{x} \in S} \EuclidSquared{\vect{x}}{\vect{q}} - \sum_{\vect{x} \in S} \EuclidSquared{\vect{x}}{z(S)}
+		= \left|S\right| \cdot \EuclidSquared{z(S)}{\vect{q}} \]
+\end{lemma}
+Wir zeigen nun das eigentliche Ergebnis.
+
+\begin{satz}[\kkmpp{} ist $\BigO{\log k}$-kompetitiv]
+\label{thm:kkmpp-ologk-approx}
+	Wenn das Clustering $C$ mit \kkmpp{} berechnet wird, dann gilt für das Potenzial $\theta$ von $C$:
+	\[ E[\theta(C)] \leq 8 (\ln{k} + 2) \optpot \]
+\end{satz}
+Der Beweis erfolgt in drei Schritten. Wir zeigen zunächst, dass das erste zufällig gleichverteilt gewählte Clusterzentrum
+die Approximationseigenschaft erfüllt. Die selbe Eigenschaft zeigen wir im zweiten Schritt für die übrigen Zentren, die gemäß
+der $D^2$-Gewichtung gewählt werden. Im dritten und letzten Schritt beweisen wir mittels Induktion das Gesamtergebnis.
+
+\begin{lemma}[Das erste Zentrum ist kompetitiv]
+\label{lemma:kkmpp-first-center-approx}
+	Sei $A$ ein beliebiges Cluster von $C_\textrm{OPT}$ und sei $C$ ein Clustering mit genau einem Zentrum, das zufällig
+	gleichverteilt aus $A$ gewählt wird. Dann gilt:
+	\[ E[\theta(A)] = 2 \optpot(A) \]
+\end{lemma}
+\begin{proof}
+	Sei $z(A)$ der geometrische Zentroid der Punkte in $A$, das heißt
+	\[ z(A) = \frac{1}{\left|A\right|} \sum_{\vect{p} \in A} \vect{p} \]
+	Mit Lemma~\ref{lemma:point-centroid} gilt:
+	\begin{align*}
+		& \sum_{\vect{p} \in A} \frac{1}{\left|A\right|} \cdot \left( \sum_{\vect{p}' \in A} \EuclidSquared{\vect{p}}{\vect{p}'} \right) \\
+		&= \frac{1}{\left|A\right|} \sum_{\vect{p} \in A} \left( \sum_{\vect{p}' \in A} \EuclidSquared{\vect{p}'}{z(A)} 
+			+ \left|A\right| \cdot \EuclidSquared{\vect{p}}{z(A)} \right) \\
+		&= 2 \sum_{\vect{p} \in A} \EuclidSquared{\vect{p}}{z(A)} \\
+		&= E[\theta(A)]
+	\end{align*}
+\end{proof}
+Wir zeigen nun, dass die Approximationseigenschaft auch für die übrigen Zentren, die gemäß der $D^2$-Gewichtung gewählt werden,
+gilt.
+\begin{lemma}[Die übrigen Zentren sind kompetitiv]
+\label{lemma:kkmpp-remaining-center-approx}
+	Sei $A$ ein beliebiges Cluster von $C_\textrm{OPT}$ und sei $C$ ein beliebiges Clustering. Wenn ein Zentrum aus $A$
+	zufällig nach der $D^2$-Gewichtung zu $C$ hinzugefügt wird, dann gilt:
+	\[ E[\theta(A)] \leq 8 \optpot(A) \]
+\end{lemma}
+\begin{proof}
+	Ein Punkt $\vect{p} \in A$ wird mit der Wahrscheinlichkeit
+	\[ \frac{D(\phi(\vect{p}))^2}{\sum_{\vect{p}' \in A} D(\phi(\vect{p}'))^2} \]
+	als Zentrum gewählt. Wenn der Punkt $\vect{p}$ als Zentrum gewählt wird, beträgt der Potenzial-Wert eines Punktes $\vect{p'}$,
+	der dem Zentrum $\vect{p}$ zugeordnet ist, genau
+	\[ \min \{ D(\phi(\vect{p}')), \EuclidSquared{\phi(\vect{p}')}{\phi(\vect{p})} \} \]
+	Der Erwartungswert für das Potenzial des gesamten Clusters $A$ ist dementsprechend:
+	\[  E[\theta(A)] = \sum_{\vect{p} \in A} \frac{D(\phi(\vect{p}))^2}{\sum_{\vect{p}' \in A} D(\phi(\vect{p}'))^2}
+		\sum_{\vect{p}' \in A} \min \{ D(\phi(\vect{p}')), \EuclidSquared{\phi(\vect{p}')}{\phi(\vect{p})} \} \]
+	Für die Berechnung von $D(\phi(\vect{p}'))$ und der Distanzen $\Euclid{\phi(\vect{p}')}{\phi(\vect{p})}$ verwenden
+	wir im \kkmpp-Algorithmus die Kernelfunktion $\kappa$. Wenn die Kernelfunktion, beziehungsweise die zugehörige
+	Kernelmatrix \emph{positiv definit} ist (für Details siehe beispielsweise~\cite{Shawe-TaylorC04}), gilt für diese die
+	Cauchy-Schwarz-Ungleichung, also $\left|\kappa(x,y)\right|^2 \leq \kappa(x,x) \cdot \kappa(y,y)$.
+	Aus der Cauchy-Schwarz-Ungleichung folgen die Dreiecks-Ungleichung, sowie die Power-Mean-Ungleichung bezüglich der
+	Kernelfunktion. Die üblichen Kernelfunktionen wie beispielsweise in Tabelle~\ref{tbl:kernel-functions} sowie die
+	in unseren Experimenten eingesetzten Kernel haben eine positiv definite zugehörige Kernelmatrix. Wir können daher an
+	dieser Stelle die Dreiecks-Ungleichung anwenden und erhalten für alle $\vect{p}, \vect{p}'$:
+	\[ D(\phi(\vect{p})) \leq D(\phi(\vect{p}')) + \Euclid{\phi(\vect{p}')}{\phi(\vect{p})} \]
+	Für die $D^2$-Gewichtung gilt zudem mit der Power-Mean-Ungleichung:
+	\[ D(\phi(\vect{p}))^2 \leq 2 D(\phi(\vect{p}'))^2 + 2 \EuclidSquared{\phi(\vect{p}')}{\phi(\vect{p})} \]
+	Summiert über alle Punkte $\vect{p} \in A$ erhalten wir somit:
+	\[ D(\phi(\vect{p}))^2 \leq \frac{2}{\left|A\right|} \sum_{\vect{p}' \in A} D(\phi(\vect{p}'))^2
+		+ \frac{2}{\left|A\right|} \sum_{\vect{p}' \in A} \EuclidSquared{\phi(\vect{p}')}{\phi(\vect{p})} \]
+	Wir schätzen nun $E[\theta(A)]$ nach oben ab:
+	\begin{align*}
+		E[\theta(A)] 	&\leq \frac{2}{\left|A\right|} \cdot \sum_{\vect{p} \in A} \frac{\sum_{\vect{p}' \in A} D(\phi(\vect{p}'))^2}{\sum_{\vect{p}' \in A} D(\phi(\vect{p}'))^2}
+								\cdot \sum_{\vect{p}' \in A} \min \{ D(\phi(\vect{p}')), \EuclidSquared{\phi(\vect{p}')}{\phi(\vect{p})} \} \\
+						& \; \; \; \; \; + \frac{2}{\left|A\right|} \cdot
+							\sum_{\vect{p} \in A} \frac{\sum_{\vect{p}' \in A} \EuclidSquared{\phi(\vect{p}')}{\phi(\vect{p})}}{\sum_{\vect{p}' \in A} D(\phi(\vect{p}'))^2} \\
+						& \; \; \; \; \; \; \cdot \sum_{\vect{p}' \in A} \min \{ D(\phi(\vect{p}')), \EuclidSquared{\phi(\vect{p}')}{\phi(\vect{p})} \}
+	\end{align*}
+	Im ersten Summanden schätzen wir
+	\[ \min \{ D(\phi(\vect{p}')), \EuclidSquared{\phi(\vect{p}')}{\phi(\vect{p})} \} \leq \EuclidSquared{\phi(\vect{p}')}{\phi(\vect{p})} \]
+	nach oben ab, und im zweiten Summanden
+	\[ \min \{ D(\phi(\vect{p}')), \EuclidSquared{\phi(\vect{p}')}{\phi(\vect{p})} \} \leq D(\phi(\vect{p}')) \]
+	Damit erhalten wir vereinfacht:
+	\[ E[\theta(A)] \leq \frac{4}{\left|A\right|} \sum_{\vect{p} \in A} \sum_{\vect{p}' \in A} \EuclidSquared{\phi(\vect{p}')}{\phi(\vect{p})} \]
+	Nun können wir Lemma~\ref{lemma:kkmpp-first-center-approx} anwenden und erhalten:
+	\[ E[\theta(A)] \leq 8 \optpot(A) \]
+\end{proof}
+Mit den Lemmas~\ref{lemma:kkmpp-first-center-approx} und~\ref{lemma:kkmpp-remaining-center-approx} folgt, dass
+die Wahl der Zentren von \kkmpp{} der Approximationseigenschaft genügt, solange der Algorithmus Zentren aus jedem Cluster
+des optimalen Clusterings $C_\textrm{OPT}$ auswählt. Im dritten und letzten Schritt unserer Analyse zeigen wir nun,
+dass der entstehende Fehler im anderen Fall nach oben durch $\BigO{\log k}$ beschränkt ist.
