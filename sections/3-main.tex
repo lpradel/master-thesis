@@ -399,4 +399,95 @@ gilt.
 Mit den Lemmas~\ref{lemma:kkmpp-first-center-approx} und~\ref{lemma:kkmpp-remaining-center-approx} folgt, dass
 die Wahl der Zentren von \kkmpp{} der Approximationseigenschaft genügt, solange der Algorithmus Zentren aus jedem Cluster
 des optimalen Clusterings $C_\textrm{OPT}$ auswählt. Im dritten und letzten Schritt unserer Analyse zeigen wir nun,
-dass der entstehende Fehler im anderen Fall nach oben durch $\BigO{\log k}$ beschränkt ist.
+dass der entstehende Fehler im anderen Fall nach oben insgesamt durch $\BigO{\log k}$ beschränkt ist.
+
+\begin{lemma}
+\label{lemma:kkmpp-error}
+	Sei $C$ ein beliebiges Clustering. Gegeben seien $u > 0$ viele freie Cluster (die übrigen Cluster nennen wir abgedeckt)
+	von $C_\textrm{OPT}$. $P_u$ seien die Punkte in
+	diesen Clustern. Weiterhin sei $P_c = P - P_u$. Wenn $t \leq u$ zufällig gemäß der $D^2$-Gewichtung gewählte Zentren zu
+	$C$ hinzugefügt werden, dann gilt für das erwartete neue Potenzial $E[\theta'(C)]$ von $C$:
+	\[ E[\theta'(C)] \leq \left( \theta(P_c) + 8 \optpot(P_u) \right) \cdot (1 + H_t) + \frac{u-t}{u} \cdot \theta(P_u) \]
+	Dabei ist $H_t$ die $t$-te harmonische Zahl $H_t = 1 + \frac{1}{2} + \dots + \frac{1}{t}$.
+\end{lemma}
+
+\begin{proof}
+	Wir beweisen die Aussage durch vollständige Induktion für $(t-1, u)$ und $(t-1, u-1)$.
+	\paragraph{Induktionsanfang.} Falls $t=0$ und $u > 0$, gilt:
+	\[ 1 + H_t = \frac{u-t}{u} = 1 \]
+	Wir betrachten nun den Fall, dass $t = u = 1$. Wir wählen genau ein neues Zentrum aus der Menge von genau einem freien Cluster
+	mit der Wahrscheinlichkeit $\frac{\theta(P_u)}{\theta(C)}$. In diesem Fall folgt aus
+	Lemma~\ref{lemma:kkmpp-remaining-center-approx}, dass
+	\[ E[\theta'(C)] \leq \theta(P_c) + 8 \optpot(P_u) \]
+	Auch wenn wir ein Zentrum aus einem abgedeckten Cluster wählen, gilt $\theta'(C) \leq \theta(C)$.
+	Somit können wir das erwartete neue Potenzial in diesem Fall nach oben abschätzen:
+	\begin{align*}
+		E[\theta'(C)] &\leq \frac{\theta(P_u)}{\theta(C)} \cdot \left( \theta(P_c) + 8 \optpot(P_u) \right)
+							+ \frac{\theta(P_u)}{\theta(C)} \cdot \theta(C) \\
+					  &\leq 2 \theta(P_c) + 8 \optpot(P_u)
+	\end{align*}
+	Bezüglich der Behauptung gilt in diesem Fall, dass $1 + H_t = 1 + 1 = 2$ (und $\frac{u-t}{u} = \frac{1-1}{1} = 0$).
+	Daher gilt die Behauptung auch in diesem Fall.
+	\paragraph{Induktionsschritt.} Wir nehmen eine Fallunterscheidung bezüglich des Clusters vor, aus dem wir unser erstes
+	Zentrum wählen.
+	\begin{enumerate}
+		\item[(a)] 	Wir nehmen an, das erste gewählte Zentrum stammt aus einem abgedeckten Cluster. Analog zum Induktionsanfang
+					ist die Wahrscheinlichkeit dafür $\frac{\theta(P_c)}{\theta(C)}$. Da das Zentrum aus einem abgedeckten
+					Cluster stammt, kann es $\theta(C)$ nicht vergrößern. Wir verwenden die Induktionsannahme mit $t-1$.
+					Folglich tragen wir erwartet höchstens den folgenden Betrag zu $E[\theta'(C)]$ bei:
+					\[ \frac{\theta(P_c)}{\theta(C)} \cdot \left( \left( \theta(P_c) + 8 \optpot(P_u) \right)
+						\cdot (1 + H_{t-1}) + \frac{u - (t-1)}{u} \cdot \theta(P_u) \right) \]
+		\item[(b)] 	Wir nehmen an, das erste gewählte Zentrum stammt aus einem freien Cluster $A$. Auch hier ist die
+					Wahrscheinlichkeit für dieses Ereignis $\frac{\theta(A)}{\theta(C)}$. Für alle $a \in A$ sei
+					$p_a$ die Wahrscheinlichkeit, dass wir $a$ als Zentrum wählen. Weiterhin sei $\theta_a$ das Potenzial
+					$\theta(A)$, nachdem $a$ als Zentrum gewählt wurde. Wir wenden wieder die Induktionsannahme an, setzen
+					jedoch $t = t-1$, $u = u-1$ und fügen $A$ zur Menge der abgedeckten Cluster hinzu. Dann tragen wir
+					erwartet höchstens den folgenden Betrag zu $E[\theta'(C)]$ bei:
+					\begin{align*}
+						& \frac{\theta(A)}{\theta(C)} \cdot \sum_{a \in A} p_a \left(
+							\left( \theta(P_c) + \theta_a + 8 \optpot(P_u) - 8 \optpot(A) \right)
+							\right) \\
+						& \; \; \; \cdot (1 + H_{t-1}) + \frac{u - (t-1)}{u-1} \cdot \left(
+							\theta(P_u) - \theta(A) \right) \\
+						&\leq \frac{\theta(A)}{\theta(C)} \cdot \bigg( \left( \theta(P_c) + 8 \optpot(P_u) \right)
+							\cdot (1 + H_{t-1}) \\
+						& \; \; \; + \frac{u-t}{u-1} \cdot \left( \theta(P_u) - \theta(A) \right) \bigg)
+					\end{align*}
+					Die zweite Abschätzung gilt, da $\sum_{a \in A} p_a \leq 8 \optpot(A)$ direkt aus
+					Lemma~\ref{lemma:kkmpp-remaining-center-approx} folgt. An dieser Stelle müssten wir über alle freien
+					Cluster summieren, um den gesamten Potenzial-Beitrag nach oben abzuschätzen. Dazu setzen wir die
+					Power-Mean-Ungleichung ein. Mit dieser gilt:
+					$ \sum_{A \subset P_u} \theta(A^2) \geq \frac{1}{u} \cdot \theta(P_u)^2 $.
+					Damit ist es uns nun möglich, den über alle freien Cluster aufsummierten Beitrag zum Potenzial
+					nach oben zu beschränken:
+					\begin{align*}
+						&\frac{\theta(P_u)}{\theta(C)} \cdot \left( \theta(P_c) + 8 \optpot(P_u) \right) \cdot (1 + H_{t-1}) \\
+						& \; \; \; + \frac{1}{\theta(C)} \cdot \frac{u-t}{u-1} \cdot \left( 
+						\theta(P_u)^2 - \frac{1}{u} \cdot \theta(P_u)^2 \right)
+					\end{align*}
+					Dieser Term lässt sich etwas vereinfachen zu:
+					\[ \frac{\theta(P_u)}{\theta(C)} \cdot \left( \theta(P_c) + 8 \optpot(P_u) \right) \cdot (1 + H_{t-1})
+						+ \frac{u-t}{u} \cdot \theta(P_u) \]
+	\end{enumerate}
+	Wir kombinieren nun den erwarteten Potenzial-Beitrag zu $\theta'(C)$ aus den Fällen (a) und (b) und erhalten die folgende
+	obere Schranke:
+	\begin{align*}
+		E[\theta'(C)] &\leq \left( \theta(P_c) + 8 \optpot(P_u) \right) \cdot (1 + H_{t-1})
+			+ \frac{u-t}{u} \cdot \theta(P_u) + \frac{\theta(P_c)}{\theta(C)} \cdot \frac{\theta(P_u)}{u} \\
+			&\leq \left( \theta(P_c) + 8 \optpot(P_u) \right) \cdot \left( 1 + H_{t-1} + \frac{1}{u} \right)
+				+ \frac{u-t}{u} \cdot \theta(P_u)
+	\end{align*}
+	In der Aussage von Lemma~\ref{lemma:kkmpp-error} ist $t \leq u$ vorausgesetzt. Daher gilt $\frac{1}{u} \leq \frac{1}{t}$.
+	Damit folgt der Induktionsschluss.
+\end{proof}
+Wir können Satz~\ref{thm:kkmpp-ologk-approx} als Spezialfall von Lemma~\ref{lemma:kkmpp-error} beweisen. Dazu betrachten wir
+das Clustering $C$, welches wir erhalten, nachdem die Zentren-Wahl von \kkmpp{} abgeschlossen ist und bevor der Kernel-$k$-means
+Algorithmus ausgeführt wird. Sei $A$ das Cluster aus $C_\textrm{OPT}$, aus dem wir das erste Zentrum ausgewählt haben.
+Wir wenden Lemma~\ref{lemma:kkmpp-error} mit $t = u = k-1$ an und legen dazu $A$ als einziges abgedecktes Cluster fest.
+Dann gilt:
+\[ E[\optpot] \leq \left( \theta(A) + 8 \optpot - 8 \optpot(A) \right) \cdot (1 + H_{k-1}) \]
+Es ist allgemein bekannt, dass für $t \geq 2$ die $t$-te harmonische Zahl nach oben beschränkt ist durch $H_t < \ln{t} + 1$.
+Damit gilt insbesondere $H_{k-1} \leq \ln{k} + 1$. Somit gilt:
+\[ E[\optpot] \leq \left( \theta(A) + 8 \optpot - 8 \optpot(A) \right) \cdot (\ln{k} + 2) \]
+Satz~\ref{thm:kkmpp-ologk-approx} folgt mit Lemma~\ref{lemma:kkmpp-first-center-approx}.
+
