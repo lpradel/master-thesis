@@ -1,2 +1,166 @@
 \section{Experimentelle Evaluation}
 \label{section:experiments}
+
+In diesem Kapitel wollen wir empirisch evaluieren, wie performant unsere Algorithmen sind. In Kapitel~\ref{section:introduction}
+haben wir bereits erwähnt, dass die Clusteranalyse zahlreiche Anwendungen hat. Zudem müssen gegenwärtig immer häufiger
+Clusteringprobleme mit großen bis riesigen Eingaben gelöst werden, sodass effiziente Algorithmen zunehmend praktisch erforderlich
+werden.
+\absatz
+Wir gehen folgendermaßen vor: wir beschreiben zunächst in Abschnitt~\ref{subsection:experiment-environment} die Umgebung, unter
+der wir unsere Experimente durchgeführt haben. Damit wollen wir die Reproduzierbarkeit unserer Ergebnisse garantieren und eine
+grobe Vorstellung von der Leistungsfähigkeit der eingesetzten Hardware ermöglichen. Wir stellen in diesem Abschnitt auch 
+die eingesetzten Eingabedaten vor.
+
+In Abschnitt~\ref{subsection:experiment-kernel-method} untersuchen wir einleitend zunächst, inwieweit der Einsatz der Kernel
+Methode tatsächlich die Qualität von Clusterings verbessern kann. Außerdem untersuchen wir insbesondere, ob sich der Overhead,
+der durch die Verwendung eines Kernels entsteht, in der Praxis tatsächlich so gering ist, wie wir zuvor bei der Einführung des
+Kernel-Tricks argumentiert haben.
+
+In Abschnitt~\ref{subsection:experiment-kkmpp} diskutieren wir, ob wir mit dem \kkmpp-Algorithmus den gewünschten Trade-off im
+Bereich der spektralen Clusteranalyse von Graphen erzielen konnten. Dazu betrachten wir einerseits Experimente mit den klassischen
+Graphclustering-Zielfunktionen und führen zusätzlich die vielleicht wichtigste Anwendung in der Bildsegmentierung durch.
+
+\subsection{Experimentelle Rahmenbedingungen}
+\label{subsection:experiment-environment}
+
+Um Vergleichbarkeit der Testläufe sicherzustellen, wurden sämtliche hier vorgestellten Ausführungen der Algorithmen auf derselben
+Hardware durchgeführt. Der Rechner wurde unter 64 Bit Linux (Arch Linux) betrieben und verfügte über einen
+Intel i7 3,5 GHz Vierkern-Prozessor sowie 16 GB Arbeitsspeicher. Die Laufzeiten der Algorithmen wurden jeweils über die reine
+Ausführung des jeweiligen Algorithmus ermittelt, das heißt Vorverarbeitung wie beispielsweise das Einlesen von Daten aus einer
+Datei wird in den angegebenen Laufzeiten nicht berücksichtigt.
+
+Die Algorithmen wurden mit einer Ausnahme in C++ implementiert. Als Compiler wurde die GCC in der Version 4.9.2 verwendet.
+Der Code wurde jeweils für 64-Bit Architekturen übersetzt, das heißt es wurde das GCC-Flag \texttt{-m64} gesetzt. Außerdem
+wurden für die Optimierung die Flags \texttt{-O3} und \texttt{-fPIC} gesetzt. Lediglich für die Bildsegmentierung wurde
+MATLAB verwendet.
+
+Für die Graphclustering-Experimente in Abschnitt~\ref{subsection:experiment-kkmpp} wurden Graphen aus dem
+"`Graph Partitioning Archive"'~\cite{SoperWC04} eingesetzt. Die Daten stammen aus Anwendungsfällen, in denen
+Graphpartitionierungen berechnet werden müssen und wurden von diversen Forschern im Laufe der Zeit bereitgestellt. Das
+Archiv ist unter der folgenden URL abrufbar: \url{http://staffweb.cms.gre.ac.uk/~wc06/partition/} (Stand: 02.02.2015).
+
+Für die Experimente in den Abschnitten~\ref{subsection:experiment-kernel-method} und~\ref{subsection:experiment-coreset}
+wurden Clusteringeingaben aus dem "`UC Irvine Machine Learning Repository"'~\cite{Lichman13} verwendet.
+Das UCI Machine Learning Repository
+ist unter der folgenden URL erreichbar: \url{http://archive.ics.uci.edu/ml/} (Stand: 02.02.2015). Es enthält über
+300 Datensätze aus Anwendungen der Community für Maschinelles Lernen, von denen einige Clusteringprobleme sind. Das jeweilige
+zu lösende Problem kann in der durchsuchbaren Übersicht unter \url{http://archive.ics.uci.edu/ml/datasets.html} dem
+Attribut "`Default Task"' entnommen werden. Die meisten Datensätze sind Klassifizierungsprobleme. Wir haben uns auf Datensätze
+beschränkt, die als Clustering-Probleme ausgezeichnet sind, da nicht bei allen Datensätzen klar wird, aus welchem Kontext,
+beziehungsweise welcher Anwendung die Daten stammen.
+
+\subsection{Die Kernel Methode}
+\label{subsection:experiment-kernel-method}
+
+Wir wollen einleitend zunächst untersuchen, ob die Kernel Methode tatsächlich signifikante Verbesserungen der
+Clusteringqualität erbringen kann. Wir betrachten zunächst die Güte der berechneten Clusterings der Algorithmen
+$k$-means (Lloyds Algorithmus) und \kkmpp{}. Wir bereiten dazu Ergebnisse des Papiers~\cite{KimLLL05} auf, welches sich mit
+exakt dieser Fragestellung beschäftigt. Die Datensätze, mit denen diese Experimente nachgestellt wurden, stammen aus diversen
+Papieren, deren Ergebnisse in~\cite{Bezdek99} zusammengefasst sind.
+\begin{table}[t]
+\centering
+\begin{tabular}{@{}ccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{Anzahl Punkte} & \textbf{Clusteranzahl} $k$ \\
+	BENSAID & 49 & 3 \\
+	DUNN & 90 & 2 \\
+	IRIS & 150 & 3 \\
+	ECOLI & 336 & 7 \\
+	CIRCLE & 108 & 2 \\
+	BLE-3 & 320 & 3 \\
+	BLE-2 & 312 & 2 \\
+	UE-4 & 262 & 4 \\
+	UE-3 & 377 & 3 \\
+	ULE-4 & 298 & 4 \\ \bottomrule
+\end{tabular}
+\caption{Eigenschaften der Datensätze aus~\cite{Bezdek99}.}
+\label{tbl:experiment-kernel-method-quality-datasets}
+\end{table}
+Tabelle~\ref{tbl:experiment-kernel-method-quality-datasets} zeigt, dass es sich um kleine Datensätze handelt. Für diese
+Datensätze sind jedoch die $k$-means-Zielfunktionswerte der jeweils optimalen Lösungen bekannt~\cite{Bezdek99}. Diese konnten
+vermutlich gerade aus dem Grund, dass die Datensätze sehr klein sind, mit überschaubarem Rechenaufwand ermittelt werden.
+Zudem decken die Datensätze ein großes Spektrum an geometrischen Clustern ab, insbesondere sind hyperspherische und
+hyperellipsoide Cluster enthalten. Graphische Plots der Cluster sind in~\cite{KimLLL05} enthalten.
+
+Um den klassischen $k$-means-Algorithmus mit dem Kernel-$k$-means-Algorithmus zu vergleichen, haben wir die beiden
+Implementierungen der Algorithmen in der Dlib-Bibliothek\footnote{Version 18.12, \url{http://dlib.net/} (Stand: 01.02.2015)}
+auf die Datensätze angewandt. Für den Kernel-$k$-means-Algorithmus wurde wie in~\cite{KimLLL05} der Gauss-/RBF-Kernel
+verwendet. Wir haben diesen für unsere Experimente mit $\sigma = 0.1$ parametrisiert. In~\cite{KimLLL05} finden sich keine
+Angaben über die Wahl des Parameters, die geringfügigen Abweichungen unserer Ergebnisse stammen daher vermutlich von der Wahl
+von $\sigma$.
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}
+		[grid=major,height=7.5cm,width=14cm,
+		 legend style={legend pos=north west,font=\tiny,legend columns=-1,at={(0.65,-0.12)}},
+		 xlabel=Datensatz,ylabel={Prozentuale Güte},
+		 x label style={align=center},
+		 y label style={align=center},
+		 ybar,ymin=0,ymax=100,ytick={0,10,...,100},
+		 symbolic x coords={BEN,DUNN,IRIS,ECO,CIRC,BLE3,BLE2,UE4,UE3,ULE4},xtick=data]
+			\addplot[fill=blue!40!white,postaction={pattern=north east lines}]
+				coordinates {
+				(BEN,79.6)
+				(DUNN,70)
+				(IRIS,89.3)
+				(ECO,42.9)
+				(CIRC,50.8)
+				(BLE3,65.7)
+				(BLE2,88.6)
+				(UE4,77.3)
+				(UE3,95.8)
+				(ULE4,76.3)
+			};
+			\addlegendentry{$k$-means}
+			\addplot[fill=red!40!white,postaction={pattern=north west lines}]
+				coordinates {
+				(BEN,83.7)
+				(DUNN,71.2)
+				(IRIS,96)
+				(ECO,68.8)
+				(CIRC,100)
+				(BLE3,76.4)
+				(BLE2,100)
+				(UE4,100)
+				(UE3,98.9)
+				(ULE4,98)
+			};
+			\addlegendentry{Kernel-$k$-means}
+		\end{axis}
+	\end{tikzpicture}
+\caption{Die Clusteringqualität von $k$-means und Kernel-$k$-means.}
+\label{fig:experiment-kernel-method-quality}
+\end{figure}
+Abbildung~\ref{fig:experiment-kernel-method-quality} und Tabelle~\ref{tbl:experiment-kernel-method-quality} zeigen, dass
+die Kernel Methode bei geometrischem Clustering auf allen Instanzen zu einem besseren Clustering führt. Auf den schwer zu
+clusternden Instanzen BENSAID und DUNN beträgt die Verbesserung schon einige Prozentpunkte, während das Potenzial der Kernel
+Methode auf den Instanzen ECOLI und CIRCLE besonders gut zu erkennen ist. Dabei handelt es sich um Instanzen, auf denen die Cluster
+hyperellipsoide, beziehungsweise konzentrische Form haben. Auf diesen Instanzen clustert der $k$-means-Algorithmus wegen der
+Hyperebenen-Beschränkung nur sehr schlecht, während mit der Kernel Methode auch nicht linear separierte Cluster möglich sind.
+Bemerkenswert ist auch, dass der Kernel-$k$-means-Algorithmus auch auf Instanzen mit mehreren hundert Punkten noch die optimale
+Lösung berechnet, wie man an den Instanzen CIRCLE, BLE-2 und UE-4 erkennen kann.
+\begin{table}[t]
+\centering
+\begin{tabular}{@{}ccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{$k$-means} & \textbf{Kernel-$k$-means} \\
+	BENSAID & 79.6 & 83.7 \\
+	DUNN & 70 & 71.2 \\
+	IRIS & 89.3 & 96 \\
+	ECOLI & 42.9 & 68.8 \\
+	CIRCLE & 50.8 & 100 \\
+	BLE-3 & 65.7 & 76.4 \\
+	BLE-2 & 88.6 & 100 \\
+	UE-4 & 77.3 & 100 \\
+	UE-3 & 95.8 & 98.9 \\
+	ULE-4 & 76.3 & 98 \\ \bottomrule
+\end{tabular}
+\caption{Die Clusteringqualität von $k$-means und Kernel-$k$-means.}
+\label{tbl:experiment-kernel-method-quality}
+\end{table}
+
+\subsection{Der Kernel-\texorpdfstring{$k$}{k}-means\texttt{++}-Algorithmus}
+\label{subsection:experiment-kkmpp}
+
+\subsection{Kernmengenkonstruktion}
+\label{subsection:experiment-coreset}
