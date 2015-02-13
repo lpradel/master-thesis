@@ -60,7 +60,7 @@ Papieren, deren Ergebnisse in~\cite{Bezdek99} zusammengefasst sind.
 \begin{table}[t]
 \centering
 \begin{tabular}{@{}ccc@{}} \toprule
-	\textbf{Datensatz} & \textbf{Anzahl Punkte} & \textbf{Clusteranzahl} $k$ \\
+	\textbf{Datensatz} & \textbf{Anzahl Punkte} & \textbf{Clusteranzahl} $k$ \\ \midrule
 	BENSAID & 49 & 3 \\
 	DUNN & 90 & 2 \\
 	IRIS & 150 & 3 \\
@@ -86,7 +86,7 @@ Implementierungen der Algorithmen in der Dlib-Bibliothek\footnote{Version 18.12,
 auf die Datensätze angewandt. Für den Kernel-$k$-means-Algorithmus wurde wie in~\cite{KimLLL05} der Gauss-/RBF-Kernel
 verwendet. Wir haben diesen für unsere Experimente mit $\sigma = 0.1$ parametrisiert. In~\cite{KimLLL05} finden sich keine
 Angaben über die Wahl des Parameters, die geringfügigen Abweichungen unserer Ergebnisse stammen daher vermutlich von der Wahl
-von $\sigma$.
+von $\sigma$. Zudem wurde die maximale Anzahl an Iterationen auf 100 beschränkt.
 
 \begin{figure}[h!]
 	\centering
@@ -143,7 +143,7 @@ Lösung berechnet, wie man an den Instanzen CIRCLE, BLE-2 und UE-4 erkennen kann
 \begin{table}[t]
 \centering
 \begin{tabular}{@{}ccc@{}} \toprule
-	\textbf{Datensatz} & \textbf{$k$-means} & \textbf{Kernel-$k$-means} \\
+	\textbf{Datensatz} & \textbf{$k$-means} & \textbf{Kernel-$k$-means} \\ \midrule
 	BENSAID & 79.6 & 83.7 \\
 	DUNN & 70 & 71.2 \\
 	IRIS & 89.3 & 96 \\
@@ -158,9 +158,162 @@ Lösung berechnet, wie man an den Instanzen CIRCLE, BLE-2 und UE-4 erkennen kann
 \caption{Die Clusteringqualität von $k$-means und Kernel-$k$-means.}
 \label{tbl:experiment-kernel-method-quality}
 \end{table}
+\absatz
+Die Datensätze sind nicht geeignet, um Laufzeiteinbußen bei der Kernel Methode zu ermitteln, da beide Algorithmen auf Instanzen
+dieser Größe nahezu unmittelbar terminieren. Wir verwenden daher größere Datensätze aus dem UCI Machine Learning Repository.
+Tabelle~\ref{tbl:experiment-kernel-method-runtime-datasets} gibt einen Überblick über die Beschaffenheit der Datensätze.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}ccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{Anzahl Punkte} & \textbf{Dimension} $d$ \\ \midrule
+	NYSK & 10241 & 7 \\
+	CENSUS & 2458285  & 68 \\
+	BAG-OF-WORDS & 8000000 & 100000 \\
+	PLANTS & 22632 & 70 \\
+	130-US & 100000 & 55 \\
+	GFE & 27965 & 100 \\
+	YOUTUBE & 120000 & 1000000 \\ \bottomrule
+\end{tabular}
+\caption{Eigenschaften der Datensätze aus~\cite{Lichman13}.}
+\label{tbl:experiment-kernel-method-runtime-datasets}
+\end{table}
+In Abbildung~\ref{fig:experiment-kernel-method-runtime} und Tabelle~\ref{tbl:experiment-kernel-method-runtime} ist gut zu
+erkennen, dass der Overhead, der durch die Kernel Methode entsteht bei den kleinen Instanzen (bis zu 100.000 Punkten)
+vernachlässigbar gering ist. Auf den größeren Instanzen sind Laufzeiteinbußen in der Größenordnung von rund 10\% zu verzeichnen.
+Diese sind nicht zu vernachlässigen. In Relation zur potenziellen Qualitätssteigerung aus den vorhergegangen Experimenten
+betrachtet, handelt es sich jedoch um einen Trade-off, der sich in den allermeisten Fällen lohnt.
+
+\begin{figure}[t!]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}
+		[grid=major,height=7.5cm,width=14cm,
+		 legend style={legend pos=north west,font=\tiny,legend columns=-1,at={(0.65,-0.12)}},
+		 xlabel=Datensatz,ylabel={Laufzeit [s] (log.)},
+		 x label style={align=center},
+		 y label style={align=center},
+		 ybar,
+		 ymode=log,
+		 symbolic x coords={NYSK,CENSUS,BOW,PLANTS,130-US,GFE,YOUTUBE},xtick=data]
+			\addplot[fill=blue!40!white,postaction={pattern=north east lines}]
+				coordinates {
+				(NYSK,0.9)
+				(CENSUS,70.4)
+				(BOW,133.3)
+				(PLANTS,1.3)
+				(130-US,2.9)
+				(GFE,1.1)
+				(YOUTUBE,4.3)
+			};
+			\addlegendentry{$k$-means}
+			\addplot[fill=red!40!white,postaction={pattern=north west lines}]
+				coordinates {
+				(NYSK,0.9)
+				(CENSUS,79.2)
+				(BOW,148.1)
+				(PLANTS,1.4)
+				(130-US,3.1)
+				(GFE,1.2)
+				(YOUTUBE,4.7)
+			};
+			\addlegendentry{Kernel-$k$-means}
+		\end{axis}
+	\end{tikzpicture}
+\caption{Die Laufzeiten von $k$-means und Kernel-$k$-means.}
+\label{fig:experiment-kernel-method-runtime}
+\end{figure}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{@{}ccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{$k$-means} & \textbf{Kernel-$k$-means} \\ \midrule
+	NYSK & 0.9 & 0.9 \\
+	CENSUS & 70.4 & 79.2 \\
+	BOW & 133.3 & 148.1 \\
+	PLANTS & 1.3 & 1.4 \\
+	130-US & 2.9 & 3.1 \\
+	GFE & 1.1 & 1.2 \\
+	YOUTUBE & 4.3 & 4.7 \\ \bottomrule
+\end{tabular}
+\caption{Die Laufzeiten von $k$-means und Kernel-$k$-means in Sekunden.}
+\label{tbl:experiment-kernel-method-runtime}
+\end{table}
+Wir diskutieren im Folgenden die experimentellen Ergebnisse im Zusammenhang mit dem \kkmpp-Algorithmus.
 
 \subsection{Der Kernel-\texorpdfstring{$k$}{k}-means\texttt{++}-Algorithmus}
 \label{subsection:experiment-kkmpp}
+
+Für den \kkmpp-Algorithmus haben wir das Framework
+"`Graclus"'\footnote{\url{http://www.cs.utexas.edu/users/dml/Software/graclus.html} (Stand: 27.01.2015)} von Kulis und Guan
+in der Version 1.2 erweitert. Dabei handelt es sich um eine Implementierung des gewichteten Kernel-$k$-means Algorithmus~\ref{algo:wkkm} für
+die spektrale Clusteranalyse beziehungsweise Graphpartitionierung. Eine detaillierte Beschreibung, die recht nah an
+der Implementierung orientiert ist, haben die Autoren in~\cite{DhillonGK07} gegeben. Graclus ist im Bereich quelloffener
+Graphpartitionierungs-Software gegenwärtig das vielleicht schnellste Framework, wie ein Vergleich im
+"`Berkeley Segmentation Dataset and
+Benchmark"'\footnote{\url{http://www.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/segbench/} (Stand: 29.01.2015)}
+vermuten lässt. Graclus wird in einer Reihe von quelloffener Bildverarbeitungs-Software verwendet. Das prominenteste Beispiel,
+das Graclus verwendet, ist vermutlich "`Clustering Views for Multi-view
+Stereo (CMVS)"'\footnote{\url{http://www.di.ens.fr/cmvs/} (Stand: 29.01.2015)}.
+\absatz
+\begin{table}[t]
+\centering
+\begin{tabular}{@{}ccc@{}} \toprule
+	\textbf{Zielfunktion} & \textbf{Knotengewichte} & \textbf{Kernelmatrix} \\ \midrule
+	Ratio Association & 1 für alle Knoten & $K = \sigma I + A$ \\
+	Ratio Cut & 1 für alle Knoten & $K = \sigma I - L$ \\
+	Kernighan-Lin & 1 für alle Knoten & $K = \sigma I - K$ \\
+	Normalized Cut & Grad jedes Knoten & $K = \sigma D^{-1} + D^{-1} A D^{-1}$ \\ \bottomrule
+\end{tabular}
+\caption{Die $\sigma$-verschobenen Kernelmatrizen für die Graphschnitt-Zielfunktionen~\cite{DhillonGK04}.}
+\label{tbl:experiment-kernel-matrices}
+\end{table}
+Bevor wir unsere Experimente vorstellen, wollen wir kurz auf ein bislang offen gebliebenes Problem aus
+Abschnitt~\ref{subsection:wkkm-graphcut-graphclustering} eingehen. Wir hatten konkret am Ende des Abschnitts angemerkt, dass
+wir für eine konkrete Implementierung des Algorithmus sicherstellen müssen, dass die verwendeten Kernelmatrizen positiv definit
+sind. In~\cite{DhillonGK07} wird detailliert diskutiert, dass für alle Graphpartitionierungs-Zielfunktionen gezeigt werden kann,
+dass eine einfache diagonale Verschiebung der ursprünglichen Kernelmatrix $K$ um einen Faktor $\sigma$ die Analogie über
+die Formulierungen als Spurmaximierungsprobleme intakt bleibt. Die Wahl von $\sigma$ muss dabei groß genug sein, damit der
+entsprechend verschobene Kernel $K'$ eine positiv definite Matrix ist. Für manche Eingaben kann es vorkommen, dass die
+Gewichtsmatrix $W$ so beschaffen ist, dass die Kernelmatrix auch ohne eine diagonale Verschiebung schon positiv definit ist.
+Die Experimente in~\cite{DhillonGK04,DhillonGK07} legen nahe, dass es in solchen Fällen sogar vorteilhaft sein kann, eine
+negative $\sigma$-Verschiebung vorzunehmen. Empirisch wird $\sigma$ idealerweise so gewählt, dass die Spur der Kernelmatrix
+möglichst nach bei Null liegt. Tabelle~\ref{tbl:experiment-kernel-matrices} zeigt die $\sigma$-verschobenen Kernelmatrizen
+für die diversen Graphschnitt-Zielfunktionen. Wie bereits erwähnt sind für unsere Zwecke nur die Ratio Association und der
+Normalized Cut relevant.
+\absatz
+Graclus selbst bietet drei Möglichkeiten der Initialisierung an: zufällige Initialisierung (analog zum klassischen Algorithmus
+von Lloyd), spektrale Initialisierung (entspricht der Initialisierung über Eigenwert-Berechnung, die wir zu Beginn von
+Abschnitt~\ref{subsection:kernelkmpp} diskutiert haben) und Initialisierung durch METIS. METIS~\cite{KarypisK98} ist ein
+state-of-the-art Graphpartitionierungs-Framework, das in einem mehrschrittigen Verfahren Cluster gleicher Größe in Graphen
+berechnet. Es diente bereits in~\cite{DhillonGK04,DhillonGK07} als Benchmark-Vergleichsinstanz. Wir werden METIS auch in
+unseren Experimenten für Vergleiche heranziehen.
+
+\begin{table}[t]
+\centering
+\begin{tabular}{@{}ccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{Anzahl Knoten} & \textbf{Anzahl Kanten} $d$ \\ \midrule
+	3ELT & 4720 & 13722 \\
+	CRACK & 10240 & 30380 \\
+	CTI & 16840 & 48232 \\
+	BCSSTK31 & 35588 & 572914 \\
+	T60K & 60005 & 89440 \\
+	598A & 110971 & 741934 \\
+	144 & 144649 & 1074393 \\
+	M14B & 214765 & 1679018 \\
+	AUTO & 448695 & 3314611 \\
+	\bottomrule
+\end{tabular}
+\caption{Eigenschaften der Datensätze aus dem Graph Partitioning Archive~\cite{SoperWC04}.}
+\label{tbl:experiment-kkmpp-datasets}
+\end{table}
+
+Wegen der Zufallskomponente im \kkmpp-Algorithmus haben wir diesen sowie die vollkommen zufällige Initialisierung pro
+Datensatz und pro Clusterzahl $k$ insgesamt 100 mal ausgeführt. In unseren Ergebnissen geben wir für die zufällige Initialisierung
+jeweils das arithmetische Mittel über alle 100 Läufe an. Für den \kkmpp-Algorithmus geben wir zusätzlich die gemessen Minima
+und Maxima über alle Durchläufe an, um eine Vorstellung der Größenordnung der Schwankungen zu ermöglichen. Wir betrachten
+insbesondere auch die Laufzeiten der Algorithmen, um den Trade-off zwischen Clusteringqualität und Ausführungszeit beurteilen
+zu können.
 
 \subsection{Kernmengenkonstruktion}
 \label{subsection:experiment-coreset}
