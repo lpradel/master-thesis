@@ -138,7 +138,7 @@ clusternden Instanzen BENSAID und DUNN beträgt die Verbesserung schon einige Pr
 Methode auf den Instanzen ECOLI und CIRCLE besonders gut zu erkennen ist. Dabei handelt es sich um Instanzen, auf denen die Cluster
 hyperellipsoide, beziehungsweise konzentrische Form haben. Auf diesen Instanzen clustert der $k$-means-Algorithmus wegen der
 Hyperebenen-Beschränkung nur sehr schlecht, während mit der Kernel Methode auch nicht linear separierte Cluster möglich sind.
-Bemerkenswert ist auch, dass der Kernel-$k$-means-Algorithmus auch auf Instanzen mit mehreren hundert Punkten noch die optimale
+Bemerkenswert ist auch, dass der Kernel-$k$-means-Algorithmus sogar auf Instanzen mit mehreren hundert Punkten noch die optimale
 Lösung berechnet, wie man an den Instanzen CIRCLE, BLE-2 und UE-4 erkennen kann.
 \begin{table}[t]
 \centering
@@ -263,13 +263,13 @@ Stereo (CMVS)"'\footnote{\url{http://www.di.ens.fr/cmvs/} (Stand: 29.01.2015)}.
 	Ratio Association & 1 für alle Knoten & $K = \sigma I + A$ \\
 	Ratio Cut & 1 für alle Knoten & $K = \sigma I - L$ \\
 	Kernighan-Lin & 1 für alle Knoten & $K = \sigma I - K$ \\
-	Normalized Cut & Grad jedes Knoten & $K = \sigma D^{-1} + D^{-1} A D^{-1}$ \\ \bottomrule
+	Normalized Cut & Grad des Knoten & $K = \sigma D^{-1} + D^{-1} A D^{-1}$ \\ \bottomrule
 \end{tabular}
 \caption{Die $\sigma$-verschobenen Kernelmatrizen für die Graphschnitt-Zielfunktionen~\cite{DhillonGK04}.}
 \label{tbl:experiment-kernel-matrices}
 \end{table}
 Bevor wir unsere Experimente vorstellen, wollen wir kurz auf ein bislang offen gebliebenes Problem aus
-Abschnitt~\ref{subsection:wkkm-graphcut-graphclustering} eingehen. Wir hatten konkret am Ende des Abschnitts angemerkt, dass
+Abschnitt~\ref{subsection:wkkm-graphcut-graphclustering} eingehen. Wir hatten am Ende des Abschnitts angemerkt, dass
 wir für eine konkrete Implementierung des Algorithmus sicherstellen müssen, dass die verwendeten Kernelmatrizen positiv definit
 sind. In~\cite{DhillonGK07} wird detailliert diskutiert, dass für alle Graphpartitionierungs-Zielfunktionen gezeigt werden kann,
 dass eine einfache diagonale Verschiebung der ursprünglichen Kernelmatrix $K$ um einen Faktor $\sigma$ die Analogie über
@@ -281,21 +281,16 @@ negative $\sigma$-Verschiebung vorzunehmen. Empirisch wird $\sigma$ idealerweise
 möglichst nach bei Null liegt. Tabelle~\ref{tbl:experiment-kernel-matrices} zeigt die $\sigma$-verschobenen Kernelmatrizen
 für die diversen Graphschnitt-Zielfunktionen. Wie bereits erwähnt sind für unsere Zwecke nur die Ratio Association und der
 Normalized Cut relevant.
-\absatz
-Graclus selbst bietet drei Möglichkeiten der Initialisierung an: zufällige Initialisierung (analog zum klassischen Algorithmus
+\paragraph{Graphpartitionierung.} Graclus selbst bietet drei Möglichkeiten der Initialisierung an: zufällige Initialisierung (analog zum klassischen Algorithmus
 von Lloyd), spektrale Initialisierung (entspricht der Initialisierung über Eigenwert-Berechnung, die wir zu Beginn von
 Abschnitt~\ref{subsection:kernelkmpp} diskutiert haben) und Initialisierung durch METIS. METIS~\cite{KarypisK98} ist ein
 state-of-the-art Graphpartitionierungs-Framework, das in einem mehrschrittigen Verfahren Cluster gleicher Größe in Graphen
 berechnet. Es diente bereits in~\cite{DhillonGK04,DhillonGK07} als Benchmark-Vergleichsinstanz. Wir werden METIS auch in
 unseren Experimenten für Vergleiche heranziehen.
-
 \begin{table}[t]
 \centering
 \begin{tabular}{@{}ccc@{}} \toprule
-	\textbf{Datensatz} & \textbf{Anzahl Knoten} & \textbf{Anzahl Kanten} $d$ \\ \midrule
-	3ELT & 4720 & 13722 \\
-	CRACK & 10240 & 30380 \\
-	CTI & 16840 & 48232 \\
+	\textbf{Datensatz} & \textbf{Anzahl Knoten} & \textbf{Anzahl Kanten} \\ \midrule
 	BCSSTK31 & 35588 & 572914 \\
 	T60K & 60005 & 89440 \\
 	598A & 110971 & 741934 \\
@@ -307,13 +302,170 @@ unseren Experimenten für Vergleiche heranziehen.
 \caption{Eigenschaften der Datensätze aus dem Graph Partitioning Archive~\cite{SoperWC04}.}
 \label{tbl:experiment-kkmpp-datasets}
 \end{table}
-
+\absatz
 Wegen der Zufallskomponente im \kkmpp-Algorithmus haben wir diesen sowie die vollkommen zufällige Initialisierung pro
 Datensatz und pro Clusterzahl $k$ insgesamt 100 mal ausgeführt. In unseren Ergebnissen geben wir für die zufällige Initialisierung
 jeweils das arithmetische Mittel über alle 100 Läufe an. Für den \kkmpp-Algorithmus geben wir zusätzlich die gemessen Minima
 und Maxima über alle Durchläufe an, um eine Vorstellung der Größenordnung der Schwankungen zu ermöglichen. Wir betrachten
 insbesondere auch die Laufzeiten der Algorithmen, um den Trade-off zwischen Clusteringqualität und Ausführungszeit beurteilen
-zu können.
+zu können. Wir untersuchen die erzielten Werte für Ratio Association (je \emph{größer} der Wert, desto besser ist die Qualität
+des berechneten Clusterings) und Normalized Cut (je \emph{kleiner} der Wert, desto besser die Qualität des berechneten
+Clusterings). Für jeden Datensatz und jede Zielfunktion berechnen wir mit den Algorithmen jeweils Clusterings mit 128
+und 512 Clustern. Damit erreichen wir eine höhere Anforderung an die spektralen Algorithmen. Wir haben bereits thematisiert, dass
+bei der Performanz für diese die Anzahl der Cluster kritisch ist, da sie die Anzahl der zu berechnenden Eigenwerte erhöht.
+Schließlich sei bereits vorab erwähnt, dass die von uns gemessenen Werte bezüglich der Laufzeit teilweise stark von denen
+aus~\cite{DhillonGK07} (nach unten) abweichen. Dies ist mit großer Wahrscheinlichkeit auf die deutlich leistungsfähigere 
+Hardware zurückzuführen: in~\cite{DhillonGK07} wurde ein Rechner mit einem 2.4 GHz Pentium IV-Prozessor und nur 1 GB
+Arbeitsspeicher eingesetzt. Es ist zudem naheliegend, dass der Prozessor über einen 32 Bit Chipsatz verfügte und Graclus
+dementsprechend auch für 32 Bit-Architekturen kompiliert wurde.
+
+\begin{figure}[ht!]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}
+		[grid=major,height=7.5cm,width=14cm,
+		 legend style={legend pos=north west,font=\tiny,legend columns=2,at={(0.65,-0.12)}},
+		 xlabel=Datensatz,ylabel={Ratio Association (log.)},
+		 x label style={align=center},
+		 y label style={align=center},
+		 ybar,
+		 ymode=log,
+		 symbolic x coords={BCSSTK31,T60K,598A,144,M14B,AUTO},xtick=data]
+			\addplot[fill=blue!40!white,postaction={pattern=north east lines}]
+				coordinates {
+				(BCSSTK31,3265)
+				(T60K,263)
+				(598A,1144)
+				(144,1223)
+				(M14B,1022)
+				(AUTO,1197)
+			};
+			\addlegendentry{Zufall}
+			\addplot[fill=red!40!white,postaction={pattern=north west lines}]
+				coordinates {
+				(BCSSTK31,4150)
+				(T60K,365)
+				(598A,1523)
+				(144,1717)
+				(M14B,1854)
+				(AUTO,1760)
+			};
+			\addlegendentry{METIS}
+			\addplot[fill=green!40!white,postaction={pattern=crosshatch}]
+				coordinates {
+				(BCSSTK31,4422)
+				(T60K,403)
+				(598A,1827)
+				(144,1908)
+				(M14B,2155)
+				(AUTO,3052)
+			};
+			\addlegendentry{Spektral}
+			\addplot[fill=gray!40!white,postaction={pattern=crosshatch dots}]
+				coordinates {
+				(BCSSTK31,4199)
+				(T60K,378)
+				(598A,1707)
+				(144,1902)
+				(M14B,2255)
+				(AUTO,2988)
+			};
+			\addlegendentry{\kkmpp}
+		\end{axis}
+	\end{tikzpicture}
+\caption{Ratio Association Werte der Algorithmen für $k = 128$ (je größer, desto besser).}
+\label{fig:experiment-experiment-kkmpp-ratioassoc-128}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}
+		[grid=major,height=7.5cm,width=14cm,
+		 legend style={legend pos=north west,font=\tiny,legend columns=2,at={(0.65,-0.12)}},
+		 xlabel=Datensatz,ylabel={Ratio Association (log.)},
+		 x label style={align=center},
+		 y label style={align=center},
+		 ybar,
+		 ymode=log,
+		 symbolic x coords={BCSSTK31,T60K,598A,144,M14B,AUTO},xtick=data]
+			\addplot[fill=blue!40!white,postaction={pattern=north east lines}]
+				coordinates {
+				(BCSSTK31,8522)
+				(T60K,875)
+				(598A,4003)
+				(144,4833)
+				(M14B,4687)
+				(AUTO,5498)
+			};
+			\addlegendentry{Zufall}
+			\addplot[fill=red!40!white,postaction={pattern=north west lines}]
+				coordinates {
+				(BCSSTK31,11984)
+				(T60K,1386)
+				(598A,5502)
+				(144,6236)
+				(M14B,6927)
+				(AUTO,6610)
+			};
+			\addlegendentry{METIS}
+			\addplot[fill=green!40!white,postaction={pattern=crosshatch}]
+				coordinates {
+				(BCSSTK31,13002)
+				(T60K,1527)
+				(598A,5899)
+				(144,6899)
+				(M14B,7832)
+				(AUTO,7603)
+			};
+			\addlegendentry{Spektral}
+			\addplot[fill=gray!40!white,postaction={pattern=crosshatch dots}]
+				coordinates {
+				(BCSSTK31,12873)
+				(T60K,1620)
+				(598A,5755)
+				(144,6133)
+				(M14B,8052)
+				(AUTO,6922)
+			};
+			\addlegendentry{\kkmpp}
+		\end{axis}
+	\end{tikzpicture}
+\caption{Ratio Association Werte der Algorithmen für $k = 512$ (je größer, desto besser).}
+\label{fig:experiment-experiment-kkmpp-ratioassoc-512}
+\end{figure}
+\newpage
+\begin{table}
+\centering
+\begin{tabular}{@{}ccccccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{Zufall} & \textbf{METIS} & \textbf{Spektral} & \textbf{Avg} & \textbf{Min} & \textbf{Max} \\ \midrule
+	BCSSTK31 	& 3265 & 4150 & 4422 & 4199 & 3955 & 4322 \\
+	T60K 		& 263 & 365 & 403 & 378 & 345 & 385 \\
+	598A 		& 1144 & 1523 & 1827 & 1707 & 1622 & 1754 \\
+	144 		& 1223 & 1717 & 1908 & 1902 & 1521 & 2334 \\
+	M14B 		& 1022 & 1854 & 2155 & 2255 & 2133 & 2552 \\
+	AUTO 		& 1197 & 1760 & 3052 & 2988 & 2852 & 3128 \\
+	\bottomrule
+\end{tabular}
+\caption{Ratio Association Werte der Algorithmen für $k = 128$ (je größer, desto besser).}
+\label{tbl:experiment-experiment-kkmpp-ratioassoc-128}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{@{}ccccccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{Zufall} & \textbf{METIS} & \textbf{Spektral} & \textbf{Avg} & \textbf{Min} & \textbf{Max} \\ \midrule
+	BCSSTK31 	& 8522 & 11984 & 13002 & 12873 & 3955 & 4322 \\
+	T60K 		& 875 & 1386 & 1527 & 1620 & 345 & 385 \\
+	598A 		& 4003 & 5502 & 5899 & 5755 & 1622 & 1754 \\
+	144 		& 4833 & 6236 & 6899 & 6133 & 1521 & 2334 \\
+	M14B 		& 4687 & 6927 & 7832 & 8052 & 2133 & 2552 \\
+	AUTO 		& 5498 & 6610 & 7603 & 6922 & 2852 & 3128 \\
+	\bottomrule
+\end{tabular}
+\caption{Ratio Association Werte der Algorithmen für $k = 512$ (je größer, desto besser).}
+\label{tbl:experiment-experiment-kkmpp-ratioassoc-512}
+\end{table}
 
 \subsection{Kernmengenkonstruktion}
 \label{subsection:experiment-coreset}
