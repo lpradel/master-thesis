@@ -7,13 +7,14 @@ Annahme zu Grunde, dass in gegebenen Datenmengen typischerweise Strukturen exist
 erkannt werden können. Diese grundlegende Annahme ist insofern plausibel, als dass die zu analysierenden Datenmengen in der Praxis
 in der Regel aus einem konkreten Anwendungsfall gesammelt oder aufgezeichnet werden, in dem bestimmte Muster oder sich wiederholende
 Prozesse existieren. Bei der Analyse von Daten aus natürlichen Prozessen, sind diese beispielsweise oft gemäß einer bestimmten
-Wahrscheinlichkeitsverteilung verteilt.
+Wahrscheinlichkeitsverteilung verteilt. Hinzu kommt, dass Daten ohne jegliche Strukturen zumeist ohnehin nicht besonders
+aufschlussreich sind.
 Sind die vorhandenen Strukturen einmal erkannt, kann der gesamte Datensatz in Gruppen oder \emph{Cluster}
 gegliedert werden, sodass innerhalb eines Clusters große Ähnlichkeit zwischen Objekten besteht, während Objekte, die
 unterschiedlichen Clustern zugeordnet sind, geringe Ähnlichkeit aufweisen. Anhand der Cluster, die mit Verfahren der Clusteranalyse
 gebildet wurden, lassen sich dann häufig aufschlussreiche Aussagen über die Eingabedaten treffen, die beim bloßen Anblick der
-gesamten unstrukturierten Datenmenge nicht möglich gewesen wären. In manchen Anwendungen ist es auch hilfreich, die Teilmengen
-der Eingabe zu verarbeiten, wenn zusätzliche Informationen oder Annahmen über die Eingabe vorliegen.
+gesamten unstrukturierten Datenmenge nicht möglich gewesen wären. Das gilt insbesondere, wenn die Daten hochdimensional sind,
+sodass eine graphische Auswertung auch nicht möglich ist.
 \absatz
 Wir betrachten dazu einleitend ein einfaches Beispiel der Gegenwart: die Analyse von Strukturen in sozialen Netzwerken.
 Die Eingabeobjektmenge besteht in diesem Fall aus Objekten, die Informationen über Beziehungen und Aktivitäten zwischen
@@ -22,31 +23,29 @@ identifiziert werden, die viel miteinander interagieren und somit eine soziale C
 oder Bekannten, bilden. In diesem Beispiel kann es auch aufschlussreich sein, sogenannte "`schwarze Löcher"' zu identifizieren,
 also Benutzer, die eine große Menge von eingehenden Aktivitäten zahlreicher anderer Benutzer haben, selbst aber nur selten
 mit einzelnen Benutzern interagieren. Bei Benutzern mit diesem Verhalten handelt es sich häufig um Prominente mit einer großen
-Fangemeinde. Auch Benutzer, die keine eingehenden oder ausgehenden Aktivitäten haben, können interessant sein. Dabei handelt es sich
-um "`Einzelgänger"', die gegebenenfalls gezielt angesprochen werden können. Unabhängig vom konkreten verfolgten Ziel wird schnell
+Fangemeinde. Unabhängig vom konkreten verfolgten Ziel wird schnell
 klar, dass entsprechende Aussagen gerade bei Netzwerken mit einer großen Nutzeranzahl, wie beispielsweise Facebook, nur dann
 möglich sind, wenn Verfahren der Clusteranalyse eingesetzt werden. Würde man lediglich die unstrukturierte gesamte Datenmenge
 betrachten, ließen sich nur sehr schwer Informationen gewinnen, die keine Aussagen über das globale Netzwerk treffen. Es wird
 ebenso klar, dass es nötig ist, Verfahren zu entwickeln, die innerhalb der Grenzen gegenwärtiger Hardware Ergebnisse liefern, wenn
 die Eingabedatenmenge sehr große bis gigantische Größenordnungen annimmt.
 \absatz
-In dieser Arbeit beschäftigen wir uns mit einem weit verbreiteten Clusteringmodell, in dem das Ähnlichkeitsmaß die
+In dieser Arbeit beschäftigen wir uns unter anderem mit einem weit verbreiteten Clusteringmodell, in dem das Ähnlichkeitsmaß die
 (quadrierte) geometrische Distanz ist. Die Eingabe besteht demnach aus einer Menge $P$ von Punkten aus dem euklidischen Raum
 $\Rd$. Neben der Punktmenge $P$ enthält unsere Eingabe zusätzlich eine positive ganze Zahl $k$, welche die Anzahl an Clustern
 angibt, in welche die Punkte unterteilt werden sollen. Dieses Modell ist unter dem Namen "`$k$-means-Problem"' bekannt. Den
 Algorithmen für das $k$-means-Problem, die wir betrachten wollen, ist gemein, dass sie eine initiale Auswahl
 von Clustern und zugehörigen \emph{Zentren} iterativ weiter verbessern, bis eine zumindest lokal optimale Lösung ermittelt wurde.
-Der Idee, jedem Cluster ein Zentrum zuzuordnen, liegt die nützliche Erkenntnis zugrunde, dass die optimale Lösung des
-$1$-means-Problems der geometrische Zentroid der Punktmenge ist. Die eigentliche Aufgabe besteht dann darin, die Summe der
+Die eigentliche Aufgabe besteht dann darin, die Summe der
 (quadrierten) Distanzen der Punkte eines Clusters zu ihrem Clusterzentrum zu minimieren.
 
-Da das $k$-means-Problem bekanntermaßen schon für $k = 2$ NP-hart ist~\cite{AloiseDHP09}, sind für praktische Zwecke insbesondere
+Da das $k$-means-Problem schon für $k = 2$ NP-hart ist~\cite{AloiseDHP09}, sind für praktische Zwecke insbesondere
 Heuristiken, also Algorithmen ohne feste Schranken für Laufzeit oder Qualität der Lösung) und
 Approximationsalgorithmen, die eine nicht-optimale Lösung berechnen, welche jedoch garantiert nur um einen gewissen
-Faktor von der optimalen Lösung abweichen, interessant. Wir betrachten in dieser Hinsicht die Konstruktion von \emph{Kernmengen}.
+Faktor von der optimalen Lösung abweichen, interessant. Wir betrachten die Konstruktion von \emph{Kernmengen}.
 Bei Eingabe einer Punktmenge $P$ für das $k$-means-Problem handelt es sich bei einer Kernmenge um eine kleinere gewichtete
-Punktmenge $S$ mit der Eigenschaft, dass für jede Wahl von $k$ Clusterzentren die Summe der quadrierten Distanzen der Punkte in
-$P$ zu den Zentren in etwa so groß ist, wie die Summe der quadrierten Distanzen der Punkte in $S$ zu den Zentren. Effektiv ist
+Punktmenge $S$ mit der Eigenschaft, dass für \emph{jede} Wahl von $k$ Clusterzentren die Summe der quadrierten Distanzen der Punkte in
+$P$ zu den Zentren in etwa so groß ist wie die Summe der quadrierten Distanzen der Punkte in $S$ zu den Zentren. Effektiv ist
 eine Kernmenge also ein hinsichtlich der Clusteringzielfunktion repräsentatives, (teilweise deutlich) kleineres Abbild der
 ursprünglichen Punktmenge. Üblicherweise bieten Kernmengenkonstruktionen Garantien einer $(1 + \epsilon)$-Approximation,
 das heißt, dass ein $k$-means-Clustering auf der Kernmenge höchstens um einen Faktor $(1 + \epsilon)$ schlechter ist, als das
@@ -73,15 +72,15 @@ Anwendung, die gerade heute im Bereich der Online-Shops relevant ist, findet das
 Hier sollen Informationen über das Einkaufsverhalten von Kunden genutzt werden, um diese beispielsweise den Marktsegmenten nach
 zu unterteilen. Je nachdem, wie detailliert die gesammelten Informationen sind, können diese auch genutzt werden, um
 Produktplatzierung zu optimieren, die Nachfrage nach neuen Produkten abzuschätzen, oder potenzielle neue Märkte zu
-erkennen. Neben den wirtschafts- und sozialwissenschaftlichen Anwendungsfällen, kommt die Clusteranalyse auch häufig in
-geographischen und geologischen Zusammenhängen zum Einsatz. Konkret werden hier chemische Eigenschaften von gesammelten
+erkennen. Neben den wirtschafts- und sozialwissenschaftlichen Anwendungsfällen, kommt die Clusteranalyse auch in
+geographischen und geologischen Zusammenhängen zum Einsatz. Konkret werden hier zum Beispiel chemische Eigenschaften von gesammelten
 Proben geclustert, um geographische Profile der untersuchten Substanzen zu erstellen.
 \absatz
-Kernmengen werden aktuell hauptsächlich in drei Anwendungen eingesetzt. Wie bereits erwähnt bieten viele Kernmengenkonstruktionen
+Kernmengen werden in drei Szenarien eingesetzt. Wie bereits erwähnt bieten viele Kernmengenkonstruktionen
 eine garantierte Approximationsgüte, das heißt das anhand der Kernmenge berechnete Clustering weicht für jede beliebige
 Wahl der Zentren aus $\Rd$ um beispielsweise einen Faktor von höchstens $1 + \epsilon$ von einem Clustering mit den
 selben Zentren auf der Ursprungsmenge ab. Man spricht in diesem Zusammenhang auch von \emph{starken} Kernmengen.
-Ist diese Eigenschaft erfüllt, können wir mit einer Kernmenge, die eine deutlich kleinere Größe hat, als die Ursprungsmenge,
+Ist diese Eigenschaft erfüllt, können wir mit einer Kernmenge, die eine deutlich kleinere Größe hat als die Ursprungsmenge,
 für Approximationsalgorithmen für das $k$-means-Problem einen signifikanten \emph{Speedup}, also eine Beschleunigung der
 Ausführungszeiten, erzielen. Dabei muss selbstverständlich beachtet werden, dass die Konstruktion der Kernmenge selbst
 ebenfalls Zeit in Anspruch nimmt und nicht zu aufwändig sein darf, wenn ein Speedup beabsichtigt wird. 
@@ -89,16 +88,22 @@ ebenfalls Zeit in Anspruch nimmt und nicht zu aufwändig sein darf, wenn ein Spe
 Ein relativ neues Modell für Algorithmen sind sogenannte \emph{Datenströme}, bei denen die Eingabe nicht initial vollständig
 vorliegt, sondern kontinuierlich in einem Datenstrom geliefert wird. Algorithmen für Datenströme, also
 \emph{Datenstromalgorithmen} dürfen die Daten des Stroms nur genau einmal einlesen und sind zusätzlich polylogarithmisch
-bezüglich der Eingabegröße platzbeschränkt, das heißt es ist nicht möglich die gesamte Eingabe zu protokollieren. Kernmengen
-können bei Clustering in Datenströmen insofern hilfreich sein, als dass in bestimmten Intervallen für einen Teil der Eingabe
-eine Kernmenge berechnet wird. Sobald der Speicherplatzverbrauch zu groß wird, wird eine einzelne Kernmenge für die Vereinigung
-aller bisher berechneten Kernmengen bestimmt und mit dieser weitergearbeitet. Die Anwendung von Kernmengen im Bereich von
+bezüglich der Eingabegröße platzbeschränkt, das heißt, es ist nicht möglich, die gesamte Eingabe zu protokollieren.
+Beim Clustering in Datenströmen nutzt man aus, dass die Vereinigung einer $(1 + \epsilon_1)$-Kernmenge und einer
+$(1 + \epsilon_2)$-Kernmenge eine $(1 + \epsilon_1) (1 + \epsilon_2)$-Kernmenge ergibt. Die Eingabe wird in kleinere Teile
+partitioniert, für die jeweils eine Kernmenge berechnet wird. Die Kernmengen werden dann zu einer einzelnen Kernmenge
+vereinigt. Da jede Vereinigung einen zusätzlichen Fehler verursacht, darf dies nicht zu oft erfolgen. Man setzt dazu die
+Merge-and-Reduce-Technik ein, die in einer Baum-Struktur bottom-up die Kernmengen einer Partition miteinander vereinigt.
+Mit der Technik wird insbesondere sichergestellt, dass jeder einzelne Punkt der Eingabe nur in $\log \left|P\right|$ vielen
+Reduktionsschritten verwendet wird, wobei $\left|P\right|$ die Anzahl an bisher betrachteten Eingabepunkten ist.
+Die Anwendung von Kernmengen im Bereich von
 Datenstromalgorithmen ist Gegenstand gegenwärtiger Forschung und hat bereits erste Ergebnisse erbracht, wie wir später noch
 sehen werden.
 
-Schließlich können wir Kernmengen mit der selben Idee einsetzen, um Clusteringalgorithmen zu parallelisieren oder zu verteilen.
-Dazu partitionieren wir die Eingabepunktmenge, berechnen auf den Teilen verteilt oder parallel Kernmengen, übermitteln die
-berechneten Kernmengen an eine zentrale Instanz und vereinen diese dort zu einer gesamten Kernmenge.
+Schließlich können wir Kernmengen mit einer ähnlichen Idee einsetzen, um Clusteringalgorithmen parallel verteilt auszuführen.
+Wenn die Eingabepunktmenge verteilt vorliegt, berechnen wir auf den Teilen verteilt oder parallel Kernmengen, übermitteln die
+berechneten Kernmengen an eine zentrale Instanz und vereinen diese dort zu einer gesamten Kernmenge. Dadurch vermeiden wir es,
+die gesamte Punktmenge über das Netzwerk übermitteln zu müssen.
 \absatz
 Die Clusteranalyse von Graphen findet ihre vielleicht wichtigste Anwendung in der Bildsegmentierung. Sie wird in diesem
 Kontext eingesetzt, um bei digitalen Bildern Kanten und insbesondere Objekte zu erkennen. Die Kantenerkennung ist eine
@@ -108,8 +113,8 @@ von Objekten macht beispielsweise die Erkennung von Gesichtern, Personen oder Or
 Darüber hinaus ergibt sich eine natürliche Anwendung in der Identifikation relevanter Strukturen und insbesondere der
 Konnektivitätsanalyse in Netzwerken. Auch die Entdeckung von häufigen Anrufmustern in der Telekommunikation kann hier
 von Interesse sein. Schließlich kann es in Netzwerken mit dynamischer Topologie, wie beispielsweise \emph{ad-hoc-Netzwerken},
-die in intelligenten Umgebungen mit vielen wechselnden mobilen Geräten vorkommen. Lokales Clustering
-wird hier unter anderem eingesetzt, um Routing-Algorithmen zu verbessern.
+die in intelligenten Umgebungen mit vielen wechselnden mobilen Geräten vorkommen, hilfreich sein, zu clustern. Lokales Clustering
+wird hier unter anderem eingesetzt, um Routing-Algorithmen zu verbessern. Das Netzwerk wird dabei als Graph aufgefasst.
 
 Zudem kann die Clusteranalyse von Graphen eingesetzt werden, um Caching-Mechanismen in Datenbanken zu optimieren.
 Konkret werden in Datenbanksystemen die einzelnen Einträge in Form von \emph{Seiten} auf dem Speichermedium abgelegt,
@@ -123,8 +128,8 @@ der Algorithmus keine Approximationsgüte garantiert. Wir betrachten in dieser A
 Lloyds Algorithmus durch Arthur und Vassilvitskii~\citep{ArthurV07}, die eine $\BigO{\log k}$-Approximation für das
 $k$-means-Problem ist.
 
-Konstruktionen für Kernmengen wurden erstmals in~\cite{HarPeledM04} vorgestellt. Wir beschäftigen uns in dieser Arbeit
-hauptsächlich mit der Konstruktion aus~\cite{Schmidt14}.
+Das heutige Konzept von \emph{starken} Kernmengen wurde in~\cite{HarPeledM04} vorgestellt. Wir beschäftigen uns in dieser Arbeit
+hauptsächlich mit der Konstruktion aus~\cite{FeldmanSS13,Schmidt14}.
 
 Das Clusteringmodell in Graphen kann bis zu~\cite{KernighanL70} zurückverfolgt werden. Die erste Anwendung von sogenannten
 \emph{spektralen} Methoden für die Clusteranalyse von Graphen und insbesondere die Anwendung im Bereich der Bildsegmentierung
@@ -136,6 +141,6 @@ Die Arbeit ist folgendermaßen gegliedert. In Kapitel~\ref{section:basics} defin
 Konzepte, die wir im Rahmen dieser Arbeit benötigen. Außerdem stellen wir die Algorithmen vor, die wir als Grundlage verwenden,
 oder weiterentwickeln beziehungsweise verbessern wollen. In Kapitel~\ref{section:main} entwickeln wir zum einen eine
 Verbesserung des Algorithmus von Dhillon, Guan und Kulis~\cite{DhillonGK04,DhillonGK07} und zeigen zum anderen, mit welchen
-Modifikationen die Kernmengenkonstruktion von Schmidt~\cite{Schmidt14} praktisch umsetzbar wird. Die entwickelten Algorithmen
-wollen wir dann in Kapitel~\ref{section:experiments} anhand einer Reihe von Experimenten empirisch bewerten. Unsere
-Ergebnisse fassen wir schließlich in Kapitel~\ref{section:conclusion} zusammen.
+Modifikationen die Kernmengenkonstruktion von Feldman, Sohler und Schmidt~\cite{FeldmanSS13,Schmidt14} praktisch umsetzbar wird.
+Die entwickelten Algorithmen wollen wir dann in Kapitel~\ref{section:experiments} anhand einer Reihe von Experimenten empirisch
+bewerten. Unsere Ergebnisse fassen wir schließlich in Kapitel~\ref{section:conclusion} zusammen.
