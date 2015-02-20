@@ -137,7 +137,7 @@ besteht. Wir beginnen mit der folgenden Definition des Graphen.
 	Bei einem 3-Tupel $G' = (V', E', w')$ mit $w' : E \rightarrow \mathbb{N}$ spricht man von einem \emph{gewichteten} Graphen,
 	dessen Kanten über ein Gewicht verfügen, das von der Gewichtsfunktion $w'$ abgebildet wird.
 \end{definition}
-Für die konkrete Datenhaltung von Graphen haben sich im Wesentlichen zwei Ansätze als praktikabel erwiesen: Bei den sogenannten
+Es gibt zwei grundlegende Datenstrukturen für Graphen: Bei den sogenannten
 \emph{Adjazenzlisten} wird für jeden Knoten $v$ im Graphen eine Liste $Adj_v$ gehalten, in der für jeden zu $v$ inzidenten
 Knoten ein Eintrag in $Adj_v$ enthalten ist, der den entsprechenden adjazenten Knoten referenziert, sowie gegebenenfalls das
 Gewicht der Kante zwischen den beiden Knoten.
@@ -242,7 +242,7 @@ Das auf Skalarprodukten basierte Analog zu Definition~\ref{def:kmeans-kmedian} d
 \label{def:kmeans-kmedian-innerproduct}
 Sei $\mathcal{V}$ ein euklidischer Vektorraum mit der Norm $\lVert \cdot \rVert : \mathcal{V} \rightarrow \mathbb{R}$
 und sei $\mathcal{P} \subset \mathcal{V}$ sowie $k \in \mathbb{N}^{+}$.
-Das $k$-means-Problem in $\mathcal{V}$ besteht darin, eine Menge von $k$ (Cluster-)Zentren
+Das $k$-means-Problem in $\mathcal{V}$ besteht darin, eine Menge von $k$ Clusterzentren
 $\mathcal{C} = \{ \mathpzc{c}_1, \dots, \mathpzc{c}_k \}$ mit $\mathpzc{c}_i \in V$ zu finden, sodass der folgende Term
 minimal wird:
 \[ \sum_{\mathpzc{p} \in \mathcal{P}} \min_{\mathpzc{c} \in \mathcal{C}} \EuclidSquared{\mathpzc{p}}{\mathpzc{c}} \]
@@ -255,6 +255,8 @@ Wir bilden zunächst mit einer Abbildung $\phi : \mathcal{X} \rightarrow \mathca
 $\mathcal{X}$ (also beispielsweise $\Rd$) auf einen $D$-dimensionalen (üblicherweise $D \gg d$) euklidischen
 Vektorraum $\mathcal{V}$ ab, und berechnen in diesem mit Lloyds Algorithmus oder einem anderen Clusteringverfahren ein
 Clustering, welches im Ursprungsraum $\mathcal{X}$ im Allgemeinen nicht-linear separierten Clustern entspricht.
+Außerdem ist es mit einem "`Trick"', den wir im Folgenden erläutern, möglich, implizit auf einen unendlich dimensionalen
+Vektorraum (einen Funktionenraum), abzubilden.
 Bei diesem Verfahren wird entsprechend der folgende Term minimiert:
 \[ \sum_{p \in P} \min_{c \in C} \EuclidSquared{\phi(p)}{c} \]
 Die Zentroid-Berechnung zur Bestimmung eines Clusterzentrums $c_i$ im Sinne von Lloyds Algorithmus lautet dann
@@ -262,12 +264,14 @@ Die Zentroid-Berechnung zur Bestimmung eines Clusterzentrums $c_i$ im Sinne von 
 wobei $S_i$ die Menge aller dem Clusterzentrum $c_i$ zugeordneten Punkte ist. Zunächst haben wir uns damit nicht-linear separierte
 Cluster "`erkauft"', der Preis, den wir dafür zahlen, besteht jedoch in höherem Rechenaufwand, da wir einerseits die Punkte
 in den jeweils höherdimensionalen Raum abbilden müssen und andererseits die Berechnung der (euklidischen) Distanzen aufwändiger
-wird; diese benötigt im Ursprungsraum Zeit $\mathcal{O}(d)$ und im höherdimensionalen Raum $\mathcal{O}(D)$. Der Mehraufwand
+wird; diese benötigt im Ursprungsraum Zeit $\mathcal{O}(d)$ und im höherdimensionalen Raum $\mathcal{O}(D)$, sofern
+dieser endlich dimensional ist. Der Mehraufwand
 für die Distanzberechnung fällt dabei stärker ins Gewicht, da wir die Distanzberechnung beispielsweise bei Lloyds Algorithmus
 in jeder Schleifeniteration durchführen.
 \absatz
 Dieses Problem wurde erstmals im Zusammenhang mit \emph{Support Vector Machines} (kurz SVMs) gelöst~\cite{BoserGV92}.
-Wir übertragen die Lösung mittels des sogenannten \emph{Kernel-Tricks} in den Clustering-Kontext und skizzieren diese kurz.
+Die Lösung mittels des sogenannten \emph{Kernel-Tricks} kann in den Clustering-Kontext übertragen werden~\cite{Schmidt14}.
+Wir skizzieren dies kurz.
 Zunächst halten wir eine wichtige Beobachtung hinsichtlich der (quadrierten) euklidischen Distanz $\EuclidSquared{\phi(p)}{c}$
 zwischen dem abgebildeten Punkt und einem Clusterzentrum fest. Diese lässt sich wie folgt ausschließlich über Skalarprodukte
 berechnen (wobei auch hier wieder $S_c$ die dem Clusterzentrum $c$ zugeordnete Punktmenge ist):
@@ -318,8 +322,8 @@ Der Vorfaktor für gewichtetes $k$-means hat auf die Berechnungsvorschriften kei
 Algorithmus~\ref{algo:kernel-lloyd} kann dementsprechend für gewichtetes $k$-means erweitert werden. Der Algorithmus
 lässt sich mit einer asymptotischen Laufzeit von $\mathcal{O}(n^2 (\tau + d))$ implementieren~\cite{DhillonGK04,DhillonGK07},
 wobei $\tau$ die Anzahl an Iterationen der äußeren Schleife ist.
-\absatz
-\begin{algorithm}
+%\absatz
+\begin{algorithm}[t]
 \caption{Kernel-$k$-means}
 \label{algo:kernel-lloyd}
 	% Optionen
@@ -328,25 +332,27 @@ wobei $\tau$ die Anzahl an Iterationen der äußeren Schleife ist.
 	\SetKwInOut{Output}{Ausgabe:}
 	
 	% Input/Output
-	\Input{$P \subseteq \Rd, k \in \mathbb{N}^{+}, \kappa : X \times X \rightarrow \mathbb{R}$}
+	\Input{$P \subseteq \Rd, k \in \mathbb{N}^{+}, \kappa : X \times X \rightarrow \mathbb{R}$, initiales Clustering $C_1, \dots, C_k$ }
 	\Output{$k$-means-Clustering von $P$}
 	\BlankLine
 	
 	% Algo
-	Wähle zufällig $k$ Zentren $c_1^{(0)}, \dots, c_k^{(0)}$ aus $P$ oder $\Rd$\;
+	%Wähle zufällig $k$ Zentren $c_1^{(0)}, \dots, c_k^{(0)}$ aus $P$ oder $\Rd$\;
 	$t \leftarrow 0$\;
 	\Repeat{\textnormal{Konvergenz oder} $t > t_{max}$}{
 		Berechne $\EuclidSquared{\phi(p)}{c_i^{(t)}}$ für alle $p \in P$ und $i \in \{1, \dots, k\}$ mit~\ref{formula:kernel-kmeans}\;
 		\ForEach{$p \in P$}{
 			$c^*(p) \leftarrow \argmin_i\left( \bigg\lVert \phi(p) - c_i^{(t)} \bigg\rVert \right)$\;
 		}
-		$t \leftarrow t + 1$\;
 		\For{$i \leftarrow 1$ \KwTo $k$}{
-			$S_i^{(t)} \leftarrow \{ p \mid c^*(p) = i \}$\;
-			$c_i^{(t)} \leftarrow \frac{1}{|S_i^{(t)}|} \sum_{p_j \in S_i^{(t)}} p_j $\;
+			%$S_i^{(t)} \leftarrow \{ p \mid c^*(p) = i \}$\;
+			%$c_i^{(t)} \leftarrow \frac{1}{|S_i^{(t)}|} \sum_{p_j \in S_i^{(t)}} p_j $\;
+			$C_{i}^{t} \leftarrow \{ p \mid c^*(p) = i \}$\;
 		}
+		$t \leftarrow t + 1$\;
 	}
 \end{algorithm}
+
 Im nächsten Unterabschnitt führen wir Verfahren ein, die mit Techniken aus der linearen Algebra das Graphclusteringproblem
 lösen und in Kombination mit dem hier vorgestellten Algorithmus eine robuste Grundlage für unsere Zwecke bilden.
 
