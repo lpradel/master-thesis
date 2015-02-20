@@ -112,6 +112,18 @@ $x' \in P \setminus \{ c_1, \dots, c_{i-1} \}$ mit Wahrscheinlichkeit $\frac{D(x
 Die $k$ Zentren, die von \kmpp{} ausgewählt werden, sind eine $\BigO{\log k}$-Approximation für das $k$-means-Problem, die durch
 die anschließende Ausführung von Lloyds Algorithmus noch zu einem lokalen Optimum verbessert werden.
 \absatz
+In der Einleitung haben wir bereits das Konzept der (starken) Kernmenge erwähnt. Diese ist formal folgendermaßen definiert.
+\begin{definition}[Starke Kernmenge~\citep{HarPeledM04,Schmidt14}]
+\label{def:strong-coreset}
+	Sei $P \subset \Rd$ eine endliche Punktmenge und sei $w_1 : P \rightarrow \mathbb{R}$ eine Gewichtsfunktion, die jedem
+	Punkt in $P$ ein Gewicht zuordnet. Sei weiterhin $\epsilon \in (0,1)$. Eine endliche Menge $P \subset \Rd$ und eine
+	Gewichtsfunktion $w_2 : S \rightarrow \mathbb{R}$ bilden eine \emph{starke} $(1-\epsilon)$-Kernmenge für $P$, wenn
+	für alle Mengen von $k$ Zentren $C \subset P$ gilt:
+	\[ (1-\epsilon) \sum_{x \in P} w_1(x) \min_{c \in C} \EuclidSquared{x}{c} 
+		\leq \sum_{y \in S} w_2(y) \min_{c \in C} \EuclidSquared{y}{c}
+		\leq  (1+\epsilon) \sum_{x \in P} w_1(x) \min_{c \in C} \EuclidSquared{x}{c} \]
+\end{definition}
+
 Im nächsten Abschnitt betrachten wir das Clusteringproblem auf Graphen, das wir im später noch genauer untersuchen wollen.
 
 \subsection{Graphen und Clusteranalyse von Graphen}
