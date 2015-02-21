@@ -1,4 +1,4 @@
-\section{Kernel \texorpdfstring{$k$}{k}-means Methoden für spektrales Graphclustering}
+\section{Kernel-\texorpdfstring{$k$}{k}-means Methoden für spektrales Graphclustering}
 \label{section:main}
 
 In diesem Kapitel wollen wir Verfahren zur spektralen Clusteranalyse von Graphen vorstellen und verbessern. Als Grundlage wollen
@@ -13,7 +13,7 @@ mit dem Kernel-$k$-means Algorithmus Graphclusteringprobleme (und umgekehrt) lö
 zeigen wir, wie sich die Kernel Methode auch auf den Algorithmus \kmpp{} anwenden lässt und wie wir damit den
 Kernel-$k$-means Algorithmus für Graphclustering verbessern können.
 
-\subsection{Graphschnitte und Graphclustering mit gewichtetem Kernel \texorpdfstring{$k$}{k}-means}
+\subsection{Graphschnitte und Graphclustering mit gewichtetem Kernel-\texorpdfstring{$k$}{k}-means}
 \label{subsection:wkkm-graphcut-graphclustering}
 
 Um die Graphclusteringprobleme aus Definition~\ref{def:graphpartitioning} mit dem Kernel-$k$-means Algorithmus zu lösen,
@@ -491,3 +491,4 @@ Damit gilt insbesondere $H_{k-1} \leq \ln{k} + 1$. Somit gilt:
 \[ E[\optpot] \leq \left( \theta(A) + 8 \optpot - 8 \optpot(A) \right) \cdot (\ln{k} + 2) \]
 Satz~\ref{thm:kkmpp-ologk-approx} folgt mit Lemma~\ref{lemma:kkmpp-first-center-approx}.
 
+\subsection{Eine praktische Kernmengenkonstruktion}

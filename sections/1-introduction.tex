@@ -6,10 +6,10 @@ Begriff \emph{cluster} lässt sich in diesem Kontext am ehesten mit Gruppe oder 
 Annahme zu Grunde, dass in gegebenen Datenmengen typischerweise Strukturen existieren, die mit einem geeigneten Ähnlichkeitsmaß
 erkannt werden können. Diese grundlegende Annahme ist insofern plausibel, als dass die zu analysierenden Datenmengen in der Praxis
 in der Regel aus einem konkreten Anwendungsfall gesammelt oder aufgezeichnet werden, in dem bestimmte Muster oder sich wiederholende
-Prozesse existieren. Bei der Analyse von Daten aus natürlichen Prozessen, sind diese beispielsweise oft gemäß einer bestimmten
+Prozesse existieren. Bei der Analyse von Daten aus natürlichen Prozessen sind diese beispielsweise oft gemäß einer bestimmten
 Wahrscheinlichkeitsverteilung verteilt. Hinzu kommt, dass Daten ohne jegliche Strukturen zumeist ohnehin nicht besonders
 aufschlussreich sind.
-Sind die vorhandenen Strukturen einmal erkannt, kann der gesamte Datensatz in Gruppen oder \emph{Cluster}
+Wenn die vorhandenen Strukturen einmal erkannt sind, kann der gesamte Datensatz in Gruppen oder \emph{Cluster}
 gegliedert werden, sodass innerhalb eines Clusters große Ähnlichkeit zwischen Objekten besteht, während Objekte, die
 unterschiedlichen Clustern zugeordnet sind, geringe Ähnlichkeit aufweisen. Anhand der Cluster, die mit Verfahren der Clusteranalyse
 gebildet wurden, lassen sich dann häufig aufschlussreiche Aussagen über die Eingabedaten treffen, die beim bloßen Anblick der
@@ -23,7 +23,7 @@ identifiziert werden, die viel miteinander interagieren und somit eine soziale C
 oder Bekannten, bilden. In diesem Beispiel kann es auch aufschlussreich sein, sogenannte "`schwarze Löcher"' zu identifizieren,
 also Benutzer, die eine große Menge von eingehenden Aktivitäten zahlreicher anderer Benutzer haben, selbst aber nur selten
 mit einzelnen Benutzern interagieren. Bei Benutzern mit diesem Verhalten handelt es sich häufig um Prominente mit einer großen
-Fangemeinde. Unabhängig vom konkreten verfolgten Ziel wird schnell
+Fangemeinde. Unabhängig vom konkreten Ziel wird schnell
 klar, dass entsprechende Aussagen gerade bei Netzwerken mit einer großen Nutzeranzahl, wie beispielsweise Facebook, nur dann
 möglich sind, wenn Verfahren der Clusteranalyse eingesetzt werden. Würde man lediglich die unstrukturierte gesamte Datenmenge
 betrachten, ließen sich nur sehr schwer Informationen gewinnen, die keine Aussagen über das globale Netzwerk treffen. Es wird
@@ -40,7 +40,7 @@ Die eigentliche Aufgabe besteht dann darin, die Summe der
 (quadrierten) Distanzen der Punkte eines Clusters zu ihrem Clusterzentrum zu minimieren.
 
 Da das $k$-means-Problem schon für $k = 2$ NP-hart ist~\cite{AloiseDHP09}, sind für praktische Zwecke insbesondere
-Heuristiken, also Algorithmen ohne feste Schranken für Laufzeit oder Qualität der Lösung) und
+Heuristiken, also Algorithmen ohne feste Schranken für Laufzeit oder Qualität der Lösung, und
 Approximationsalgorithmen, die eine nicht-optimale Lösung berechnen, welche jedoch garantiert nur um einen gewissen
 Faktor von der optimalen Lösung abweichen, interessant. Wir betrachten die Konstruktion von \emph{Kernmengen}.
 Bei Eingabe einer Punktmenge $P$ für das $k$-means-Problem handelt es sich bei einer Kernmenge um eine kleinere gewichtete
@@ -48,8 +48,8 @@ Punktmenge $S$ mit der Eigenschaft, dass für \emph{jede} Wahl von $k$ Clusterze
 $P$ zu den Zentren in etwa so groß ist wie die Summe der quadrierten Distanzen der Punkte in $S$ zu den Zentren. Effektiv ist
 eine Kernmenge also ein hinsichtlich der Clusteringzielfunktion repräsentatives, (teilweise deutlich) kleineres Abbild der
 ursprünglichen Punktmenge. Üblicherweise bieten Kernmengenkonstruktionen Garantien einer $(1 + \epsilon)$-Approximation,
-das heißt, dass ein $k$-means-Clustering auf der Kernmenge höchstens um einen Faktor $(1 + \epsilon)$ schlechter ist, als das
-selbe Clustering auf der Ursprungsmenge $P$. Neben der Approximation des $k$-means-Problems können Kernmengen auch ein
+das heißt, dass ein $k$-means-Clustering auf der Kernmenge höchstens um einen Faktor $(1 + \epsilon)$ schlechter ist als dasselbe
+Clustering auf der Ursprungsmenge $P$. Neben der Approximation des $k$-means-Problems können Kernmengen auch ein
 effektives Mittel im Umgang mit großen Datenmengen sein. Wenn die Größe der Kernmenge $S$ nur ein kleiner Anteil an der Größe
 von $P$ ist, können Clustering-Algorithmen auf $S$ deutlich schneller ausgeführt werden als auf $P$.
 \absatz
@@ -77,9 +77,9 @@ geographischen und geologischen Zusammenhängen zum Einsatz. Konkret werden hier
 Proben geclustert, um geographische Profile der untersuchten Substanzen zu erstellen.
 \absatz
 Kernmengen werden in drei Szenarien eingesetzt. Wie bereits erwähnt bieten viele Kernmengenkonstruktionen
-eine garantierte Approximationsgüte, das heißt das anhand der Kernmenge berechnete Clustering weicht für jede beliebige
-Wahl der Zentren aus $\Rd$ um beispielsweise einen Faktor von höchstens $1 + \epsilon$ von einem Clustering mit den
-selben Zentren auf der Ursprungsmenge ab. Man spricht in diesem Zusammenhang auch von \emph{starken} Kernmengen.
+eine garantierte Approximationsgüte, das heißt, das anhand der Kernmenge berechnete Clustering weicht für jede beliebige
+Wahl der Zentren aus $\Rd$ um beispielsweise einen Faktor von höchstens $1 + \epsilon$ von einem Clustering mit denselben
+Zentren auf der Ursprungsmenge ab. Man spricht in diesem Zusammenhang auch von \emph{starken} Kernmengen.
 Ist diese Eigenschaft erfüllt, können wir mit einer Kernmenge, die eine deutlich kleinere Größe hat als die Ursprungsmenge,
 für Approximationsalgorithmen für das $k$-means-Problem einen signifikanten \emph{Speedup}, also eine Beschleunigung der
 Ausführungszeiten, erzielen. Dabei muss selbstverständlich beachtet werden, dass die Konstruktion der Kernmenge selbst
@@ -101,7 +101,7 @@ Datenstromalgorithmen ist Gegenstand gegenwärtiger Forschung und hat bereits er
 sehen werden.
 
 Schließlich können wir Kernmengen mit einer ähnlichen Idee einsetzen, um Clusteringalgorithmen parallel verteilt auszuführen.
-Wenn die Eingabepunktmenge verteilt vorliegt, berechnen wir auf den Teilen verteilt oder parallel Kernmengen, übermitteln die
+Wenn die Eingabepunktmenge verteilt vorliegt, berechnen wir auf den Partitionen verteilt oder parallel Kernmengen, übermitteln die
 berechneten Kernmengen an eine zentrale Instanz und vereinen diese dort zu einer gesamten Kernmenge. Dadurch vermeiden wir es,
 die gesamte Punktmenge über das Netzwerk übermitteln zu müssen.
 \absatz
