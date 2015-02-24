@@ -8,7 +8,7 @@ Qualität der berechneten Clusterings noch einmal steigern, ohne dabei signifika
 Der Algorithmus ist zudem leicht zu implementieren. Gerade im Bereich der Clusteranalyse sollte dies nicht unterschätzt werden,
 da eine praktische Evaluation der Algorithmen in diesem anwendungsreichen Gebiet unerlässlich ist.
 \absatz
-Das Kapitel ist folgendermaßen gegliedert: in Abschnitt~\ref{subsection:wkkm-graphcut-graphclustering} diskutieren wir, wie wir
+Das Kapitel ist folgendermaßen gegliedert: In Abschnitt~\ref{subsection:wkkm-graphcut-graphclustering} diskutieren wir, wie wir
 mit dem Kernel-$k$-means Algorithmus Graphclusteringprobleme (und umgekehrt) lösen können. In Abschnitt~\ref{subsection:kernelkmpp}
 zeigen wir, wie sich die Kernel Methode auch auf den Algorithmus \kmpp{} anwenden lässt und wie wir damit den
 Kernel-$k$-means Algorithmus für Graphclustering verbessern können.
@@ -22,7 +22,7 @@ Transformation (bidirektional) möglich ist, haben bereits Dhillon, Guan und Kul
 fassen daher zunächst den für uns relevanten Teil ihrer Ergebnisse zusammen.
 \absatz
 Die grundlegende Idee besteht darin, zu zeigen, dass sowohl die Zielfunktion für Kernel-$k$-means als auch die (diversen)
-Zielfunktionen für Graphpartitionierungsprobleme als \emph{Spurmaximimerungsprobleme} formuliert werden können. Die
+Zielfunktionen für Graphpartitionierungsprobleme als \emph{Spurmaximierungsprobleme} formuliert werden können. Die
 \emph{Spur} (engl. \emph{trace}) einer quadratischen $n \times n$-Matrix $M$ ist dabei die Summe der Elemente auf der
 Hauptdiagonalen von $M$:
 \[ \tr{M} = \sum_{i=1}^{n} M_{i,i} \]
@@ -151,7 +151,7 @@ daher gleichzusetzen mit der Maximierungszielfunktion des folgenden Spurmaximier
 	\max_{Y}{} \tr{ Y^T W^{\frac{1}{2}} K W^{\frac{1}{2}} Y }
 \end{align}
 Da das eigentliche Clustering von Algorithmus~\ref{algo:wkkm} offenbar einer spurmaximierenden Wahl der Matrix $Y$ gleichkommt,
-wollen wir abschließend noch kurz einen genaueren Blick auf diese werden.
+wollen wir abschließend noch kurz einen genaueren Blick auf diese werfen.
 Die Matrix $Y = W^{\frac{1}{2}} Z$ ist eine orthonormale Diagonalmatrix, das heißt $Y^T Y = I$. Ihre Einträge sehen
 dementsprechend wie folgt aus:
 \[ Y = 	\begin{pmatrix}
@@ -181,7 +181,7 @@ Damit können wir eine erste Transformation der Zielfunktion vornehmen:
 \[ \max \sum_{c=1}^{k} \frac{w(V_c, V_c)}{\left|V_c\right|}
 	\Leftrightarrow \max \sum_{c=1}^{k} \frac{\vect{x}_c^T A \vect{x}_c}{\vect{x}_c^T \vect{x}_c}
 	\Leftrightarrow \max \sum_{c=1}^{k} \tilde{\vect{x}}_c^T A \tilde{\vect{x}}_c \]
-Betrachten wir $\tilde{X}$ als Matrix deren $c$-te Spalte der Vektor $\tilde{\vect{x}}_c$ ist, können wir die Zielfunktion
+Betrachten wir $\tilde{X}$ als Matrix, deren $c$-te Spalte der Vektor $\tilde{\vect{x}}_c$ ist, können wir die Zielfunktion
 umformen zu
 \begin{align}
 \label{formula:ratioassoc-tracemax}
@@ -197,7 +197,7 @@ Für den Normalized Cut gehen wir ähnlich vor. Unsere ursprüngliche Zielfunkti
 Zunächst wollen wir die Funktion in ein Maximierungsproblem umwandeln. Wir beobachten, dass die Zielfunktion äquivalent ist
 zu
 \[ \max \sum_{c=1}^{k} \frac{w(V_c, V_c)}{w(V_c, V)} \]
-Wir benötigen zur Umformung des Normalized Cut die diagonale Gradmatrix $D$ des Graphen, der der Adjazenzmatrix $A$ zu
+Wir benötigen zur Umformung des Normalized Cut die diagonale Gradmatrix $D$ des Graphen, welcher der Adjazenzmatrix $A$ zu
 Grunde liegt. Wir verwenden wieder die Indikator-Vektoren und definieren zusätzlich
 \[ \hat{\vect{x}}_c = \frac{\vect{x}_c}{ (\vect{x}_c^T D \vect{x}_c)^{\frac{1}{2}} } \]
 Unter Verwendung der Gradmatrix können wir die Variante des Normalized Cut als Maximierungsproblem wie folgt umformen:
@@ -215,7 +215,7 @@ Gewichtsmatrix $W = D$ und als Kernel-Matrix $K = D^{-1} A D^{-1}$ setzen.
 \absatz
 Wir wollen abschließend noch anmerken, dass die Adjazenzmatrix $A$ positiv definit sein muss, damit sie als Kernel-Matrix in
 Algorithmus~\ref{algo:wkkm} garantiert zu einer iterativen Verringerung des gewichteten Kernel-$k$-means Zielfunktionswertes
-führt. Um dies in der Praxis sicherzustellen ist bei der Wahl der Kernel-Matrix gegebenenfalls das Aufaddieren einer
+führt. Um dies in der Praxis sicherzustellen, ist bei der Wahl der Kernel-Matrix gegebenenfalls das Aufaddieren einer
 "`Verschiebung"' auf die ursprüngliche Kernel-Matrix nötig. Wir gehen auf dieses Detail im Experimente-Kapitel noch genauer ein.
 
 \subsection{Die Kernel Methode für \texorpdfstring{$k$}{k}-means\texttt{++}}
@@ -265,12 +265,12 @@ gewählten Zentren $c_i$:
 \[ D(x) = \min_{i = 1 \dots l} \EuclidSquared{x}{c_i} \]
 Wenden wir die Kernel Methode an, berechnet sich $D(\phi(x))$ dementsprechend folgendermaßen:
 \[ D(\phi(x)) = \min_{i = 1 \dots l} \EuclidSquared{\phi(x)}{\phi(c_i)} \]
-Demnach genügt es zu zeigen, dass wir $\EuclidSquared{\phi(x)}{\phi(c_i)}$ ausschließlich mit der Kernelfunktion berechnen
+Demnach genügt es, zu zeigen, dass wir $\EuclidSquared{\phi(x)}{\phi(c_i)}$ ausschließlich mit der Kernelfunktion berechnen
 können. Wir haben bereits gesehen, dass die Kernelfunktion gerade dafür gedacht ist. Es gilt:
 \begin{align}
 	\EuclidSquared{\phi(x)}{\phi(c_i)} = \kappa(x,x) - 2 \kappa(x,c_i) + \kappa(c_i,c_i)
 \end{align}
-Mit den selben Überlegungen können wir auch zeigen, dass sich der Wert von $D(\phi(x))^2$ mit der Kernel Methode berechnen lässt.
+Mit denselben Überlegungen können wir auch zeigen, dass sich der Wert von $D(\phi(x))^2$ mit der Kernel Methode berechnen lässt.
 Zunächst lässt sich auch $D(\phi(x))^2$ als Minimum formulieren:
 \[ D(\phi(x))^2 = \left( \min_{i = 1 \dots l} \EuclidSquared{\phi(x)}{\phi(c_i)} \right)^2 \]
 Dazu müssen wir effektiv $\left( \EuclidSquared{\phi(x)}{\phi(c_i)} \right)^2$ berechnen. Auch dies lässt sich mit der
@@ -327,7 +327,7 @@ Wir zeigen nun das eigentliche Ergebnis.
 	\[ E[\theta(C)] \leq 8 (\ln{k} + 2) \optpot \]
 \end{satz}
 Der Beweis erfolgt in drei Schritten. Wir zeigen zunächst, dass das erste zufällig gleichverteilt gewählte Clusterzentrum
-die Approximationseigenschaft erfüllt. Die selbe Eigenschaft zeigen wir im zweiten Schritt für die übrigen Zentren, die gemäß
+die Approximationseigenschaft erfüllt. Dieselbe Eigenschaft zeigen wir im zweiten Schritt für die übrigen Zentren, die gemäß
 der $D^2$-Gewichtung gewählt werden. Im dritten und letzten Schritt beweisen wir mittels Induktion das Gesamtergebnis.
 
 \begin{lemma}[Das erste Zentrum ist kompetitiv]
@@ -396,7 +396,7 @@ gilt.
 	Nun können wir Lemma~\ref{lemma:kkmpp-first-center-approx} anwenden und erhalten:
 	\[ E[\theta(A)] \leq 8 \optpot(A) \]
 \end{proof}
-Mit den Lemmas~\ref{lemma:kkmpp-first-center-approx} und~\ref{lemma:kkmpp-remaining-center-approx} folgt, dass
+Aus den Lemmas~\ref{lemma:kkmpp-first-center-approx} und~\ref{lemma:kkmpp-remaining-center-approx} folgt, dass
 die Wahl der Zentren von \kkmpp{} der Approximationseigenschaft genügt, solange der Algorithmus Zentren aus jedem Cluster
 des optimalen Clusterings $C_\textrm{OPT}$ auswählt. Im dritten und letzten Schritt unserer Analyse zeigen wir nun,
 dass der entstehende Fehler im anderen Fall nach oben insgesamt durch $\BigO{\log k}$ beschränkt ist.
@@ -492,3 +492,6 @@ Damit gilt insbesondere $H_{k-1} \leq \ln{k} + 1$. Somit gilt:
 Satz~\ref{thm:kkmpp-ologk-approx} folgt mit Lemma~\ref{lemma:kkmpp-first-center-approx}.
 
 \subsection{Eine praktische Kernmengenkonstruktion}
+
+In diesem Abschnitt wollen wir die Kernmengenkonstruktion von Feldman, Schmidt und Sohler~\cite{FeldmanSS13,Schmidt14} auf ihre
+Implementierbarkeit untersuchen und gegebenenfalls für eine praktische Umsetzung modifizieren.

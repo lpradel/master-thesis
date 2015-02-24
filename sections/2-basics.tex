@@ -16,7 +16,7 @@ Konzepte von Kernel-Methoden vor.
 
 Clusteranalyse oder "`Clustering"' beschäftigt sich mit der Einteilung von Objekten in Gruppen ("`Cluster"'), sodass
 sich die Objekte innerhalb eines Clusters gemäß eines bestimmten Optimierungskriteriums ähnlich sind und von Objekten eines
-anderen Clusters unterscheiden. Es existieren zahlreiche grundsätzlich verschiedene Ansätze, Clusteringprobleme zu lösen.
+anderen Clusters unterscheiden. Es existieren zahlreiche grundsätzlich verschiedene Ansätze, um Clusteringprobleme zu lösen.
 Wir beschränken uns in dieser Arbeit auf \emph{partitionierende} Clusteringprobleme und -verfahren. Bei diesen
 soll eine Menge von Objekten, welche der erste Teil der Eingabe ist, gemäß einer Cluster-Zielfunktion möglichst
 optimal in genau $k$ Cluster unterteilt werden. Dabei ist $k$ der ganzzahlige zweite Teil der Eingabe, das heißt, die
@@ -124,7 +124,7 @@ In der Einleitung haben wir bereits das Konzept der (starken) Kernmenge erwähnt
 		\leq  (1+\epsilon) \sum_{x \in P} w_1(x) \min_{c \in C} \EuclidSquared{x}{c} \]
 \end{definition}
 
-Im nächsten Abschnitt betrachten wir das Clusteringproblem auf Graphen, das wir im später noch genauer untersuchen wollen.
+Im nächsten Abschnitt betrachten wir das Clusteringproblem auf Graphen, das wir später noch genauer untersuchen wollen.
 
 \subsection{Graphen und Clusteranalyse von Graphen}
 \label{subsection:basics:graphs}
@@ -166,7 +166,7 @@ weiterhin anwenden. Wir interessieren uns in diesem Fall für die "`Ähnlichkeit
 	Sei $G=(V,E,w)$ ein gewichteter Graph. Ein \emph{Schnitt} $C=(S,T)$ von $G$ ist eine Partitionierung von $V$ in die beiden
 	Mengen $S$ und $T$, das heißt, dass $V = S \cup T$ und gleichzeitig $S \cap T = \emptyset$.
 	Die \emph{Schnittmenge} von $C$ sind die Kanten in $E$, die einen
-	Endpunkt in $S$ und den anderen Endpunkt in $T$ haben, das heißt formal ist die Schnittmenge definiert als
+	Endpunkt in $S$ und den anderen Endpunkt in $T$ haben, das heißt, formal ist die Schnittmenge definiert als
 	\[ \{ (u,v) \in E \mid u \in S, v \in T \}. \]
 	Das Gewicht oder der Wert eines Schnittes ist die Summe der Kantengewichte der Schnittmenge. Wir verwenden die folgende
 	Notation:
@@ -183,7 +183,7 @@ der eine $k$-fache Partitionierung der Knotenmenge erlaubt. Diese lautet wie fol
 	\[ w(A,B) = \sum_{u \in A, v \in B} w((u,v)) \]
 	Das $k$-Graphpartitionierungsproblem besteht darin, eine Partitionierung der Knotenmenge $V$ in $k$ disjunkte Teilmengen
 	$V_1, \dots, V_k$ mit $\bigcup_{i \in \{1, \dots, k \}} V_i = V$ zu ermitteln, sodass sich die Knoten innerhalb einer
-	Partition bezüglich einer Ähnlichkeitsrelation möglichst ähnlich sind und die Knoten unterschiedlicher Partitionen
+	Partition bezüglich einer Ähnlichkeitsrelation möglichst ähnlich sind und sich die Knoten unterschiedlicher Partitionen
 	bezüglich der Ähnlichkeitsrelation möglichst stark voneinander unterscheiden~\cite{KernighanL70}.
 	
 	Beim Clustering von Punktmengen lagen für die Unähnlichkeitsrelation Metriken nahe, im Falle der Graphpartitionierung
@@ -198,7 +198,7 @@ der eine $k$-fache Partitionierung der Knotenmenge erlaubt. Diese lautet wie fol
 				\[ \min \sum_{c=1}^{k} \frac{w(V_c, V \setminus V_c)}{\left|V_c\right|} \]
 		\item 	\textbf{Kernighan-Lin}. Bei dem in~\cite{KernighanL70} vorgestellten Optimierungskriterium werden die
 				Intra-Clusterabstände ähnlich der Ratio Association minimiert, allerdings müssen alle Partitionen hier zusätzlich
-				die selbe Größe haben. Die hier vorgestellte Zielfunktion ist von $2$ auf $k$ Partitionen verallgemeinert:
+				dieselbe Größe haben. Die hier vorgestellte Zielfunktion ist von $2$ auf $k$ Partitionen verallgemeinert:
 				\[ \min \sum_{c=1}^{k} \frac{w(V_c, V \setminus V_c)}{\left|V_c\right|} \textrm{ s.t. } 
 				   \left|V_c\right| = \frac{\left|V\right|}{k} \, \forall \, c \in \{ 1, \dots, k \} \]
 		\item 	\textbf{Normalized Cut}. Ziel des Normalized Cut ist wie beim Ratio Cut die Minimierung des Schnitts von einem
@@ -217,7 +217,7 @@ sowie der Komplexität der Berechnungen verbessert werden können.
 Legt man die $k$-means Zielfunktion zu Grunde, können im Ursprungsraum $\Rd$ nur Cluster berechnet werden, die \emph{linear
 separierbar} sind. Ein illustratives Beispiel im $\mathbb{R}^2$ sind zwei konzentrisch angeordnete ringförmige Punktmengen.
 Die intuitiv optimalen Cluster sind die beiden jeweiligen Ringe, es ist jedoch im $\mathbb{R}^2$ nicht
-möglich Clusterzentren anzugeben, die den zweidimensionalen Raum in Ringe partitionieren. Die Beschränkung liegt darin, dass
+möglich, Clusterzentren anzugeben, die den zweidimensionalen Raum in Ringe partitionieren. Die Beschränkung liegt darin, dass
 wir die Partitionierung oder Separierung durch Hyperebenen vornehmen. Im Ursprungsraum können wir daher nur linear separierbare
 Cluster bestimmen. Wir betrachten nun ein Verfahren, mit dem sich diese Beschränkung umgehen lässt.
 
@@ -438,7 +438,7 @@ der Laplace-Matrix nutzt, wird diese Technik "`spektrale Clusteranalyse"' genann
 \absatz
 Die wichtigsten Algorithmen, die auf dem Spektrum der Laplace-Matrix der Eingabe basieren, wollen wir im Folgenden vorstellen.
 Wir beginnen mit den Algorithmen~\ref{algo:non-normalized-spectral-clustering}
-und~\ref{algo:normalized-spectral-clustering-shi-malik} , welche die normalisierten Laplace-Matrizen verwenden und
+und~\ref{algo:normalized-spectral-clustering-shi-malik}, welche die normalisierten Laplace-Matrizen verwenden und
 in den jeweils zitierten Papieren vorgestellt wurden.
 
 \begin{algorithm}

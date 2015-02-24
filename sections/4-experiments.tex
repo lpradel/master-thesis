@@ -12,7 +12,7 @@ grobe Vorstellung von der Leistungsfähigkeit der eingesetzten Hardware ermögli
 die eingesetzten Eingabedaten vor.
 
 In Abschnitt~\ref{subsection:experiment-kernel-method} untersuchen wir einleitend zunächst, inwieweit der Einsatz der Kernel
-Methode tatsächlich die Qualität von Clusterings verbessern kann. Außerdem untersuchen wir insbesondere, ob sich der Overhead,
+Methode tatsächlich die Qualität von Clusterings verbessern kann. Außerdem untersuchen wir insbesondere, ob der Overhead,
 der durch die Verwendung eines Kernels entsteht, in der Praxis tatsächlich so gering ist, wie wir zuvor bei der Einführung des
 Kernel-Tricks argumentiert haben.
 
@@ -26,17 +26,17 @@ Graphclustering-Zielfunktionen und führen zusätzlich die vielleicht wichtigste
 Um Vergleichbarkeit der Testläufe sicherzustellen, wurden sämtliche hier vorgestellten Ausführungen der Algorithmen auf derselben
 Hardware durchgeführt. Der Rechner wurde unter 64 Bit Linux (Arch Linux) betrieben und verfügte über einen
 Intel i7 3,5 GHz Vierkern-Prozessor sowie 16 GB Arbeitsspeicher. Die Laufzeiten der Algorithmen wurden jeweils über die reine
-Ausführung des jeweiligen Algorithmus ermittelt, das heißt Vorverarbeitung wie beispielsweise das Einlesen von Daten aus einer
-Datei wird in den angegebenen Laufzeiten nicht berücksichtigt.
+Ausführung des jeweiligen Algorithmus ermittelt, das heißt, Vorverarbeitung, wie beispielsweise das Einlesen von Daten aus einer
+Datei, wird in den angegebenen Laufzeiten nicht berücksichtigt.
 
 Die Algorithmen wurden mit einer Ausnahme in C++ implementiert. Als Compiler wurde die GCC in der Version 4.9.2 verwendet.
-Der Code wurde jeweils für 64-Bit Architekturen übersetzt, das heißt es wurde das GCC-Flag \texttt{-m64} gesetzt. Außerdem
+Der Code wurde jeweils für 64-Bit Architekturen übersetzt, das heißt, es wurde das GCC-Flag \texttt{-m64} gesetzt. Außerdem
 wurden für die Optimierung die Flags \texttt{-O3} und \texttt{-fPIC} gesetzt. Lediglich für die Bildsegmentierung wurde
 MATLAB verwendet.
 
 Für die Graphclustering-Experimente in Abschnitt~\ref{subsection:experiment-kkmpp} wurden Graphen aus dem
 "`Graph Partitioning Archive"'~\cite{SoperWC04} eingesetzt. Die Daten stammen aus Anwendungsfällen, in denen
-Graphpartitionierungen berechnet werden müssen und wurden von diversen Forschern im Laufe der Zeit bereitgestellt. Das
+Graphpartitionierungen berechnet werden müssen, und wurden von diversen Forschern im Laufe der Zeit bereitgestellt. Das
 Archiv ist unter der folgenden URL abrufbar: \url{http://staffweb.cms.gre.ac.uk/~wc06/partition/} (Stand: 02.02.2015).
 
 Für die Experimente in den Abschnitten~\ref{subsection:experiment-kernel-method} und~\ref{subsection:experiment-coreset}
@@ -46,7 +46,7 @@ ist unter der folgenden URL erreichbar: \url{http://archive.ics.uci.edu/ml/} (St
 300 Datensätze aus Anwendungen der Community für Maschinelles Lernen, von denen einige Clusteringprobleme sind. Das jeweilige
 zu lösende Problem kann in der durchsuchbaren Übersicht unter \url{http://archive.ics.uci.edu/ml/datasets.html} dem
 Attribut "`Default Task"' entnommen werden. Die meisten Datensätze sind Klassifizierungsprobleme. Wir haben uns auf Datensätze
-beschränkt, die als Clustering-Probleme ausgezeichnet sind, da nicht bei allen Datensätzen klar wird, aus welchem Kontext,
+beschränkt, die als Clustering-Probleme ausgezeichnet sind, da nicht bei allen Datensätzen klar wird, aus welchem Kontext
 beziehungsweise welcher Anwendung die Daten stammen.
 
 \subsection{Die Kernel Methode}
@@ -136,7 +136,7 @@ Abbildung~\ref{fig:experiment-kernel-method-quality} und Tabelle~\ref{tbl:experi
 die Kernel Methode bei geometrischem Clustering auf allen Instanzen zu einem besseren Clustering führt. Auf den schwer zu
 clusternden Instanzen BENSAID und DUNN beträgt die Verbesserung schon einige Prozentpunkte, während das Potenzial der Kernel
 Methode auf den Instanzen ECOLI und CIRCLE besonders gut zu erkennen ist. Dabei handelt es sich um Instanzen, auf denen die Cluster
-hyperellipsoide, beziehungsweise konzentrische Form haben. Auf diesen Instanzen clustert der $k$-means-Algorithmus wegen der
+eine hyperellipsoide, beziehungsweise konzentrische Form haben. Auf diesen Instanzen clustert der $k$-means-Algorithmus wegen der
 Hyperebenen-Beschränkung nur sehr schlecht, während mit der Kernel Methode auch nicht linear separierte Cluster möglich sind.
 Bemerkenswert ist auch, dass der Kernel-$k$-means-Algorithmus sogar auf Instanzen mit mehreren hundert Punkten noch die optimale
 Lösung berechnet, wie man an den Instanzen CIRCLE, BLE-2 und UE-4 erkennen kann.
@@ -179,9 +179,9 @@ Tabelle~\ref{tbl:experiment-kernel-method-runtime-datasets} gibt einen Überblic
 \label{tbl:experiment-kernel-method-runtime-datasets}
 \end{table}
 In Abbildung~\ref{fig:experiment-kernel-method-runtime} und Tabelle~\ref{tbl:experiment-kernel-method-runtime} ist gut zu
-erkennen, dass der Overhead, der durch die Kernel Methode entsteht bei den kleinen Instanzen (bis zu 100.000 Punkten)
+erkennen, dass der Overhead, der durch die Kernel Methode entsteht, bei den kleinen Instanzen (bis zu 100.000 Punkten)
 vernachlässigbar gering ist. Auf den größeren Instanzen sind Laufzeiteinbußen in der Größenordnung von rund 10\% zu verzeichnen.
-Diese sind nicht zu vernachlässigen. In Relation zur potenziellen Qualitätssteigerung aus den vorhergegangen Experimenten
+Diese sind nicht zu vernachlässigen. In Relation zur potenziellen Qualitätssteigerung aus den vorhergegangenen Experimenten
 betrachtet, handelt es sich jedoch um einen Trade-off, der sich in den allermeisten Fällen lohnt.
 
 \begin{figure}[t!]
@@ -278,7 +278,7 @@ entsprechend verschobene Kernel $K'$ eine positiv definite Matrix ist. Für manc
 Gewichtsmatrix $W$ so beschaffen ist, dass die Kernelmatrix auch ohne eine diagonale Verschiebung schon positiv definit ist.
 Die Experimente in~\cite{DhillonGK04,DhillonGK07} legen nahe, dass es in solchen Fällen sogar vorteilhaft sein kann, eine
 negative $\sigma$-Verschiebung vorzunehmen. Empirisch wird $\sigma$ idealerweise so gewählt, dass die Spur der Kernelmatrix
-möglichst nach bei Null liegt. Tabelle~\ref{tbl:experiment-kernel-matrices} zeigt die $\sigma$-verschobenen Kernelmatrizen
+möglichst nah bei Null liegt. Tabelle~\ref{tbl:experiment-kernel-matrices} zeigt die $\sigma$-verschobenen Kernelmatrizen
 für die diversen Graphschnitt-Zielfunktionen. Wie bereits erwähnt sind für unsere Zwecke nur die Ratio Association und der
 Normalized Cut relevant.
 \paragraph{Graphpartitionierung.} Graclus selbst bietet drei Möglichkeiten der Initialisierung an: zufällige Initialisierung (analog zum klassischen Algorithmus
@@ -305,7 +305,7 @@ unseren Experimenten für Vergleiche heranziehen.
 \absatz
 Wegen der Zufallskomponente im \kkmpp-Algorithmus haben wir diesen sowie die vollkommen zufällige Initialisierung pro
 Datensatz und pro Clusterzahl $k$ insgesamt 100 mal ausgeführt. In unseren Ergebnissen geben wir für die zufällige Initialisierung
-jeweils das arithmetische Mittel über alle 100 Läufe an. Für den \kkmpp-Algorithmus geben wir zusätzlich die gemessen Minima
+jeweils das arithmetische Mittel über alle 100 Läufe an. Für den \kkmpp-Algorithmus geben wir zusätzlich die gemessenen Minima
 und Maxima über alle Durchläufe an, um eine Vorstellung der Größenordnung der Schwankungen zu ermöglichen. Wir betrachten
 insbesondere auch die Laufzeiten der Algorithmen, um den Trade-off zwischen Clusteringqualität und Ausführungszeit beurteilen
 zu können. Wir untersuchen die erzielten Werte für Ratio Association (je \emph{größer} der Wert, desto besser ist die Qualität
@@ -471,11 +471,11 @@ Die Abbildungen~\ref{fig:experiment-experiment-kkmpp-ratioassoc-128} und~\ref{fi
 beziehungsweise die Tabellen~\ref{tbl:experiment-experiment-kkmpp-ratioassoc-128}
 und~\ref{tbl:experiment-experiment-kkmpp-ratioassoc-512} zeigen die Güte der berechneten Clusterings für die Ratio Association.
 Es ist zunächst gut zu erkennen, dass wir die Ergebnisse von~\cite{DhillonGK04} in etwa bestätigt haben: sowohl die
-Initialisierung mit METIS, als auch die spektrale Initialisierung liefern deutlich bessere Clusterings, als die rein zufällige
+Initialisierung mit METIS, als auch die spektrale Initialisierung liefern deutlich bessere Clusterings als die rein zufällige
 Initialisierung. Der Algorithmus \kkmpp{} ist auf allen Instanzen mindestens kompetitiv und auf einigen sogar noch besser.
-Bemerkenswert ist, dass die Verbesserung des Zielfunktionswertes mit geringerer Anzahl an Clustern prozentual größer ist,
+Bemerkenswert ist, dass die Verbesserung des Zielfunktionswertes mit geringerer Anzahl an Clustern prozentual größer ist
 als bei einer größeren Anzahl an Clustern. So werden beispielsweise bei 128 Clustern im Schnitt um 50\% bessere Ergebnisse
-erzielt, während bei 512 Clustern eher rund 20\%-30\% Verbesserung erzielt werden. Die Maximal erzielten Werte für
+erzielt, während bei 512 Clustern eher rund 20\%-30\% Verbesserung erzielt werden. Die maximal erzielten Werte für
 \kkmpp{} zeigen, dass in fast allen Testläufen mit der $D^2$-Gewichtung eine zufällige Initialisierung stattgefunden hat, welche
 die spektrale Initialisierung verbessert. Wie bereits erwähnt gilt dies im arithmetischen Mittel jedoch nicht bei allen Instanzen.
 \absatz
@@ -949,7 +949,7 @@ wir uns der direkten Anwendung in der Bildsegmentierung widmen.
 \label{tbl:experiment-experiment-kkmpp-ncut-runtime-512}
 \end{table}
 
-Die gemessenen Werte für den Normalized Cut sind in etwa in der selben relativen Größenordnung wie schon bei der 
+Die gemessenen Werte für den Normalized Cut sind in etwa in derselben relativen Größenordnung wie schon bei der 
 Ratio Association. Qualitativ schneidet der Algorithmus \kkmpp{} nicht ganz so gut ab wie bei der Ratio Association, da
 er hier auf keiner Instanz die spektrale Initialisierung verbessert. Bei der Laufzeit sind die Unterschiede dafür aber ebenfalls
 etwas deutlicher ausgeprägt. Insbesondere die spektrale Initialisierung ist bei den Experimenten mit großer Clusteranzahl
@@ -1000,7 +1000,7 @@ Graclus-Webseite\footnote{\url{http://www.cs.utexas.edu/users/dml/Software/gracl
 \absatz
 Die Segmentierung einer einzelnen Grafik erfolgte nahezu unmittelbar. Um eine Vorstellung über die Leistungsfähigkeit des
 Algorithmus in der Bildsegmentierung zu ermöglichen, haben wir ihn auf die
-Extended Yale Face Database B (B+)\footnote{\url{http://vision.ucsd.edu/content/extended-yale-face-database-b-b}
+Extended Yale Face Database B (B+)\footnote{\url{http://vision.ucsd.edu/content/extended-yale-face-database-b-b}\\
 (Stand: 29.01.2015)}~\cite{GeorghiadesBK01} angewandt. Dabei handelt es sich um eine Sammlung von 16128 Portrait-Fotos von
 28 Menschen in 9 unterschiedlichen Positionen und 64 verschiedenen Belichtungsszenarien. Der gesamte Datensatz ist etwa
 2 GB groß. Der Datensatz konnte mit \kkmpp{} in rund 50 Minuten verarbeitet werden. Unter Einsatz von METIS und mit
