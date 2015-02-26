@@ -1,10 +1,11 @@
 \section{Experimentelle Evaluation}
 \label{section:experiments}
 
-In diesem Kapitel wollen wir empirisch evaluieren, wie performant unsere Algorithmen sind. In Kapitel~\ref{section:introduction}
-haben wir bereits erwähnt, dass die Clusteranalyse zahlreiche Anwendungen hat. Zudem müssen gegenwärtig immer häufiger
-Clusteringprobleme mit großen bis riesigen Eingaben gelöst werden, sodass effiziente Algorithmen zunehmend praktisch erforderlich
-werden.
+In diesem Kapitel wollen wir empirisch evaluieren, wie performant unsere Algorithmen sind.
+%In Kapitel~\ref{section:introduction}
+%haben wir bereits erwähnt, dass die Clusteranalyse zahlreiche Anwendungen hat. Zudem müssen gegenwärtig immer häufiger
+%Clusteringprobleme mit großen bis riesigen Eingaben gelöst werden, sodass effiziente Algorithmen zunehmend praktisch erforderlich
+%werden.
 \absatz
 Wir gehen folgendermaßen vor: wir beschreiben zunächst in Abschnitt~\ref{subsection:experiment-environment} die Umgebung, unter
 der wir unsere Experimente durchgeführt haben. Damit wollen wir die Reproduzierbarkeit unserer Ergebnisse garantieren und eine
@@ -132,11 +133,13 @@ von $\sigma$. Zudem wurde die maximale Anzahl an Iterationen auf 100 beschränkt
 \caption{Die Clusteringqualität von $k$-means und Kernel-$k$-means.}
 \label{fig:experiment-kernel-method-quality}
 \end{figure}
+Wir haben die prozentuale Güte ermittelt, indem wir jeweils die optimalen Kosten durch die Kosten der ermittelten Lösung
+dividiert haben.
 Abbildung~\ref{fig:experiment-kernel-method-quality} und Tabelle~\ref{tbl:experiment-kernel-method-quality} zeigen, dass
 die Kernel Methode bei geometrischem Clustering auf allen Instanzen zu einem besseren Clustering führt. Auf den schwer zu
 clusternden Instanzen BENSAID und DUNN beträgt die Verbesserung schon einige Prozentpunkte, während das Potenzial der Kernel
 Methode auf den Instanzen ECOLI und CIRCLE besonders gut zu erkennen ist. Dabei handelt es sich um Instanzen, auf denen die Cluster
-eine hyperellipsoide, beziehungsweise konzentrische Form haben. Auf diesen Instanzen clustert der $k$-means-Algorithmus wegen der
+eine hyperellipsoide beziehungsweise hyperspherische Form haben. Auf diesen Instanzen clustert der $k$-means-Algorithmus wegen der
 Hyperebenen-Beschränkung nur sehr schlecht, während mit der Kernel Methode auch nicht linear separierte Cluster möglich sind.
 Bemerkenswert ist auch, dass der Kernel-$k$-means-Algorithmus sogar auf Instanzen mit mehreren hundert Punkten noch die optimale
 Lösung berechnet, wie man an den Instanzen CIRCLE, BLE-2 und UE-4 erkennen kann.
@@ -180,7 +183,7 @@ Tabelle~\ref{tbl:experiment-kernel-method-runtime-datasets} gibt einen Überblic
 \end{table}
 In Abbildung~\ref{fig:experiment-kernel-method-runtime} und Tabelle~\ref{tbl:experiment-kernel-method-runtime} ist gut zu
 erkennen, dass der Overhead, der durch die Kernel Methode entsteht, bei den kleinen Instanzen (bis zu 100.000 Punkten)
-vernachlässigbar gering ist. Auf den größeren Instanzen sind Laufzeiteinbußen in der Größenordnung von rund 10\% zu verzeichnen.
+vernachlässigbar gering ist. Auf den größeren Instanzen sind Laufzeiteinbußen in der Größenordnung von rund 15\% zu verzeichnen.
 Diese sind nicht zu vernachlässigen. In Relation zur potenziellen Qualitätssteigerung aus den vorhergegangenen Experimenten
 betrachtet, handelt es sich jedoch um einen Trade-off, der sich in den allermeisten Fällen lohnt.
 
@@ -199,23 +202,23 @@ betrachtet, handelt es sich jedoch um einen Trade-off, der sich in den allermeis
 			\addplot[fill=blue!40!white,postaction={pattern=north east lines}]
 				coordinates {
 				(NYSK,0.9)
-				(CENSUS,70.4)
-				(BOW,133.3)
+				(CENSUS,750.4)
+				(BOW,1933.3)
 				(PLANTS,1.3)
 				(130-US,2.9)
 				(GFE,1.1)
-				(YOUTUBE,4.3)
+				(YOUTUBE,149.3)
 			};
 			\addlegendentry{$k$-means}
 			\addplot[fill=red!40!white,postaction={pattern=north west lines}]
 				coordinates {
 				(NYSK,0.9)
-				(CENSUS,79.2)
-				(BOW,148.1)
+				(CENSUS,897.2)
+				(BOW,2148.1)
 				(PLANTS,1.4)
 				(130-US,3.1)
 				(GFE,1.2)
-				(YOUTUBE,4.7)
+				(YOUTUBE,165.7)
 			};
 			\addlegendentry{Kernel-$k$-means}
 		\end{axis}
@@ -229,12 +232,12 @@ betrachtet, handelt es sich jedoch um einen Trade-off, der sich in den allermeis
 \begin{tabular}{@{}ccc@{}} \toprule
 	\textbf{Datensatz} & \textbf{$k$-means} & \textbf{Kernel-$k$-means} \\ \midrule
 	NYSK & 0.9 & 0.9 \\
-	CENSUS & 70.4 & 79.2 \\
-	BOW & 133.3 & 148.1 \\
+	CENSUS & 750.4 & 897.2 \\
+	BOW & 1933.3 & 2148.1 \\
 	PLANTS & 1.3 & 1.4 \\
 	130-US & 2.9 & 3.1 \\
 	GFE & 1.1 & 1.2 \\
-	YOUTUBE & 4.3 & 4.7 \\ \bottomrule
+	YOUTUBE & 149.3 & 165.7 \\ \bottomrule
 \end{tabular}
 \caption{Die Laufzeiten von $k$-means und Kernel-$k$-means in Sekunden.}
 \label{tbl:experiment-kernel-method-runtime}
@@ -272,8 +275,8 @@ Bevor wir unsere Experimente vorstellen, wollen wir kurz auf ein bislang offen g
 Abschnitt~\ref{subsection:wkkm-graphcut-graphclustering} eingehen. Wir hatten am Ende des Abschnitts angemerkt, dass
 wir für eine konkrete Implementierung des Algorithmus sicherstellen müssen, dass die verwendeten Kernelmatrizen positiv definit
 sind. In~\cite{DhillonGK07} wird detailliert diskutiert, dass für alle Graphpartitionierungs-Zielfunktionen gezeigt werden kann,
-dass eine einfache diagonale Verschiebung der ursprünglichen Kernelmatrix $K$ um einen Faktor $\sigma$ die Analogie über
-die Formulierungen als Spurmaximierungsprobleme intakt bleibt. Die Wahl von $\sigma$ muss dabei groß genug sein, damit der
+dass eine einfache diagonale Verschiebung der ursprünglichen Kernelmatrix $K$ um einen Wert $\sigma$ die Analogie über
+die Formulierungen als Spurmaximierungsprobleme intakt bleibt. Dabei muss $\sigma$ muss groß genug gewählt werden, damit der
 entsprechend verschobene Kernel $K'$ eine positiv definite Matrix ist. Für manche Eingaben kann es vorkommen, dass die
 Gewichtsmatrix $W$ so beschaffen ist, dass die Kernelmatrix auch ohne eine diagonale Verschiebung schon positiv definit ist.
 Die Experimente in~\cite{DhillonGK04,DhillonGK07} legen nahe, dass es in solchen Fällen sogar vorteilhaft sein kann, eine
@@ -951,17 +954,17 @@ wir uns der direkten Anwendung in der Bildsegmentierung widmen.
 
 Die gemessenen Werte für den Normalized Cut sind in etwa in derselben relativen Größenordnung wie schon bei der 
 Ratio Association. Qualitativ schneidet der Algorithmus \kkmpp{} nicht ganz so gut ab wie bei der Ratio Association, da
-er hier auf keiner Instanz die spektrale Initialisierung verbessert. Bei der Laufzeit sind die Unterschiede dafür aber ebenfalls
-etwas deutlicher ausgeprägt. Insbesondere die spektrale Initialisierung ist bei den Experimenten mit großer Clusteranzahl
+er hier auf keiner Instanz die spektrale Initialisierung verbessert. Bei der Laufzeit zeigen sich dafür aber besonders
+deutliche Unterschiede. Insbesondere die spektrale Initialisierung ist bei den Experimenten mit großer Clusteranzahl
 sehr deutlich abgeschlagen.
 \paragraph{Bildsegmentierung.} Wir wollen abschließend wie angekündigt den \kkmpp-Algorithmus zur Bildsegmentierung einsetzen.
 Dazu verwenden wir die Normalized Cut Zielfunktion und nutzen die MATLAB-Schnittstelle von Graclus, um die Cluster
-graphisch zu plotten. Dazu haben wir die Grafiken zunächst mit Code für "`Image Segmentation with Normalized Cuts"' von
+graphisch zu plotten. Wir haben zu diesem Zweck die Grafiken zunächst mit Code für "`Image Segmentation with Normalized Cuts"' von
 Jianbo Shi\footnote{\url{http://www.cis.upenn.edu/~jshi/software/} (Stand: 29.01.2015)} vorverarbeitet, wie in der
 Graclus-Dokumentation beschrieben. Für die Gesichtserkennung bietet sich eine Clusteranzahl von $k = 2$ an. Die beiden
 Cluster würden dann dem Gesicht und dem "`Rest"' des Bildes entsprechen. Die Experimente haben schnell gezeigt, dass sich für
 die meisten Portrait-Fotos bessere Ergebnisse erzielen lassen, wenn $k = 3$ gewählt wird. In diesem Szenario entspricht wieder
-ein Cluster dem Gesicht, ein weiteres Cluster dem Hintergrund beziehungsweise Rauschen, und ein drittes Cluster wird für
+ein Cluster dem Gesicht, ein weiteres Cluster den irrelevanten Teilen des Bildes, und ein drittes Cluster wird für
 den Hals beziehungsweise den Torso verwendet.
 
 \begin{figure}[t]
@@ -1005,9 +1008,11 @@ Extended Yale Face Database B (B+)\footnote{\url{http://vision.ucsd.edu/content/
 28 Menschen in 9 unterschiedlichen Positionen und 64 verschiedenen Belichtungsszenarien. Der gesamte Datensatz ist etwa
 2 GB groß. Der Datensatz konnte mit \kkmpp{} in rund 50 Minuten verarbeitet werden. Unter Einsatz von METIS und mit
 der spektralen Initialisierung dauerte die gesamte Verarbeitung rund 2 Stunden und 10 Minuten, also mehr als doppelt so lange.
-Die Korrektheit der Gesichtserkennung konnte wegen der Anzahl der Bilder nicht vollständig ermittelt werden. In einer
-Stichprobe von 160 Bildern wurden 153 Bilder korrekt segmentiert, das entspricht einem Anteil von 96\%. Bei der spektralen
-Methode wurden 157 Bilder korrekt segmentiert, was einem Anteil von 98\% entspricht.
+Die "`Korrektheit"' der Gesichtserkennung konnte wegen der Anzahl der Bilder nicht vollständig ermittelt werden, da diese nur
+durch menschlichen Augenschein verifiziert werden kann. Es ist nötig, bei einer Segmentierung zu prüfen, ob ein Cluster
+dem Gesicht auf dem Foto entspricht.
+In einer Stichprobe von 160 Bildern wurden 153 Bilder korrekt segmentiert, das entspricht einem Anteil von 96\%.
+Bei der spektralen Methode wurden 157 Bilder korrekt segmentiert, was einem Anteil von 98\% entspricht.
 
 \subsection{Kernmengenkonstruktion}
 \label{subsection:experiment-coreset}

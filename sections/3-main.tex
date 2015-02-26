@@ -495,3 +495,218 @@ Satz~\ref{thm:kkmpp-ologk-approx} folgt mit Lemma~\ref{lemma:kkmpp-first-center-
 
 In diesem Abschnitt wollen wir die Kernmengenkonstruktion von Feldman, Schmidt und Sohler~\cite{FeldmanSS13,Schmidt14} auf ihre
 Implementierbarkeit untersuchen und gegebenenfalls für eine praktische Umsetzung modifizieren.
+
+Bevor wir die Konstruktion erläutern, benötigen wir zwei Konzepte, die zum Verständnis nötig sind. Zunächst wird mit der
+Konstruktion streng genommen eine Kernmenge \emph{mit Verschiebung} $\Delta$ berechnet. Diese unterscheidet sich von einer
+starken Kernmenge lediglich in der zusätzlichen Addition der Konstante $\Delta$ in den Kosten der Kernmenge.
+Formal ist eine Kernmenge mit Verschiebung folgendermaßen definiert.
+
+\begin{definition}[Kernmenge mit Verschiebung~\citep{FeldmanSS13}]
+\label{def:coreset-with-offset}
+	Sei $P \subset \Rd$ eine endliche Punktmenge und sei $w_1 : P \rightarrow \mathbb{R}$ eine Gewichtsfunktion, die jedem
+	Punkt in $P$ ein Gewicht zuordnet. Sei weiterhin $\epsilon \in (0,1)$ und $\Delta \in \mathbb{R}$.
+	Eine endliche Menge $P \subset \Rd$ und eine
+	Gewichtsfunktion $w_2 : S \rightarrow \mathbb{R}$ bilden eine Kernmenge mit Verschiebung $\Delta$ für $P$, wenn
+	für alle Mengen von $k$ Zentren $C \subset P$ gilt:
+	\[ (1-\epsilon) \sum_{x \in P} w_1(x) \min_{c \in C} \EuclidSquared{x}{c} 
+		\leq \sum_{y \in S} w_2(y) \min_{c \in C} \EuclidSquared{y}{c} + \Delta
+		\leq  (1+\epsilon) \sum_{x \in P} w_1(x) \min_{c \in C} \EuclidSquared{x}{c} \]
+\end{definition}
+
+Weiterhin liegt der Kernmengenkonstruktion die bereits erwähnt Erkenntnis zu Grunde, dass die optimale Lösung eines
+$1$-means-Problems für eine Punktmenge $P$ der geometrische Zentroid $z(P)$ ist. Mit dem folgenden Lemma lassen sich die
+$1$-means-Kosten einer Punktmenge $P$ mit einem gegebenen Zentrum $c$ aufteilen in die optimalen $1$-means-Kosten von $P$
+plus das $\left|P\right|$-fache der Distanz von $c$ zum optimalen Zentrum, also dem Zentroiden.
+
+\begin{lemma}
+\label{lemma:1-means-cost-parts}
+	Sei $P \subset \Rd$ eine endliche Punktmenge mit dem geometrischen Zentroiden $z(P)$. Für jeden Punkt $q \in \Rd$ gilt:
+	\[ \sum_{x \in P} \EuclidSquared{x}{q} = \sum_{x \in P} \EuclidSquared{x}{z(P)} + \left|P\right| \cdot \EuclidSquared{q}{z(P)}
+	 \]
+	 Wenn $P$ eine gewichtete Punktmenge mit Gewichtsfunktion $w : P \rightarrow \mathbb{R}^+$ ist, dann gilt:
+	 \[ \sum_{x \in P} w(x) \cdot \EuclidSquared{x}{q} = \sum_{x \in P} w(x) \cdot \EuclidSquared{x}{z_w(P)} +
+	 	W \cdot \EuclidSquared{q}{z_w(P)} \]
+	 Dabei ist $W = \sum_{x \in P} w(x)$ und $z_w(P) = \frac{1}{W} \sum_{x \in P} w(x) \cdot x$.
+\end{lemma}
+
+Die Kernmengenkonstruktion versucht auszunutzen, dass der Anteil der optimalen $1$-means-Kosten konstant in allen möglichen
+Clusterings ist. Die Berechnung des zweiten Summanden gestaltet sich als schwierig. Die Konstruktion ist der Versuch, diese
+Erkenntnisse auf das $k$-means-Problem zu verallgemeinern. Gegeben ein Clustering $C$, lässt sich die Punktmenge $P$ in
+$k$ Teile partitionieren, sodass der Zentroid und die $1$-means-Kosten jeder Partition ausreichen, um die Gesamtkosten von $C$
+zu berechnen. $C$ ist jedoch zuvor nicht bekannt.
+
+Der Algorithmus partitioniert die ursprüngliche Punktmenge $P$ rekursiv in Teilmengen, bis es für eine Teilmenge $P'$ ausreicht,
+eine $1$-means-Kernmenge zu verwenden, um die $k$-means-Kosten von $P'$ zu approximieren. Sobald dies für alle Teilmengen
+möglich ist, wird nicht länger partitioniert und die Teilmengen werden durch ihre Zentroiden ersetzt. Die Zentroiden bilden
+dann die Punkte der Kernmenge, deren Gewicht die Kardinalität der jeweiligen Teilmenge ist. Wir unterscheiden bei den
+Teilmengen zwischen \emph{$k$-unstrukturierten} Teilmengen und \emph{$k$-strukturierten} Teilmengen. Eine $k$-unstrukturierte
+Teilmenge muss nicht weiter partitioniert werden. Für sie gilt, dass ihre $1$-means-Kosten höchstens um einen Faktor
+$(1+\epsilon')$ größer sind als die $k$-means-Kosten. Die $k$-strukturierten Teilmengen werden jeweils solange weiter
+partitioniert, bis nur noch $k$-unstrukturierte Teilmengen übrig sind. In der ursprünglichen Version des Algorithmus werden
+die $k$-strukturierten Teilmengen anhand der optimalen $k$-means-Lösung partitioniert. Alternativ wird die rekursive
+Partitionierung abgebrochen, wenn eine maximale Rekursionstiefe $\nu$ erreicht ist, um sicherzustellen, dass nicht zu lange
+partitioniert wird.
+
+\begin{algorithm}
+\caption{\texttt{Coreset}~\cite{FeldmanSS13,Schmidt14}}
+\label{algo:fss-coreset}
+	% Optionen
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Eingabe:}
+	\SetKwInOut{Output}{Ausgabe:}
+	
+	% Input/Output
+	\Input{$P \subseteq \Rd, k \in \mathbb{N}^{+}$, $\epsilon$}
+	\Output{Kernmenge $S$ mit Gewichten $w$ und Verschiebung $\Delta$}
+	\BlankLine
+	
+	% Algo
+	$\epsilon' \leftarrow \epsilon^2/50$\;
+	$S \leftarrow \emptyset$\;
+	$\Delta \leftarrow 0$\;
+	$M \leftarrow $ \texttt{Partition}($P,k,0,\lceil \log_{1+\epsilon'} 1/\epsilon' \rceil, \epsilon'$)\;
+	\For{jede Teilmenge $P' \in M$}{
+		$S \leftarrow S \cup z(P')$\;
+		$w(z(P')) \leftarrow \left|P'\right|$\;
+		$\Delta \leftarrow \Delta + \sum_{x \in P'} \EuclidSquared{x}{z(P')}$\;
+	}
+	\Return{$S, w, \Delta$}
+\end{algorithm}
+Algorithmus~\ref{algo:fss-coreset} ist eine Pseudocode-Beschreibung der Kernmengenkonstruktion. Die Punkte der Kernmenge
+werden in $S$ gespeichert, die Gewichtung in $w$ und die Verschiebung in $\Delta$. Wie zuvor beschrieben ruft \texttt{Coreset}
+die rekursive Partitionierungs-Routine \texttt{Partition} auf und ersetzt am Ende der Partitionierung die Teilmengen durch
+ihren Zentroiden, der dann als Punkt in die Kernmenge aufgenommen wird.
+\absatz
+Die Partitionierung nimmt der Algorithmus~\ref{algo:fss-partition} \texttt{Partition} vor. In der Menge $M$ speichert diese
+alle berechneten Teilmengen. Die Zeilen 1-3 berechnen dabei eine neue Partitionierung, was in der ursprünglichen Variante
+des Algorithmus anhand einer optimalen $k$-means-Lösung erfolgt. Die Unterscheidung nach $k$-strukturierten und
+$k$-unstrukturierten Teilmengen erfolgt in Zeile 4. Der rekursive Aufruf der Partitionierung erfolgt in den Zeilen 7-8.
+
+\begin{algorithm}
+\caption{\texttt{Partition}~\cite{FeldmanSS13,Schmidt14}}
+\label{algo:fss-partition}
+	% Optionen
+	\DontPrintSemicolon
+	\SetKw{KwOr}{\textbf{or}}
+	\SetKwInOut{Input}{Eingabe:}
+	\SetKwInOut{Output}{Ausgabe:}
+	
+	% Input/Output
+	\Input{$P \subseteq \Rd, k \in \mathbb{N}^{+}$, $t, \nu, \epsilon'$}
+	\Output{Partitionierung $M$}
+	\BlankLine
+	
+	% Algo
+	Berechne optimale Menge von Zentren $C^* = \{c_1, \dots, c_k\}$ für $P$\;
+	Sei $P_1, \dots, P_k$ die durch $C^*$ induzierte Partitionierung von $P$\;
+	Sei $z(P)$ der Zentroid von $P$\;
+	\If{$t=\nu$ \KwOr $\sum_{x \in P} \EuclidSquared{x}{z(P)} \leq (1+\epsilon') \sum_{i=1}^{k} \sum_{y \in P_i} \EuclidSquared{y}{z(P_i)} $}{
+		$M \leftarrow M \cup P$\;	
+	}\Else{
+		\For{$i \leftarrow 1$ \KwTo $k$}{
+			$M \leftarrow M \cup $ \texttt{Partition}($P_i,k,t+1,\nu,\epsilon'$)\;
+		}
+	}
+	\Return{$M$}
+\end{algorithm}
+In~\cite{Schmidt14} wird bereits thematisiert, dass die wiederholte Partitionierung anhand einer optimalen $k$-means-Lösung
+für die Praxis zu aufwändig wäre und zu unpraktikablen Laufzeiten führen würde. Schmidt schlägt daher vor, eine
+$\alpha$-approximative Lösung zu verwenden. Dementsprechend wird dann in Zeile 1 von Algorithmus~\ref{algo:fss-partition}
+eine Lösung $C'$ berechnet, deren Kosten höchstens um einen Faktor $\alpha$ größer sind, als die Kosten einer optimalen
+$k$-means-Lösung für $P$. Um zu entscheiden, ob die Teilmengen $k$-strukturiert sind, wird dann geprüft, ob
+\[ \sum_{x \in P'} \EuclidSquared{x}{z(P')} \leq ((1+\epsilon')/\alpha) \sum_{i=1}^{k} \sum_{y \in P_i} \EuclidSquared{y}{z(P_i)} \]
+gilt. Die Analyse in~\cite{Schmidt14} zeigt, dass auch bei Verwendung der Approximation noch Garantien über Qualität und
+Laufzeit bewiesen werden können. Insbesondere berechnet der entsprechend modifizierte Algorithmus weiterhin eine
+$(1+\epsilon)$-Kernmenge mit Verschiebung $\Delta$.
+\absatz
+Wir wollen noch einen Schritt weiter gehen und die Partitionierung heuristisch vornehmen. Die Schwierigkeit besteht weiterhin
+darin, eine heuristische Lösung für das $k$-means-Problem im Partitionierungsschritt zu berechnen, die nur geringen Aufwand
+hat und dennoch in vielen Fällen Partitionierungen mit handhabbaren Kosten erzeugt. Wie schon zuvor sehen wir von einer
+vollkommen zufälligen Auswahl der Zentren ab und setzen stattdessen die $D^2$-Gewichtung von \kmpp{} ein. Dabei gehen
+wir folgendermaßen vor. Zunächst wählen wir initial $c \cdot k$ Zentren gemäß der $D^2$-Gewichtung aus der gesamten
+Punktmenge. Diese induzieren eine initiale Partitionierung $P_1, \dots, P_{ck}$, die wir bestimmen, indem wir jeden
+Punkt dem nächstgelegenen Zentrum zuweisen. Anschließend führen wir rekursiv die folgende modifizierte, weitere Partitionierung
+durch.
+Bis zu einer maximalen Tiefe $T$ (entspricht $\nu$ aus der ursprünglichen Konstruktion) prüfen wir für jede
+Teilmenge $P'$, ob eine Partitionierung in weitere $d \cdot k$ Teilmengen um einen Faktor $f$ billiger ist, als die
+$1$-means-Kosten mit dem Zentroiden $z(P')$. Die $d \cdot k$ Teilmengen in der rekursiven Partitionierung wählen wir dabei
+wieder gemäß der $D^2$-Gewichtung in der jeweiligen Teilmenge aus. Wenn eine weitere Partitionierung anhand der $d \cdot k$
+Zentren vorzuziehen ist, berechnen wir die neuen Teilmengen wieder über Zuweisung der Punkte zu den nächstgelegenen Zentren.
+
+\begin{algorithm}
+\caption{\texttt{Coreset2}}
+\label{algo:coreset}
+	% Optionen
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Eingabe:}
+	\SetKwInOut{Output}{Ausgabe:}
+	
+	% Input/Output
+	\Input{$P \subseteq \Rd, k \in \mathbb{N}^{+}$, $c, d, f, T$}
+	\Output{Kernmenge $S$ mit Gewichten $w$ und Verschiebung $\Delta$}
+	\BlankLine
+	
+	% Algo
+	$l \leftarrow c \cdot k$\;
+	$S \leftarrow \emptyset$\;
+	$M \leftarrow \emptyset$\;
+	$\Delta \leftarrow 0$\;
+	Wähle $l$ Zentren $C^0 = \{c_1, \dots, c_l\}$ gemäß $D^2$-Gewichtung aus $P$\;
+	Sei $P_1, \dots, P_l$ die durch $C^0$ induzierte Partitionierung von $P$\;
+	\For{$i \leftarrow 1$ \KwTo $l$}{
+		$M_i \leftarrow $ \texttt{Partition2}($P_i,k,d,f,1,T$)\;
+		$M \leftarrow M \cup M_i$\;
+	}
+	\For{jede Teilmenge $P' \in M$}{
+		$S \leftarrow S \cup z(P')$\;
+		$w(z(P')) \leftarrow \left|P'\right|$\;
+		$\Delta \leftarrow \Delta + \sum_{x \in P'} \EuclidSquared{x}{z(P')}$\;
+	}
+	\Return{$S, w, \Delta$}
+\end{algorithm}
+Sobald bei allen Teilmengen die Partitionierung abgebrochen ist, ersetzen wir wieder jede Teilmenge durch ihren Zentroiden. Die
+Vereinigung aller Zentroiden entspricht dann wieder den Punkten der Kernmenge. Die Gewichtung $w$ und die Verschiebung $\Delta$
+werden ebenfalls analog berechnet.
+\absatz
+Algorithmus~\ref{algo:coreset} ist die Pseudocode-Beschreibung unserer Variante der Kernmengenkonstruktion. In den Zeilen
+5-6 wird die initiale Partitionierung gemäß $D^2$-Gewichtung vorgenommen. Anschließend führen wir in den Zeilen 7-9 die
+rekursive Partitionierung für jede der Teilmengen solange durch, bis entweder die maximale Tiefe erreicht wurde, oder die
+Abbruchbedingung über die Kosten einer weiteren Partitionierung erreicht ist. Wir vereinigen alle berechneten Teilmenge zur
+Menge $M$. In den Zeilen 10-14 gehen wir analog zur ursprünglichen Konstruktion vor. Alle Teilmengen werden wieder durch ihren
+Zentroiden ersetzt.
+
+\begin{algorithm}
+\caption{\texttt{Partition2}}
+\label{algo:partition}
+	% Optionen
+	\DontPrintSemicolon
+	\SetKw{KwOr}{\textbf{or}}
+	\SetKwInOut{Input}{Eingabe:}
+	\SetKwInOut{Output}{Ausgabe:}
+	
+	% Input/Output
+	\Input{$P \subseteq \Rd, k \in \mathbb{N}^{+}, d, f, t, T$}
+	\Output{Partitionierung $M$}
+	\BlankLine
+	
+	% Algo
+	$m \leftarrow d \cdot k$\;
+	$M \leftarrow \emptyset$\;
+	Wähle $m$ Zentren $C^t = \{c_1, \dots, c_m\}$ gemäß $D^2$-Gewichtung aus $P$\;
+	Sei $P_1, \dots, P_m$ die durch $C^t$ induzierte Partitionierung von $P$\;
+	Sei $z(P)$ der Zentroid von $P$\;
+	\If{$t=T$ \KwOr $\sum_{x \in P} \EuclidSquared{x}{z(P)} \leq \frac{1}{f} \sum_{i=1}^{m} \sum_{y \in P_i} \EuclidSquared{y}{z(P_i)} $}{
+		$M \leftarrow M \cup P$\;	
+	}\Else{
+		\For{$i \leftarrow 1$ \KwTo $m$}{
+			$M \leftarrow M \cup $ \texttt{Partition2}($P_i,k,d,f,t+1,T$)\;
+		}
+	}
+	\Return{$M$}
+\end{algorithm}
+Algorithmus~\ref{algo:partition} ist unsere Variante der Partitionierung. In den Zeilen 3-5 wählen wir $d \cdot k$ Zentren
+gemäß $D^2$-Gewichtung und prüfen in Zeile 6 die modifizierte Abbruchbedingung. Ansonsten ist die Partitionierung unverändert.
+\absatz
+Wir können bei unserer Variante der Kernmengenkonstruktion keine Garantien für die Laufzeit oder die Qualität der berechneten
+Kernmenge mehr geben. Es ist daher unerlässlich, die Konstruktion empirisch auszuwerten. Dies wollen wir in
+Abschnitt~\ref{subsection:experiment-coreset} des nächsten Kapitels tun.
