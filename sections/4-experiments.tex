@@ -1043,9 +1043,10 @@ UCI Machine Learning Repository.
 angestrebt. Wir orientieren uns in unseren Experimenten an~\cite{AckermannMRSLS12,FichtenbergerGSSS13}. In beiden Papieren
 wurden in der experimentellen Auswertungen Kernmengen der Größe $200k$ konstruiert. Für die beiden Datensätze Spambase und
 NYSK würden die Kernmengen bei einer Größe von $200k$ mehr Punkte enthalten als die Ursprungsmenge. Bei diesen beiden Datensätzen
-haben wir daher Kernmengen der Größe $20k$ berechnet. Für die Evaluation unserer Konstruktion
-ergibt sich damit die Herausforderung, die diversen Parameter so zu wählen, dass die berechnete Kernmenge in etwa diese
-Größe annimmt. Bei unserer Vorgehensweise können wir dies auf mehrere Wege erreichen. Es ist beispielsweise möglich, schon bei
+haben wir daher Kernmengen der Größe $20k$ berechnet, um mehr Testwerte für einen umfassenderen Vergleich zu generieren.
+Für die Evaluation unserer Konstruktion
+ergibt sich die Herausforderung, die diversen Parameter so zu wählen, dass die berechnete Kernmenge in etwa diese
+Größe annimmt. Wir können dies auf mehreren Wegen erreichen. Es ist beispielsweise möglich, schon bei
 der initialen Partitionierung ein großes $c$ zu wählen (im Extremfall sogar schon hier $c=200$) und durch die maximale Tiefe
 oder den Kostenfaktor $f$ dafür zu sorgen, dass nur zu bis zu einer geringen Tiefe partitioniert wird (oder im Extremfall
 gar nicht weiter partitioniert wird). Alternativ können wir entsprechend auch ein kleines $c$ wählen und dafür größere
@@ -1093,9 +1094,9 @@ Dies deuten wir mit der Notation "`/"' an.
 			 					& 30 & $1.34 \cdot 10^7$ & $4.98 \cdot 10^8$ & $4.96 \cdot 10^{11}$ & $1.54 \cdot 10^{11}$ \\
 		 						& 50 & $6.68 \cdot 10^6$ & $7.01 \cdot 10^8$ & $1.29 \cdot 10^{11}$ & $1.13 \cdot 10^{11}$ \\
 	\midrule
-	\CsTwo-c-200-d-/-f-/-T-1	& 10 & - 				& - 				& $1.63 \cdot 10^{13}$ & $3.35 \cdot 10^{11}$ \\
-			 					& 30 & - 				& - 				& $4.82 \cdot 10^{11}$ & $1.51 \cdot 10^{11}$ \\
-		 						& 50 & - 				& - 				& $1.23 \cdot 10^{11}$ & $1.09 \cdot 10^{11}$ \\
+	\CsTwo-c-200-d-/-f-/-T-1	& 10 & $8.71 \cdot 10^7$ & $6.07 \cdot 10^8$ & $1.63 \cdot 10^{13}$ & $3.35 \cdot 10^{11}$ \\
+			 					& 30 & - 				& $4.96 \cdot 10^8$ & $4.82 \cdot 10^{11}$ & $1.51 \cdot 10^{11}$ \\
+		 						& 50 & - 				& $7.00 \cdot 10^8$	& $1.23 \cdot 10^{11}$ & $1.09 \cdot 10^{11}$ \\
 	\midrule
 	\CsTwo-c-1-d-50-f-1.3-T-3	& 10 & $8.33 \cdot 10^7$ & $5.92 \cdot 10^8$ & $1.59 \cdot 10^{13}$ & $3.31 \cdot 10^{11}$ \\
 			 					& 30 & $1.30 \cdot 10^7$ & $4.88 \cdot 10^8$ & $4.75 \cdot 10^{11}$ & $1.48 \cdot 10^{11}$ \\
@@ -1135,9 +1136,9 @@ Dies deuten wir mit der Notation "`/"' an.
 			 					& 30 & $5.7$ 			& $10.2$ 			& $897.3$ 				& $2024.7$ \\
 		 						& 50 & $13.3$ 			& $28.3$ 			& $644.0$ 				& $6922.9$ \\
 	\midrule
-	\CsTwo-c-200-d-/-f-/-T-1	& 10 & - 				& - 				& $22.6$ 				& $175.3$ \\
-			 					& 30 & - 				& - 				& $854.2$ 				& $1889.1$ \\
-		 						& 50 & - 				& - 				& $608.1$ 				& $6122.3$ \\
+	\CsTwo-c-200-d-/-f-/-T-1	& 10 & $1.2$			& $2.9$				& $22.6$ 				& $175.3$ \\
+			 					& 30 & - 				& $10.0$			& $854.2$ 				& $1889.1$ \\
+		 						& 50 & - 				& $27.8$			& $608.1$ 				& $6122.3$ \\
 	\midrule
 	\CsTwo-c-1-d-50-f-1.3-T-3	& 10 & $1.1$ 			& $2.5$ 			& $21.1$ 				& $155.3$ \\
 			 					& 30 & $5.5$ 			& $9.1$ 			& $802.3$ 				& $1772.4$ \\
