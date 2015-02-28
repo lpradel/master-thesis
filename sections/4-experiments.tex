@@ -1027,9 +1027,10 @@ Eingabepunktmenge $P$, wendet auf $S$ einen $k$-means-Algorithmus an und erhält
 $C^1 = \{c_1^1, \dots, c_k^1\}$, für die sich $k$-means-Kosten $c^1$ in Bezug auf die Eingabepunktmenge $P$ ergeben.
 Andererseits wendet man denselben $k$-means-Algorithmus direkt auf ganz $P$ an und erhält ebenfalls eine Zentrenmenge
 $C^2 = \{c_1^2, \dots, c_k^2\}$, für die sich $k$-means-Kosten $c^2$ für $P$ ergeben. Die Kosten $c^1$ und $c^2$ lassen sich
-vergleichen. Auf diese Weise wollen wir in diesem Abschnitt vorgehen. Dazu haben wir auf die Ausgaben der Kernmengen-Algorithmen
-den \kmpp-Algorithmus insgesamt zehn mal angewandt und die durchschnittlichen Kosten für den Vergleich
-genommen.
+vergleichen. Auf diese Weise wollen wir in diesem Abschnitt vorgehen. Dazu haben wir auf die Ausgaben der Kernmengen-Algorithmen,
+die wir jeweils zehn mal ausgeführt haben,
+den \kmpp-Algorithmus je zehn mal angewandt und die durchschnittlichen Kosten für den Vergleich
+genommen. Insgesamt wurden also 100 Ausführungen gemessen.
 \paragraph{Algorithmen.} Für einen Vergleich ziehen wir zunächst die Kernmengenkonstruktionen BICO~\cite{FichtenbergerGSSS13}
 und \Skmpp~\cite{AckermannMRSLS12} heran. Beide Algorithmen sind state-of-the-art Datenstromalgorithmen zur Berechnung von
 Kernmengen. Außerdem wollen wir auch hier wieder die Dlib-Implementierung von \kmpp{} zum Vergleich einsetzen, da wir in
@@ -1070,9 +1071,10 @@ Anzahl von Teilmengen erzielen.
 Dabei orientieren wir uns an den Experimenten aus~\cite{AckermannMRSLS12,FichtenbergerGSSS13}. Wir führen die Algorithmen
 jeweils mit $k \in \{ 10, 30, 50 \}$ aus.
 
-Wir geben wie bereits erwähnt bei den Ergebnistabellen immer den durchschnittlichen Wert für Kosten und Laufzeit von zehn
-Ausführungen des \kmpp-Algorithmus an. Bei den Kernmengen-Algorithmen bezieht sich dieser auf die Ausführung von \kmpp{} unter
-Eingabe der Kernmenge und bei \kmpp{} selbst auf die Ausführung auf der gesamten Punktmenge $P$. Für \CsTwo{} geben wir die
+Wir geben bei den Ergebnistabellen immer den durchschnittlichen Wert für Kosten und Laufzeit von zehn
+Ausführungen des \kmpp-Algorithmus für je zehn Ausführungen der Kernmengen-Algorithmen an. Bei den Kernmengen-Algorithmen
+beziehen sich diese Werte auf die Ausführung von \kmpp{} unter
+Eingabe der Kernmenge und bei \kmpp{} selbst auf die 100 Ausführungen auf der gesamten Punktmenge $P$. Für \CsTwo{} geben wir die
 jeweiligen Parameter im Namen des Algorithmus an. Beispielsweise notieren wir für $c = 200$, $d=/$, $f=/$ und $T=1$:
 \CsTwo-c-200-d-/-f-/-T-1. Die Wahl von $d$ und $f$ ist hier irrelevant, da wegen $T$ nur initial partitioniert wird.
 Dies deuten wir mit der Notation "`/"' an.
@@ -1172,4 +1174,5 @@ die Kosten als auch für die Laufzeit am besten geeignet zu sein.
 Es ist abzusehen, dass wir mit unserer Konstruktion keine
 Laufzeiten in der Größenordnung der Datenstromalgorithmen erzielen können. Wir wollen stattdessen abschließend versuchen,
 auch für die Kernmengenkonstruktion die Kernel Methode für alle Distanzberechnungen anzuwenden, um die erzielten Kosten zu
-optimieren. Dazu setzen wir wieder einen Gauss-/RBF-Kernel mit $\sigma = 0.1$ ein.
+optimieren. Dazu setzen wir wieder einen Gauss-/RBF-Kernel mit $\sigma = 0.1$ ein. Für die Kernelvariante von \CsTwo{} notieren
+wir \KCsTwo.
