@@ -1115,6 +1115,60 @@ Dies deuten wir mit der Notation "`/"' an.
 	\bottomrule
 \end{tabular}
 \caption{Durchschnittliche Kosten der Algorithmen für $k \in \{ 10, 30, 50 \}$ (je kleiner, desto besser).}
-\label{tbl:experiment-experiment-coresets-costs}
+\label{tbl:experiment-coresets-costs}
 \end{table}
-
+\newpage
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}cccccc@{}} \toprule
+	\textbf{Algorithmus} & $k$ & \multicolumn{4}{c}{\textbf{Datensatz}} \\
+	\cmidrule(r){3-6} & 		& Spambase 				& NYSK 				& Intrusion 			& Covertype \\ \toprule
+	\Skmpp 						& 10 & $1.4$ 			& $2.7$ 			& $28.7$ 				& $115.2$ \\
+		 						& 30 & $6.3$ 			& $9.3$ 			& $45.3$ 				& $170.5$ \\
+		 						& 50 & $18.2$ 			& $25.2$ 			& $100.1$ 				& $290.2$ \\
+	\midrule
+	BICO 						& 10 & $0.1$ 			& $0.8$ 			& $7.6$ 				& $13.7$ \\
+			 					& 30 & $0.1$ 			& $0.9$ 			& $9.8$ 				& $16.3$ \\
+		 						& 50 & $0.1$ 			& $1.0$ 			& $12.1$ 				& $19.2$ \\
+	\midrule
+	\kmpp 						& 10 & $1.2$ 			& $2.9$ 			& $23.8$ 				& $181.2$ \\
+			 					& 30 & $5.7$ 			& $10.2$ 			& $897.3$ 				& $2024.7$ \\
+		 						& 50 & $13.3$ 			& $28.3$ 			& $644.0$ 				& $6922.9$ \\
+	\midrule
+	\CsTwo-c-200-d-/-f-/-T-1	& 10 & - 				& - 				& $22.6$ 				& $175.3$ \\
+			 					& 30 & - 				& - 				& $854.2$ 				& $1889.1$ \\
+		 						& 50 & - 				& - 				& $608.1$ 				& $6122.3$ \\
+	\midrule
+	\CsTwo-c-1-d-50-f-1.3-T-3	& 10 & $1.1$ 			& $2.5$ 			& $21.1$ 				& $155.3$ \\
+			 					& 30 & $5.5$ 			& $9.1$ 			& $802.3$ 				& $1772.4$ \\
+		 						& 50 & $12.9$ 			& $26.5$ 			& $577.2$ 				& $5532.1$ \\
+	\midrule
+	\CsTwo-c-5-d-25-f-1.2-T-15	& 10 & $1.0$ 			& $2.3$ 			& $19.9$ 				& $149.2$ \\
+			 					& 30 & $5.2$ 			& $8.3$ 			& $763.7$ 				& $1566.3$ \\
+		 						& 50 & $11.8$ 			& $23.2$ 			& $522.3$ 				& $5138.4$ \\
+	\midrule
+	\CsTwo-c-50-d-10-f-1.4-T-10	& 10 & $0.9$ 			& $1.8$ 			& $18.1$ 				& $121.3$ \\
+			 					& 30 & $4.3$ 			& $7.6$ 			& $653.2$ 				& $1132.5$ \\
+		 						& 50 & $9.9$ 			& $20.4$ 			& $434.1$ 				& $4237.2$ \\
+	\midrule
+	\CsTwo-c-100-d-5-f-1.1-T-4	& 10 & $1.0$ 			& $8.5$ 			& $20.6$ 				& $162.4$ \\
+			 					& 30 & $5.1$ 			& $8.0$				& $788.1$ 				& $1802.4$ \\
+		 						& 50 & - 				& $24.7$ 			& $554.3$ 				& $5322.1$ \\
+	\bottomrule
+\end{tabular}
+\caption{Durchschnittliche Laufzeiten der Algorithmen für $k \in \{ 10, 30, 50 \}$ in Sekunden.}
+\label{tbl:experiment-coresets-runtime}
+\end{table}
+Tabelle~\ref{tbl:experiment-coresets-costs} ist zu entnehmen, dass unsere Konstruktion mit allen Parametrisierungen bessere
+$k$-means-Kosten erzielt als \kmpp. In der Spitze sind Verbesserungen von bis zu 10\% zu verzeichnen. Andererseits erzielen
+die Datenstromalgorithmen \Skmpp und BICO durchweg noch geringere Kosten (in der Spitze bis rund 20\% weniger im Vergleich
+zu \kmpp). Bei den Laufzeiten in Tabelle~\ref{tbl:experiment-coresets-runtime} ist deutlich zu erkennen, dass unsere
+Kernmengenkonstruktion, die intensiven Gebrauch der $D^2$-Gewichtung macht, um einige Größenordnungen langsamer ist als die
+state-of-the-art Datenstromalgorithmen. Die Läufe mit den geringsten Kosten und Laufzeiten sind jeweils bei $c = 50$ und
+$d = 10$ und verbessern die Laufzeit von \kmpp{} um immerhin 40\%. Diese Wahl der Parameter scheint empirisch sowohl für
+die Kosten als auch für die Laufzeit am besten geeignet zu sein.
+\absatz
+Es ist abzusehen, dass wir mit unserer Konstruktion keine
+Laufzeiten in der Größenordnung der Datenstromalgorithmen erzielen können. Wir wollen stattdessen abschließend versuchen,
+auch für die Kernmengenkonstruktion die Kernel Methode für alle Distanzberechnungen anzuwenden, um die erzielten Kosten zu
+optimieren. Dazu setzen wir wieder einen Gauss-/RBF-Kernel mit $\sigma = 0.1$ ein.
