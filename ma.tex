@@ -64,6 +64,7 @@
 \usetikzlibrary{positioning}
 \usepackage{pgfplots} % Plots
 \pgfplotsset{compat=newest}
+\usepackage{pdfpages}
 
 % Tabellen
 \usepackage{booktabs}
@@ -164,7 +165,8 @@ Hier kommt eine Danksagung hin!
 	\emptypagenumbered
 	%\markboth{}{ERKLÄRUNG}
 	\addcontentsline{toc}{section}{Erklärung}
-	\input{sections/6-statement}
+	%\input{sections/6-statement}
+	\includepdf[pages={1}]{appendices/erklaerung.pdf}
 }
 
 \emptypagenumbered
