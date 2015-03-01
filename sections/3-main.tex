@@ -52,7 +52,7 @@ Skalarprodukte $\innerproduct{\phi(\vect{p}_i)}{\phi(\vect{p}_j)}$ und speichern
 $n \times n$-Kernelmatrix $K$ mit $K_{i,j} = \kappa(\vect{p}_i, \vect{p}_j) = \innerproduct{\phi(\vect{p}_i)}{\phi(\vect{p}_j)}$.
 Die Distanzberechnung von einem Punkt zu seinem Clusterzentrum
 können wir ebenfalls analog zu~\ref{formula:kernel-kmeans} mit Hilfe der Kernelmatrix umformulieren. Sie unterscheidet sich von
-dieser nur darin, dass die Punkte gewichtet sind:
+dieser nur darin, dass die Punkte gewichtet sind. Mit $\left| S_i \right| = \sum_{\vect{p}_j \in S_i} w(\vect{p}_j)$ gilt:
 \begin{align}
 \label{formula:wkkm}
 	\EuclidSquared{\phi(\vect{p}_j)}{\vect{c}_i} =
@@ -312,14 +312,16 @@ Wir zeigen nun, dass auch \kkmpp{} eine $\BigO{\log k}$-Approximation für das $
 wir dabei analog zu dem Papier von Arthur und Vassilvitskii~\cite{ArthurV07} vor, da sich durch die Kernel Methode keine
 wesentlichen Änderungen ergeben. Für ein Clustering $C = \{ C_1, \dots, C_k \}$ mit den jeweiligen Clusterzentren
 $c_1, \dots, c_k$ bezeichnen wir mit dem \emph{Potenzial} $\theta$ den Zielfunktionswert des Clusterings bezüglich der
-$k$-means-Zielfunktion, das heißt
-\[ \theta(C) = \sum_{i=1}^k \theta(C_i) = \sum_{i=1}^k \sum_{p \in C_i} \EuclidSquared{p}{c_i} \]
+Kernel-$k$-means-Zielfunktion, das heißt
+\[ \theta(C) = \sum_{i=1}^k \theta(C_i) = \sum_{i=1}^k \sum_{p \in C_i} \EuclidSquared{\phi(p)}{\phi(c_i)} \]
 Das Potenzial des optimalen Clusterings $C_\textrm{OPT}$ notieren wir mit $\optpot$. Bevor wir mit der Analyse beginnen,
 benötigen wir folgendes Lemma, das einen beliebigen Punkt mit einer Punktmenge und ihrem Zentroiden in Relation setzt:
 
 \begin{lemma}
 \label{lemma:point-centroid}
-	Sei $S$ eine Punktmenge mit dem geometrischen Zentroiden $z(S)$. Weiterhin sei $\vect{q}$ ein beliebiger Punkt. Es gilt:
+	Sei $V$ ein euklidischer Vektorraum und $S \subset V$ eine Vektormenge mit dem geometrischen
+	Zentroiden $z(S) = \frac{1}{\left|S\right|} \sum_{\vect{x} \in P} \vect{x}$.
+	Weiterhin sei $\vect{q} \in V$ ein beliebiger Vektor aus $V$. Es gilt:
 	\[ \sum_{\vect{x} \in S} \EuclidSquared{\vect{x}}{\vect{q}} - \sum_{\vect{x} \in S} \EuclidSquared{\vect{x}}{z(S)}
 		= \left|S\right| \cdot \EuclidSquared{z(S)}{\vect{q}} \]
 \end{lemma}
@@ -342,13 +344,13 @@ der $D^2$-Gewichtung gewählt werden. Im dritten und letzten Schritt beweisen wi
 \end{lemma}
 \begin{proof}
 	Sei $z(A)$ der geometrische Zentroid der Punkte in $A$, das heißt
-	\[ z(A) = \frac{1}{\left|A\right|} \sum_{\vect{p} \in A} \vect{p} \]
+	\[ \phi(z(A)) = \frac{1}{\left|A\right|} \sum_{\vect{p} \in A} \phi(\vect{p}) \]
 	Mit Lemma~\ref{lemma:point-centroid} gilt:
 	\begin{align*}
-		& \sum_{\vect{p} \in A} \frac{1}{\left|A\right|} \cdot \left( \sum_{\vect{p}' \in A} \EuclidSquared{\vect{p}}{\vect{p}'} \right) \\
-		&= \frac{1}{\left|A\right|} \sum_{\vect{p} \in A} \left( \sum_{\vect{p}' \in A} \EuclidSquared{\vect{p}'}{z(A)} 
-			+ \left|A\right| \cdot \EuclidSquared{\vect{p}}{z(A)} \right) \\
-		&= 2 \sum_{\vect{p} \in A} \EuclidSquared{\vect{p}}{z(A)} \\
+		& \sum_{\vect{p} \in A} \frac{1}{\left|A\right|} \cdot \left( \sum_{\vect{p}' \in A} \EuclidSquared{\phi(\vect{p})}{\phi(\vect{p}')} \right) \\
+		&= \frac{1}{\left|A\right|} \sum_{\vect{p} \in A} \left( \sum_{\vect{p}' \in A} \EuclidSquared{\phi(\vect{p}')}{\phi(z(A))} 
+			+ \left|A\right| \cdot \EuclidSquared{\phi(\vect{p})}{\phi(z(A))} \right) \\
+		&= 2 \sum_{\vect{p} \in A} \EuclidSquared{\phi(\vect{p})}{\phi(z(A))} \\
 		&= E[\theta(A)]
 	\end{align*}
 \end{proof}
