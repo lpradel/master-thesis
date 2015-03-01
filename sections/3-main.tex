@@ -230,7 +230,7 @@ auskommt. Wir müssen uns jedoch wie auch bei Lloyds Algorithmus ohne Kernel Met
 der Clusterzentren beschäftigen. Zunächst einmal wählen wir diese wie schon zuvor zufällig aus der Eingabepunktmenge.
 Diese Vorgehensweise ist durchaus praktikabel, die experimentelle Evaluation aus~\citep{DhillonGK04,DhillonGK07} zeigt jedoch,
 dass sich mit einer geschickteren Wahl die Qualität des letztlich berechneten Clusterings noch signifikant steigern lässt.
-Die Autoren verwenden für die Initialisierung die spektrale Clusteranalyse, was wiederum den Aufwand der Eigenvektor-Berechnung
+Die Autoren verwenden für die Initialisierung die spektrale Clusteranalyse, was wiederum die Laufzeit der Eigenvektor-Berechnung
 mit sich bringt.
 \absatz
 Konkret wird mit einem Verfahren aus~\cite{GolubL96} eine Problemrelaxion
@@ -249,13 +249,13 @@ die dennoch deutlich verbesserte Clusterings mit dem Kernel-$k$-means-Algorithmu
 
 In Abschnitt~\ref{subsection:basics:clustering} haben wir bereits den Algorithmus \kmpp{} von Arthur und
 Vassilvitskii~\cite{ArthurV07} kennengelernt. Die initiale Wahl der Cluster erfolgt hier gemäß einer
-Wahrscheinlichkeitsverteilung der Punkte als mögliche Clusterzentren, die proportional zur quadrierten euklidischen Distanz
+Wahrscheinlichkeitsverteilung der Punkte als mögliche Clusterzentren. Diese ist proportional zur quadrierten euklidischen Distanz
 zum jeweils nächstgelegenen bereits gewählten Zentrum ist. Wir zeigen nun, dass die Kernel Methode auch auf den Algorithmus
 \kmpp{} angewendet werden kann. Damit ist es uns möglich, Algorithmus~\ref{algo:kernel-lloyd} (und damit
 auch Algorithmus~\ref{algo:wkkm}) in eine Kernel-basierte Variante von \kmpp{} umzuwandeln, die wir \kkmpp{} nennen.
 \absatz
 Wir erinnern uns, dass wir im Zusammenhang mit \kmpp{} für einen Punkt $x$ aus der Eingabe-Punktmenge $P$ mit $D(x)$
-die geringste Distanz von $x$ zum nächstgelegenen bereits gewählten Zentrum notieren. Der Punkt $x$ wird als nächstes
+die geringste Distanz von $x$ zum nächstgelegenen bereits gewählten Zentrum bezeichnen. Der Punkt $x$ wird als nächstes
 Zentrum mit der Wahrscheinlichkeit
 \[ \frac{D(x)^2}{\sum_{y \in P} D(y)^2} \]
 gewählt. Wir können demnach die Kernel Methode auf den Algorithmus \kmpp{} anwenden, wenn wir für jeden Eingabepunkt $x$ den
@@ -264,13 +264,17 @@ beim Kernel-$k$-means-Algorithmus ausschließlich über die Kernelfunktion $\kap
 Punkte oder der Abbildung $\phi$ selbst berechnen können.
 
 Wir nehmen zunächst an, dass die Zentren $c_1, \dots, c_l$ mit $l \in \{ 1, \dots, k-1 \}$ bereits gewählt worden sind.
-Dann können wir $D(x)$ formal notieren als das Minimum über alle quadrierten euklidischen Distanzen von $x$ zu jedem der bisher
+Dann können wir $D(x)$ formal beschreiben als das Minimum über alle quadrierten euklidischen Distanzen von $x$ zu jedem der bisher
 gewählten Zentren $c_i$:
 \[ D(x) = \min_{i = 1 \dots l} \EuclidSquared{x}{c_i} \]
 Wenden wir die Kernel Methode an, berechnet sich $D(\phi(x))$ dementsprechend folgendermaßen:
 \[ D(\phi(x)) = \min_{i = 1 \dots l} \EuclidSquared{\phi(x)}{\phi(c_i)} \]
-Demnach genügt es, zu zeigen, dass wir $\EuclidSquared{\phi(x)}{\phi(c_i)}$ ausschließlich mit der Kernelfunktion berechnen
-können. Wir haben bereits gesehen, dass die Kernelfunktion gerade dafür gedacht ist. Es gilt:
+Wir können die hier $\phi(c_i)$ berechnen, da diese im \kkmpp-Algorithmus stets Eingabepunkt sind. Im Allgemeinen ist dies
+nicht möglich.
+Es genügt, zu zeigen, dass wir $\EuclidSquared{\phi(x)}{\phi(c_i)}$ ausschließlich mit der Kernelfunktion berechnen
+können.
+%Wir haben bereits gesehen, dass die Kernelfunktion gerade dafür gedacht ist.
+Es gilt:
 \begin{align}
 	\EuclidSquared{\phi(x)}{\phi(c_i)} = \kappa(x,x) - 2 \kappa(x,c_i) + \kappa(c_i,c_i)
 \end{align}
