@@ -1265,3 +1265,42 @@ wir \KCsTwo.
 \caption{Durchschnittliche Laufzeiten der Algorithmen für $k \in \{ 10, 30, 50 \}$ in Sekunden.}
 \label{tbl:experiment-coresets-kernel-runtime}
 \end{table}
+
+\KCsTwo{} erzielt mit $c=50$ und $d=10$ durchweg Ergebnisse, die um einige Prozentpunkte besser sind als die für \kmpp{}
+gemessenen Werte. Es ist naheliegend, dass wir somit unter Einsatz von \KCsTwo{} noch einmal eine Leistungssteigerung
+in der Graphpartitionierung erreichen können.
+Dies lässt sich in den folgenden beiden Tabellen~\ref{tbl:experiment-coreset-ncut-128}
+und~\ref{tbl:experiment-coreset-ncut-runtime-128} für den Normalized Cut erkennen.
+Die durchschnittliche Verbesserung beträgt hier in etwa 5-10\%.
+\newpage
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}cccccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{Zufall} & \textbf{METIS} & \textbf{Spektral} & \textbf{\kkmpp{}} & \textbf{\KCsTwo{}} \\ \midrule
+	BCSSTK31 	& 29.2 & 21.5 & 19.8 & 22 & 20.7  \\
+	T60K 		& 6.9 & 5.4 & 4.8 & 5.8 & 5.0 \\
+	598A 		& 16.1 & 14.3 & 12.4 & 13.5 & 12.4  \\
+	144 		& 15.3 & 12.9 & 10.3 & 12.7 & 11.9  \\
+	M14B 		& 24.2 & 21 & 18.7 & 21.7 & 20.2  \\
+	AUTO 		& 12.1 & 9.9 & 8.2 & 9.5 & 8.8  \\
+	\bottomrule
+\end{tabular}
+\caption{Durchschnittliche Normalized Cut Werte der Algorithmen für $k = 128$ (je kleiner, desto besser).}
+\label{tbl:experiment-coreset-ncut-128}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}cccccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{Zufall} & \textbf{METIS} & \textbf{Spektral} & \textbf{\kkmpp{}} &  \textbf{\KCsTwo{}} \\ \midrule
+	BCSSTK31 	& 0.1 & 0.33 & 0.6 & 0.1 & 0.1 \\
+	T60K 		& 0.1 & 0.18 & 0.3 & 0.1 & 0.1 \\
+	598A 		& 0.4 & 0.97 & 1.5 & 0.5 & 0.5 \\
+	144 		& 0.5 & 1.3 & 2.6 & 0.6 & 0.5 \\
+	M14B 		& 0.8 & 2.0 & 3.8 & 1.1 & 1.0 \\
+	AUTO 		& 1.9 & 4.2 & 7.3 & 2.9 & 2.7 \\
+	\bottomrule
+\end{tabular}
+\caption{Durchschnittliche Laufzeiten der Algorithmen für Normalized Cut mit $k = 128$.}
+\label{tbl:experiment-coreset-ncut-runtime-128}
+\end{table}
