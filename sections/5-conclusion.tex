@@ -1,2 +1,30 @@
 \section{Zusammenfassung}
 \label{section:conclusion}
+
+Die Kernel Methode ist eine wirkungsvolle Technik in der Clusteranalyse. Ihr Einsatz erlaubt es, die Effektivität von Verfahren
+signifikant zu steigern, die auf die lineare Separierung von Clustern beschränkt sind. Angewandt auf den $k$-means-Algorithmus
+erhält man den Kernel-$k$-means-Algorithmus, mit dem sich beispielsweise das Graph\-partitionierungsproblem lösen lässt, wie wir
+in Abschnitt~\ref{subsection:wkkm-graphcut-graphclustering} erläutert haben.
+\absatz
+Der \kmpp-Algorithmus sieht eine geschicktere Wahl der initialen Zentren für den $k$-means-Algorithmus vor.
+Wir haben die Kernel Methode auf \kmpp{} angewandt und den resultierenden \kkmpp-Algorithmus vorgestellt.
+Dabei konnten wir zeigen, dass die $\mathcal{O}(\log k)$-Approximationseigenschaft von \kmpp{} erhalten bleibt.
+Bislang haben in der Graphpartitionierung spektrale Verfahren die qualitativ besten Ergebnisse geliefert.
+Diese bringen jedoch wegen der nötigen Eigenvektorberechnungen hohe Laufzeiten mit sich.
+Mit \kkmpp{} war es uns möglich, Graphpartitionierungen ohne spektrale Techniken zu berechnen, die qualitativ kompetitiv zu
+den bisherigen Verfahren sind. Wir konnten jedoch gleichzeitig die Laufzeiten um einen Faktor zwei verbessern. Dies ist besonders
+erfreulich, wenn man bedenkt, dass das modifizierte Framework Graclus die derzeit vielleicht schnellste quelloffene
+Software im Bereich der Graphpartitionierung ist, die von einer Reihe von quelloffenen Bildverarbeitungsprogrammen eingesetzt wird.
+\absatz
+Wir haben zudem eine Variante der Kernmengenkonstruktion von Feldman, Schmidt und Sohler~\cite{FeldmanSS13} vorgestellt,
+die in den Experimenten praktikable Qualität und Laufzeit aufweist. Insbesondere die Kernel-basierte Variante liefert bessere
+Ergebnisse als der \kmpp-Algorithmus. Mit der Kernmengenkonstruktion war es uns möglich, den Kernel-$k$-means-basierten 
+Algorithmus zur Graphpartitionierung noch einmal zu verbessern.
+\absatz
+Über diese Arbeit hinaus wäre es sicherlich interessant, zu untersuchen, ob die Kernel Methode auch auf andere $k$-means-Algorithmen
+angewandt werden kann und ob dies zu Verbesserungen führt.
+
+Für die Kernmengenkonstruktion haben wir in der Einleitung eine mögliche Anwendung in der verteilten Clusteranalyse erwähnt.
+Es wäre daher sicherlich interessant, eine verteilte Variante der Konstruktion zu implementieren und diese dann auf verteilt
+vorliegenden zu clusternden Daten zu untersuchen. Dabei sollte der Algorithmus nicht nur auf einigen wenigen Maschinen ausgeführt
+werden sondern auf 16 oder mehr Knoten, um die Leistungsfähigkeit in verteilten System zu analysieren.

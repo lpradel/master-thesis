@@ -317,7 +317,7 @@ wir dabei analog zu dem Papier von Arthur und Vassilvitskii~\cite{ArthurV07} vor
 wesentlichen Änderungen ergeben. Für ein Clustering $C = \{ C_1, \dots, C_k \}$ mit den jeweiligen Clusterzentren
 $c_1, \dots, c_k$ bezeichnen wir mit dem \emph{Potenzial} $\theta$ den Zielfunktionswert des Clusterings bezüglich der
 Kernel-$k$-means-Zielfunktion, das heißt
-\[ \theta(C) = \sum_{i=1}^k \theta(C_i) = \sum_{i=1}^k \sum_{p \in C_i} \EuclidSquared{\phi(p)}{\phi(c_i)} \]
+\[ \theta(C) = \sum_{i=1}^k \theta(C_i) = \sum_{i=1}^k \sum_{p \in C_i} \EuclidSquared{\phi(p)}{c_i} \]
 Das Potenzial des optimalen Clusterings $C_\textrm{OPT}$ notieren wir mit $\optpot$. Bevor wir mit der Analyse beginnen,
 benötigen wir folgendes Lemma, das einen beliebigen Punkt mit einer Punktmenge und ihrem Zentroiden in Relation setzt:
 
@@ -348,13 +348,13 @@ der $D^2$-Gewichtung gewählt werden. Im dritten und letzten Schritt beweisen wi
 \end{lemma}
 \begin{proof}
 	Sei $z(A)$ der geometrische Zentroid der Punkte in $A$, das heißt
-	\[ \phi(z(A)) = \frac{1}{\left|A\right|} \sum_{\vect{p} \in A} \phi(\vect{p}) \]
+	\[ z(A) = \frac{1}{\left|A\right|} \sum_{\vect{p} \in A} \phi(\vect{p}) \]
 	Mit Lemma~\ref{lemma:point-centroid} gilt:
 	\begin{align*}
 		& \sum_{\vect{p} \in A} \frac{1}{\left|A\right|} \cdot \left( \sum_{\vect{p}' \in A} \EuclidSquared{\phi(\vect{p})}{\phi(\vect{p}')} \right) \\
-		&= \frac{1}{\left|A\right|} \sum_{\vect{p} \in A} \left( \sum_{\vect{p}' \in A} \EuclidSquared{\phi(\vect{p}')}{\phi(z(A))} 
-			+ \left|A\right| \cdot \EuclidSquared{\phi(\vect{p})}{\phi(z(A))} \right) \\
-		&= 2 \sum_{\vect{p} \in A} \EuclidSquared{\phi(\vect{p})}{\phi(z(A))} \\
+		&= \frac{1}{\left|A\right|} \sum_{\vect{p} \in A} \left( \sum_{\vect{p}' \in A} \EuclidSquared{\phi(\vect{p}')}{z(A)} 
+			+ \left|A\right| \cdot \EuclidSquared{\phi(\vect{p})}{z(A)} \right) \\
+		&= 2 \sum_{\vect{p} \in A} \EuclidSquared{\phi(\vect{p})}{z(A)} \\
 		&= E[\theta(A)]
 	\end{align*}
 \end{proof}
