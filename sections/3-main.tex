@@ -523,7 +523,7 @@ Formal ist eine Kernmenge mit Verschiebung folgendermaßen definiert.
 		\leq  (1+\epsilon) \sum_{x \in P} w_1(x) \min_{c \in C} \EuclidSquared{x}{c} \]
 \end{definition}
 
-Weiterhin liegt der Kernmengenkonstruktion die bereits erwähnt Erkenntnis zu Grunde, dass die optimale Lösung eines
+Weiterhin liegt der Kernmengenkonstruktion die bereits erwähnte Erkenntnis zu Grunde, dass die optimale Lösung eines
 $1$-means-Problems für eine Punktmenge $P$ der geometrische Zentroid $z(P)$ ist. Mit dem folgenden Lemma lassen sich die
 $1$-means-Kosten einer Punktmenge $P$ mit einem gegebenen Zentrum $c$ aufteilen in die optimalen $1$-means-Kosten von $P$
 plus das $\left|P\right|$-fache der Distanz von $c$ zum optimalen Zentrum, also dem Zentroiden.
@@ -539,8 +539,8 @@ plus das $\left|P\right|$-fache der Distanz von $c$ zum optimalen Zentrum, also 
 	 Dabei ist $W = \sum_{x \in P} w(x)$ und $z_w(P) = \frac{1}{W} \sum_{x \in P} w(x) \cdot x$.
 \end{lemma}
 
-Die Kernmengenkonstruktion versucht auszunutzen, dass der Anteil der optimalen $1$-means-Kosten konstant in allen möglichen
-Clusterings ist. Die Berechnung des zweiten Summanden gestaltet sich als schwierig. Die Konstruktion ist der Versuch, diese
+Die Kernmengenkonstruktion nutzt aus, dass der Anteil der optimalen $1$-means-Kosten konstant in allen möglichen
+Clusterings ist. Die Berechnung des zweiten Summanden gestaltet sich als schwierig. Die Idee der Konstruktion besteht darin, diese
 Erkenntnisse auf das $k$-means-Problem zu verallgemeinern. Gegeben ein Clustering $C$, lässt sich die Punktmenge $P$ in
 $k$ Teile partitionieren, sodass der Zentroid und die $1$-means-Kosten jeder Partition ausreichen, um die Gesamtkosten von $C$
 zu berechnen. $C$ ist jedoch zuvor nicht bekannt.
@@ -622,15 +622,15 @@ $k$-unstrukturierten Teilmengen erfolgt in Zeile 4. Der rekursive Aufruf der Par
 In~\cite{Schmidt14} wird bereits thematisiert, dass die wiederholte Partitionierung anhand einer optimalen $k$-means-Lösung
 für die Praxis zu aufwändig wäre und zu unpraktikablen Laufzeiten führen würde. Schmidt schlägt daher vor, eine
 $\alpha$-approximative Lösung zu verwenden. Dementsprechend wird dann in Zeile 1 von Algorithmus~\ref{algo:fss-partition}
-eine Lösung $C'$ berechnet, deren Kosten höchstens um einen Faktor $\alpha$ größer sind, als die Kosten einer optimalen
+eine Lösung $C'$ berechnet, deren Kosten höchstens um einen Faktor $\alpha$ größer sind als die Kosten einer optimalen
 $k$-means-Lösung für $P$. Um zu entscheiden, ob die Teilmengen $k$-strukturiert sind, wird dann geprüft, ob
 \[ \sum_{x \in P'} \EuclidSquared{x}{z(P')} \leq ((1+\epsilon')/\alpha) \sum_{i=1}^{k} \sum_{y \in P_i} \EuclidSquared{y}{z(P_i)} \]
 gilt. Die Analyse in~\cite{Schmidt14} zeigt, dass auch bei Verwendung der Approximation noch Garantien über Qualität und
 Laufzeit bewiesen werden können. Insbesondere berechnet der entsprechend modifizierte Algorithmus weiterhin eine
-$(1+\epsilon)$-Kernmenge mit Verschiebung $\Delta$.
+$(1+\epsilon)$-Kernmenge mit Verschiebung $\Delta$, sofern $\alpha$ klein genug ist.
 \absatz
-Wir wollen noch einen Schritt weiter gehen und die Partitionierung heuristisch vornehmen. Die Schwierigkeit besteht weiterhin
-darin, eine heuristische Lösung für das $k$-means-Problem im Partitionierungsschritt zu berechnen, die nur geringen Aufwand
+Wir wollen noch einen Schritt weiter gehen und die Partitionierung konstant approximativ vornehmen. Die Schwierigkeit besteht weiterhin
+darin, eine Lösung für das $k$-means-Problem im Partitionierungsschritt zu berechnen, die nur geringen Aufwand
 hat und dennoch in vielen Fällen Partitionierungen mit handhabbaren Kosten erzeugt. Wie schon zuvor sehen wir von einer
 vollkommen zufälligen Auswahl der Zentren ab und setzen stattdessen die $D^2$-Gewichtung von \kmpp{} ein. Dabei gehen
 wir folgendermaßen vor. Zunächst wählen wir initial $c \cdot k$ Zentren gemäß der $D^2$-Gewichtung aus der gesamten
@@ -717,6 +717,13 @@ Zentroiden ersetzt.
 Algorithmus~\ref{algo:partition} ist unsere Variante der Partitionierung. In den Zeilen 3-5 wählen wir $d \cdot k$ Zentren
 gemäß $D^2$-Gewichtung und prüfen in Zeile 6 die modifizierte Abbruchbedingung. Ansonsten ist die Partitionierung unverändert.
 \absatz
-Wir können bei unserer Variante der Kernmengenkonstruktion keine Garantien für die Laufzeit oder die Qualität der berechneten
+Bezüglich der Laufzeit müssen wir jeden Punkt der Dimension $d$ mindestens einmal betrachten. Damit erhalten wir eine
+Mindestlaufzeit von $\mathcal{O(nd)}$. Hinzu kommt ein Faktor für die Anzahl an Punkten der Kernmenge, die wir anhand der
+$D^2$-Gewichtung aus der Eingabepunktmenge beziehungsweise deren Partitionen auswählen. Dies sind in der initialen
+Partitionierung $c \cdot k$ viele. In der rekursiven Partitionierung kommen $\mathcal{O}( (dk - g)^T )$ viele hinzu, wobei
+$g$ die Anzahl an abgebrochenen Partitionierungen in jeder Stufe sind. Insgesamt erhalten wir damit eine Laufzeit von
+$\mathcal{O}\left( nd \cdot \left( ck + \left( dk - g \right)^T \right) \right)$.
+\absatz
+Wir können bei unserer Variante der Kernmengenkonstruktion keine Garantien für die Qualität der berechneten
 Kernmenge mehr geben. Es ist daher unerlässlich, die Konstruktion empirisch auszuwerten. Dies wollen wir in
 Abschnitt~\ref{subsection:experiment-coreset} des nächsten Kapitels tun.

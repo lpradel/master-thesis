@@ -1018,7 +1018,7 @@ Bei der spektralen Methode wurden 157 Bilder korrekt segmentiert, was einem Ante
 \subsection{Kernmengenkonstruktion}
 \label{subsection:experiment-coreset}
 
-Unsere Variante der Kernmengenkonstruktion notieren wir in diesem Abschnitt verkürzt mit \CsTwo. Die empirische Evaluation
+Unsere Variante der Kernmengenkonstruktion nennen wir in diesem Abschnitt verkürzt mit \CsTwo. Die empirische Evaluation
 der "`Güte"' einer~(starken)~Kernmenge im Sinne ihrer Definition~\ref{def:strong-coreset}
 beziehungsweise~\ref{def:coreset-with-offset} ist im Allgemeinen schwierig, da sich schlecht für alle möglichen Zentrenmengen
 die jeweiligen Kosten vergleichen lassen. Neben der Messung der Laufzeiten geht man bezüglich der Qualitätsanalyse von Kernmengen
@@ -1031,6 +1031,9 @@ vergleichen. Auf diese Weise wollen wir in diesem Abschnitt vorgehen. Dazu haben
 die wir jeweils zehn mal ausgeführt haben,
 den \kmpp-Algorithmus je zehn mal angewandt und die durchschnittlichen Kosten für den Vergleich
 genommen. Insgesamt wurden also 100 Ausführungen gemessen.
+Diese Methode der Evaluation ist zwar nicht allumfassend,
+wir können jedoch den gesamten Algorithmus evaluieren und insbesondere die Leistungsfähigkeit der Kernmengenkonstruktion zur
+Lösung des $k$-means-Problems bewerten.
 \paragraph{Algorithmen.} Für einen Vergleich ziehen wir zunächst die Kernmengenkonstruktionen BICO~\cite{FichtenbergerGSSS13}
 und \Skmpp~\cite{AckermannMRSLS12} heran. Beide Algorithmen sind state-of-the-art Datenstromalgorithmen zur Berechnung von
 Kernmengen. Außerdem wollen wir auch hier wieder die Dlib-Implementierung von \kmpp{} zum Vergleich einsetzen, da wir in
@@ -1040,8 +1043,9 @@ mit mehreren hunderttausend Punkten vergleichsweise lange Ausführungszeiten. Wi
 Evaluation auf mittelgroße Instanzen mit weniger als $10^6$ Punkten und insbesondere überschaubarer Dimensionsanzahl (bis
 ca. $50$ Dimensionen). Tabelle~\ref{tbl:experiment-coresets-datasets} zeigt die Eigenschaften der ausgewählten Datensätze aus dem
 UCI Machine Learning Repository.
-\paragraph{Kernmengen-Größe.} Für die meisten Kernmengenkonstruktionen wird eine asymptotische Größe von $\mathcal{O}(k)$
-angestrebt. Wir orientieren uns in unseren Experimenten an~\cite{AckermannMRSLS12,FichtenbergerGSSS13}. In beiden Papieren
+\paragraph{Kernmengen-Größe.}
+Eine asymptotische Größe von $\mathcal{O}(k)$ ist eine natürliche untere Schranke für die Größe einer Kernmenge, die wir
+erreichen wollen. Wir orientieren uns in unseren Experimenten an~\cite{AckermannMRSLS12,FichtenbergerGSSS13}. In beiden Papieren
 wurden in der experimentellen Auswertungen Kernmengen der Größe $200k$ konstruiert. Für die beiden Datensätze Spambase und
 NYSK würden die Kernmengen bei einer Größe von $200k$ mehr Punkte enthalten als die Ursprungsmenge. Bei diesen beiden Datensätzen
 haben wir daher Kernmengen der Größe $20k$ berechnet, um mehr Testwerte für einen umfassenderen Vergleich zu generieren.
@@ -1075,10 +1079,10 @@ Wir geben bei den Ergebnistabellen immer den durchschnittlichen Wert für Kosten
 Ausführungen des \kmpp-Algorithmus für je zehn Ausführungen der Kernmengen-Algorithmen an. Bei den Kernmengen-Algorithmen
 beziehen sich diese Werte auf die Ausführung von \kmpp{} unter
 Eingabe der Kernmenge und bei \kmpp{} selbst auf die 100 Ausführungen auf der gesamten Punktmenge $P$. Für \CsTwo{} geben wir die
-jeweiligen Parameter im Namen des Algorithmus an. Beispielsweise notieren wir für $c = 200$, $d=/$, $f=/$ und $T=1$:
+jeweiligen Parameter im Namen des Algorithmus an. Beispielsweise schreiben wir für $c = 200$, $d=/$, $f=/$ und $T=1$:
 \CsTwo-c-200-d-/-f-/-T-1. Die Wahl von $d$ und $f$ ist hier irrelevant, da wegen $T$ nur initial partitioniert wird.
 Dies deuten wir mit der Notation "`/"' an.
-\newpage
+%\newpage
 \begin{table}[h]
 \centering
 \begin{tabular}{@{}cccccc@{}} \toprule
@@ -1168,13 +1172,14 @@ die Datenstromalgorithmen \Skmpp und BICO durchweg noch geringere Kosten (in der
 zu \kmpp). Bei den Laufzeiten in Tabelle~\ref{tbl:experiment-coresets-runtime} ist deutlich zu erkennen, dass unsere
 Kernmengenkonstruktion, die intensiven Gebrauch der $D^2$-Gewichtung macht, um einige Größenordnungen langsamer ist als die
 state-of-the-art Datenstromalgorithmen. Die Läufe mit den geringsten Kosten und Laufzeiten sind jeweils bei $c = 50$ und
-$d = 10$ und verbessern die Laufzeit von \kmpp{} um immerhin 40\%. Diese Wahl der Parameter scheint empirisch sowohl für
-die Kosten als auch für die Laufzeit am besten geeignet zu sein.
+$d = 10$ und verbessern die Laufzeit von \kmpp{} um bis zu 40\%. Dies ist eine beachtliche Verbesserung.
+Die dementsprechende Wahl der Parameter scheint empirisch sowohl für die Kosten als auch für die Laufzeit am besten geeignet
+zu sein. 
 \absatz
 Es ist abzusehen, dass wir mit unserer Konstruktion keine
-Laufzeiten in der Größenordnung der Datenstromalgorithmen erzielen können. Wir wollen stattdessen abschließend versuchen,
+Laufzeiten in der Größenordnung der Datenstromalgorithmen erzielen können. Wir wollen stattdessen versuchen,
 auch für die Kernmengenkonstruktion die Kernel Methode für alle Distanzberechnungen anzuwenden, um die erzielten Kosten zu
-optimieren. Dazu setzen wir wieder einen Gauss-/RBF-Kernel mit $\sigma = 0.1$ ein. Für die Kernelvariante von \CsTwo{} notieren
+optimieren. Dazu setzen wir wieder einen Gauss-/RBF-Kernel mit $\sigma = 0.1$ ein. Für die Kernelvariante von \CsTwo{} schreiben
 wir \KCsTwo.
 
 \begin{table}[h]
