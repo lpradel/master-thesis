@@ -1018,7 +1018,7 @@ Bei der spektralen Methode wurden 157 Bilder korrekt segmentiert, was einem Ante
 \subsection{Kernmengenkonstruktion}
 \label{subsection:experiment-coreset}
 
-Unsere Variante der Kernmengenkonstruktion nennen wir in diesem Abschnitt verkürzt mit \CsTwo. Die empirische Evaluation
+Unsere Variante der Kernmengenkonstruktion nennen wir in diesem Abschnitt verkürzt \CsTwo. Die empirische Evaluation
 der "`Güte"' einer~(starken)~Kernmenge im Sinne ihrer Definition~\ref{def:strong-coreset}
 beziehungsweise~\ref{def:coreset-with-offset} ist im Allgemeinen schwierig, da sich schlecht für alle möglichen Zentrenmengen
 die jeweiligen Kosten vergleichen lassen. Neben der Messung der Laufzeiten geht man bezüglich der Qualitätsanalyse von Kernmengen
@@ -1028,8 +1028,8 @@ $C^1 = \{c_1^1, \dots, c_k^1\}$, für die sich $k$-means-Kosten $c^1$ in Bezug a
 Andererseits wendet man denselben $k$-means-Algorithmus direkt auf ganz $P$ an und erhält ebenfalls eine Zentrenmenge
 $C^2 = \{c_1^2, \dots, c_k^2\}$, für die sich $k$-means-Kosten $c^2$ für $P$ ergeben. Die Kosten $c^1$ und $c^2$ lassen sich
 vergleichen. Auf diese Weise wollen wir in diesem Abschnitt vorgehen. Dazu haben wir auf die Ausgaben der Kernmengen-Algorithmen,
-die wir jeweils zehn mal ausgeführt haben,
-den \kmpp-Algorithmus je zehn mal angewandt und die durchschnittlichen Kosten für den Vergleich
+die wir jeweils zehnmal ausgeführt haben,
+den \kmpp-Algorithmus je zehnmal angewandt und die durchschnittlichen Kosten für den Vergleich
 genommen. Insgesamt wurden also 100 Ausführungen gemessen.
 Diese Methode der Evaluation ist zwar nicht allumfassend,
 wir können jedoch den gesamten Algorithmus evaluieren und insbesondere die Leistungsfähigkeit der Kernmengenkonstruktion zur
@@ -1053,7 +1053,7 @@ Für die Evaluation unserer Konstruktion
 ergibt sich die Herausforderung, die diversen Parameter so zu wählen, dass die berechnete Kernmenge in etwa diese
 Größe annimmt. Wir können dies auf mehreren Wegen erreichen. Es ist beispielsweise möglich, schon bei
 der initialen Partitionierung ein großes $c$ zu wählen (im Extremfall sogar schon hier $c=200$) und durch die maximale Tiefe
-oder den Kostenfaktor $f$ dafür zu sorgen, dass nur zu bis zu einer geringen Tiefe partitioniert wird (oder im Extremfall
+oder den Kostenfaktor $f$ dafür zu sorgen, dass nur bis zu einer geringen Tiefe partitioniert wird (oder im Extremfall
 gar nicht weiter partitioniert wird). Alternativ können wir entsprechend auch ein kleines $c$ wählen und dafür größere
 Werte von $d$ wählen, sodass wir initial nur wenige Teilmengen haben und in der rekursiven Partitionierung eine größere
 Anzahl von Teilmengen erzielen.

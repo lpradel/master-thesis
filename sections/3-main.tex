@@ -674,14 +674,14 @@ Zentren vorzuziehen ist, berechnen wir die neuen Teilmengen wieder über Zuweisu
 	}
 	\Return{$S, w, \Delta$}
 \end{algorithm}
-Sobald bei allen Teilmengen die Partitionierung abgebrochen ist, ersetzen wir wieder jede Teilmenge durch ihren Zentroiden. Die
+Sobald bei allen Teilmengen die Partitionierung abgebrochen ist, ersetzen wir jede Teilmenge durch ihren Zentroiden. Die
 Vereinigung aller Zentroiden entspricht dann wieder den Punkten der Kernmenge. Die Gewichtung $w$ und die Verschiebung $\Delta$
 werden ebenfalls analog berechnet.
 \absatz
 Algorithmus~\ref{algo:coreset} ist die Pseudocode-Beschreibung unserer Variante der Kernmengenkonstruktion. In den Zeilen
 5-6 wird die initiale Partitionierung gemäß $D^2$-Gewichtung vorgenommen. Anschließend führen wir in den Zeilen 7-9 die
-rekursive Partitionierung für jede der Teilmengen solange durch, bis entweder die maximale Tiefe erreicht wurde, oder die
-Abbruchbedingung über die Kosten einer weiteren Partitionierung erreicht ist. Wir vereinigen alle berechneten Teilmenge zur
+rekursive Partitionierung für jede der Teilmengen solange durch, bis entweder die maximale Tiefe erreicht wurde oder die
+Abbruchbedingung über die Kosten einer weiteren Partitionierung erreicht ist. Wir vereinigen alle berechneten Teilmengen zur
 Menge $M$. In den Zeilen 10-14 gehen wir analog zur ursprünglichen Konstruktion vor. Alle Teilmengen werden wieder durch ihren
 Zentroiden ersetzt.
 
@@ -718,12 +718,12 @@ Algorithmus~\ref{algo:partition} ist unsere Variante der Partitionierung. In den
 gemäß $D^2$-Gewichtung und prüfen in Zeile 6 die modifizierte Abbruchbedingung. Ansonsten ist die Partitionierung unverändert.
 \absatz
 Bezüglich der Laufzeit müssen wir jeden Punkt der Dimension $d$ mindestens einmal betrachten. Damit erhalten wir eine
-Mindestlaufzeit von $\mathcal{O(nd)}$. Hinzu kommt ein Faktor für die Anzahl an Punkten der Kernmenge, die wir anhand der
+Mindestlaufzeit von $\mathcal{O}(nd)$. Hinzu kommt ein Faktor für die Anzahl an Punkten der Kernmenge, die wir anhand der
 $D^2$-Gewichtung aus der Eingabepunktmenge beziehungsweise deren Partitionen auswählen. Dies sind in der initialen
 Partitionierung $c \cdot k$ viele. In der rekursiven Partitionierung kommen $\mathcal{O}( (dk - g)^T )$ viele hinzu, wobei
-$g$ die Anzahl an abgebrochenen Partitionierungen in jeder Stufe sind. Insgesamt erhalten wir damit eine Laufzeit von
+$g$ die Anzahl abgebrochener Partitionierungen in jeder Stufe ist. Insgesamt erhalten wir damit eine Laufzeit von
 $\mathcal{O}\left( nd \cdot \left( ck + \left( dk - g \right)^T \right) \right)$.
 \absatz
 Wir können bei unserer Variante der Kernmengenkonstruktion keine Garantien für die Qualität der berechneten
-Kernmenge mehr geben. Es ist daher unerlässlich, die Konstruktion empirisch auszuwerten. Dies wollen wir in
-Abschnitt~\ref{subsection:experiment-coreset} des nächsten Kapitels tun.
+Kernmenge mehr geben. Es ist daher unerlässlich, die Konstruktion empirisch auszuwerten. Diese Auswertung wollen wir in
+Abschnitt~\ref{subsection:experiment-coreset} des nächsten Kapitels vornehmen.
