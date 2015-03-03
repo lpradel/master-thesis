@@ -136,6 +136,15 @@ Das Clusteringmodell in Graphen kann bis zu~\cite{KernighanL70} zurückverfolgt 
 stammt von~\cite{ShiM00}. Eine wichtige Weiterentwicklung des Ansatzes geht zurück auf~\cite{NgJW01}. Die unmittelbare
 Äquivalenz zum geometrischen $k$-means-Problem wurde in~\cite{DhillonGK04,DhillonGK07} gezeigt. Wir werden sehen, dass diese
 für unsere Zwecke besonders wichtig ist.
+
+In~\cite{Swierkot08} wird ebenfalls unter Einsatz der Kernel Methode anhand einer Kernmengenkonstruktion das
+Graphpartitionierungsproblem untersucht. Diese Arbeit ist von~\cite{Swierkot08} folgendermaßen abzugrenzen: zunächst wird in dieser
+Arbeit explizit die Kernel Methode auf den \kmpp-Algorithmus angewandt. Wir zeigen insbesondere formal, dass die darin umfassten
+Distanzberechnungen im Kernel-Raum möglich sind. Zudem beweisen wir, dass auch die Kernel-Variante \kkmpp{} eine
+$\mathcal{O}(\log k)$-Approximation für das $k$-means-Problem ist. Weiterhin nutzen wir den \kkmpp-Algorithmus, um das
+Graclus-Framework zu erweitern. In~\cite{Swierkot08} wurde die Kernmengenkonstruktion von \Skmpp{} für die Clusteranalyse von
+Graphen verwendet. Wir setzen hingegen die Konstruktion von~\cite{FeldmanSS13} ein und wenden zudem die Kernel Methode auf
+diese an.
 \absatz
 Die Arbeit ist folgendermaßen gegliedert. In Kapitel~\ref{section:basics} definieren wir die wichtigsten Begriffe und
 Konzepte, die wir im Rahmen dieser Arbeit benötigen. Außerdem stellen wir die Algorithmen vor, die wir als Grundlage verwenden
