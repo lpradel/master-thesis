@@ -1015,25 +1015,29 @@ dem Gesicht auf dem Foto entspricht.
 In einer Stichprobe von 160 Bildern wurden 153 Bilder korrekt segmentiert, das entspricht einem Anteil von 96\%.
 Bei der spektralen Methode wurden 157 Bilder korrekt segmentiert, was einem Anteil von 98\% entspricht.
 
-\subsection{Kernmengenkonstruktion}
+\subsection{Die Kernmengenkonstruktion}
 \label{subsection:experiment-coreset}
 
-Unsere Variante der Kernmengenkonstruktion nennen wir in diesem Abschnitt verkürzt \CsTwo. Die empirische Evaluation
-der "`Güte"' einer~(starken)~Kernmenge im Sinne ihrer Definition~\ref{def:strong-coreset}
+Unsere Variante der Kernmengenkonstruktion nennen wir in diesem Abschnitt verkürzt \CsTwo.
+
+\subsubsection{\texorpdfstring{$k$}{k}-means mit der Kernmengenkonstruktion}
+Die empirische Evaluation der "`Güte"' einer~(starken)~Kernmenge im Sinne ihrer Definition~\ref{def:strong-coreset}
 beziehungsweise~\ref{def:coreset-with-offset} ist im Allgemeinen schwierig, da sich schlecht für alle möglichen Zentrenmengen
 die jeweiligen Kosten vergleichen lassen. Neben der Messung der Laufzeiten geht man bezüglich der Qualitätsanalyse von Kernmengen
 wie beispielsweise in~\cite{AckermannMRSLS12,FichtenbergerGSSS13} vor. Man berechnet einerseits die Kernmenge $S$ für die
 Eingabepunktmenge $P$, wendet auf $S$ einen $k$-means-Algorithmus an und erhält eine Menge von $k$ Zentren
 $C^1 = \{c_1^1, \dots, c_k^1\}$, für die sich $k$-means-Kosten $c^1$ in Bezug auf die Eingabepunktmenge $P$ ergeben.
 Andererseits wendet man denselben $k$-means-Algorithmus direkt auf ganz $P$ an und erhält ebenfalls eine Zentrenmenge
-$C^2 = \{c_1^2, \dots, c_k^2\}$, für die sich $k$-means-Kosten $c^2$ für $P$ ergeben. Die Kosten $c^1$ und $c^2$ lassen sich
-vergleichen. Auf diese Weise wollen wir in diesem Abschnitt vorgehen. Dazu haben wir auf die Ausgaben der Kernmengen-Algorithmen,
-die wir jeweils zehnmal ausgeführt haben,
-den \kmpp-Algorithmus je zehnmal angewandt und die durchschnittlichen Kosten für den Vergleich
-genommen. Insgesamt wurden also 100 Ausführungen gemessen.
-Diese Methode der Evaluation ist zwar nicht allumfassend,
-wir können jedoch den gesamten Algorithmus evaluieren und insbesondere die Leistungsfähigkeit der Kernmengenkonstruktion zur
-Lösung des $k$-means-Problems bewerten.
+$C^2 = \{c_1^2, \dots, c_k^2\}$, für die sich $k$-means-Kosten $c^2$ für $P$ ergeben. Die $k$-means-Kosten $c^1$ und $c^2$ lassen
+sich vergleichen. Die untersuchte Qualität der Kernmenge bezieht sich bei diesem Vorgehen dann auf die Lösung des
+$k$-means-Problems mit Hilfe der Kernmenge.
+\absatz
+Auf diese Weise wollen wir in diesem Abschnitt vorgehen. Dazu haben wir auf die Ausgaben der Kernmengen-Algorithmen,
+die wir jeweils zehnmal ausgeführt haben, den $k$-means-Algorithmus und den \kmpp-Algorithmus je zehnmal angewandt und die
+durchschnittlichen Kosten für den Vergleich genommen. Insgesamt wurden also 100 Ausführungen inklusive anschließendem $k$-means und
+weitere 100 Ausführungen mit anschließendem \kmpp{} gemessen.
+Diese Methode der Evaluation ist zwar nicht allumfassend, wir können jedoch den gesamten Algorithmus evaluieren und insbesondere
+die Leistungsfähigkeit der Kernmengenkonstruktion zur Lösung des $k$-means-Problems bewerten.
 \paragraph{Algorithmen.} Für einen Vergleich ziehen wir zunächst die Kernmengenkonstruktionen BICO~\cite{FichtenbergerGSSS13}
 und \Skmpp~\cite{AckermannMRSLS12} heran. Beide Algorithmen sind state-of-the-art Datenstromalgorithmen zur Berechnung von
 Kernmengen. Außerdem wollen wir auch hier wieder die Dlib-Implementierung von \kmpp{} zum Vergleich einsetzen, da wir in
@@ -1043,20 +1047,6 @@ mit mehreren hunderttausend Punkten vergleichsweise lange Ausführungszeiten. Wi
 Evaluation auf mittelgroße Instanzen mit weniger als $10^6$ Punkten und insbesondere überschaubarer Dimensionsanzahl (bis
 ca. $50$ Dimensionen). Tabelle~\ref{tbl:experiment-coresets-datasets} zeigt die Eigenschaften der ausgewählten Datensätze aus dem
 UCI Machine Learning Repository.
-\paragraph{Kernmengen-Größe.}
-Eine asymptotische Größe von $\mathcal{O}(k)$ ist eine natürliche untere Schranke für die Größe einer Kernmenge, die wir
-erreichen wollen. Wir orientieren uns in unseren Experimenten an~\cite{AckermannMRSLS12,FichtenbergerGSSS13}. In beiden Papieren
-wurden in der experimentellen Auswertungen Kernmengen der Größe $200k$ konstruiert. Für die beiden Datensätze Spambase und
-NYSK würden die Kernmengen bei einer Größe von $200k$ mehr Punkte enthalten als die Ursprungsmenge. Bei diesen beiden Datensätzen
-haben wir daher Kernmengen der Größe $20k$ berechnet, um mehr Testwerte für einen umfassenderen Vergleich zu generieren.
-Für die Evaluation unserer Konstruktion
-ergibt sich die Herausforderung, die diversen Parameter so zu wählen, dass die berechnete Kernmenge in etwa diese
-Größe annimmt. Wir können dies auf mehreren Wegen erreichen. Es ist beispielsweise möglich, schon bei
-der initialen Partitionierung ein großes $c$ zu wählen (im Extremfall sogar schon hier $c=200$) und durch die maximale Tiefe
-oder den Kostenfaktor $f$ dafür zu sorgen, dass nur bis zu einer geringen Tiefe partitioniert wird (oder im Extremfall
-gar nicht weiter partitioniert wird). Alternativ können wir entsprechend auch ein kleines $c$ wählen und dafür größere
-Werte von $d$ wählen, sodass wir initial nur wenige Teilmengen haben und in der rekursiven Partitionierung eine größere
-Anzahl von Teilmengen erzielen.
 
 \begin{table}[t]
 \centering
@@ -1071,18 +1061,132 @@ Anzahl von Teilmengen erzielen.
 \label{tbl:experiment-coresets-datasets}
 \end{table}
 
+\paragraph{Kernmengen-Größe.}
+Eine asymptotische Größe von $\mathcal{O}(k)$ ist eine natürliche untere Schranke für die Größe einer Kernmenge, die wir
+erreichen wollen. Wir orientieren uns in unseren Experimenten an~\cite{AckermannMRSLS12,FichtenbergerGSSS13}. In beiden Papieren
+wurden in der experimentellen Auswertungen Kernmengen der Größe $200k$ konstruiert. Für die beiden Datensätze Spambase und
+NYSK würden die Kernmengen bei einer Größe von $200k$ mehr Punkte enthalten als die Ursprungsmenge. Bei diesen beiden Datensätzen
+haben wir daher Kernmengen der Größe $20k$ berechnet, um mehr Testwerte für einen umfassenderen Vergleich zu generieren, sofern
+die Wahl der Parameter dies zulässt (insbesondere $c \leq 20$).
+Für die Evaluation unserer Konstruktion ergibt sich die Herausforderung, die diversen Parameter so zu wählen, dass die
+berechnete Kernmenge in etwa diese Größe annimmt. Wir können dies auf mehreren Wegen erreichen. Es ist beispielsweise möglich,
+schon bei der initialen Partitionierung ein großes $c$ zu wählen (im Extremfall sogar schon hier $c=200$) und durch die maximale
+Tiefe oder den Kostenfaktor $f$ dafür zu sorgen, dass nur bis zu einer geringen Tiefe partitioniert wird (oder im Extremfall
+gar nicht weiter partitioniert wird). Alternativ können wir auch ein kleines $c$ wählen und dafür größere
+Werte von $d$ wählen, sodass wir initial nur wenige Teilmengen haben und in der rekursiven Partitionierung eine größere
+Anzahl von Teilmengen erzielen.
 \paragraph{Clusteranzahl.} Wir wollen auch hier mit verschiedenen Werten für die Clusteranzahl $k$ arbeiten.
 Dabei orientieren wir uns an den Experimenten aus~\cite{AckermannMRSLS12,FichtenbergerGSSS13}. Wir führen die Algorithmen
 jeweils mit $k \in \{ 10, 30, 50 \}$ aus.
+\absatz
+Wir geben bei den Ergebnistabellen immer den durchschnittlichen Wert für Kosten und Laufzeit von zehn Ausführungen
+des $k$-means-Algorithmus beziehungsweise des \kmpp-Algorithmus für je zehn Ausführungen der Kernmengen-Algorithmen an.
+Bei den Kernmengen-Algorithmen beziehen sich diese Werte auf die Ausführung von $k$-means beziehungsweise \kmpp{} unter
+Eingabe der Kernmenge und bei $k$-means beziehungsweise \kmpp{} selbst auf die 100 Ausführungen auf der gesamten Punktmenge $P$.
+Für \CsTwo{} geben wir die jeweiligen Parameter im Namen des Algorithmus an. Beispielsweise schreiben wir für
+$c = 200$, $d=/$, $f=/$ und $T=1$: \CsTwo-c-200-d-/-f-/-T-1.
+Die Wahl von $d$ und $f$ ist hier irrelevant, da wegen $T$ nur initial partitioniert wird. Dies deuten wir mit der
+Notation "`/"' an.
 
-Wir geben bei den Ergebnistabellen immer den durchschnittlichen Wert für Kosten und Laufzeit von zehn
-Ausführungen des \kmpp-Algorithmus für je zehn Ausführungen der Kernmengen-Algorithmen an. Bei den Kernmengen-Algorithmen
-beziehen sich diese Werte auf die Ausführung von \kmpp{} unter
-Eingabe der Kernmenge und bei \kmpp{} selbst auf die 100 Ausführungen auf der gesamten Punktmenge $P$. Für \CsTwo{} geben wir die
-jeweiligen Parameter im Namen des Algorithmus an. Beispielsweise schreiben wir für $c = 200$, $d=/$, $f=/$ und $T=1$:
-\CsTwo-c-200-d-/-f-/-T-1. Die Wahl von $d$ und $f$ ist hier irrelevant, da wegen $T$ nur initial partitioniert wird.
-Dies deuten wir mit der Notation "`/"' an.
-%\newpage
+Wir betrachten zunächst die Ergebnisse der Kernmengenkonstruktionen mit anschließender Ausführung des $k$-means-Algorithmus im
+Vergleich zu \kmpp.
+\newpage
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}cccccc@{}} \toprule
+	\textbf{Algorithmus} & $k$ & \multicolumn{4}{c}{\textbf{Datensatz}} \\
+	\cmidrule(r){3-6} & 		& Spambase 				& NYSK 				& Intrusion 			& Covertype \\ \toprule
+	\Skmpp 						& 10 & $8.44 \cdot 10^7$ & $5.93 \cdot 10^8$ & $1.58 \cdot 10^{13}$ & $3.77 \cdot 10^{11}$ \\
+		 						& 30 & $1.33 \cdot 10^7$ & $4.76 \cdot 10^8$ & $4.63 \cdot 10^{11}$ & $1.72 \cdot 10^{11}$ \\
+		 						& 50 & $6.57 \cdot 10^6$ & $6.63 \cdot 10^8$ & $1.22 \cdot 10^{11}$ & $1.29 \cdot 10^{11}$ \\
+	\midrule
+	BICO 						& 10 & $7.21 \cdot 10^7$ & $5.71 \cdot 10^8$ & $1.37 \cdot 10^{13}$ & $3.56 \cdot 10^{11}$ \\
+			 					& 30 & $1.29 \cdot 10^7$ & $4.45 \cdot 10^8$ & $4.48 \cdot 10^{11}$ & $1.59 \cdot 10^{11}$ \\
+		 						& 50 & $6.33 \cdot 10^6$ & $6.32 \cdot 10^8$ & $1.18 \cdot 10^{11}$ & $1.15 \cdot 10^{11}$ \\
+	\midrule
+	\kmpp 						& 10 & $8.71 \cdot 10^7$ & $6.09 \cdot 10^8$ & $1.75 \cdot 10^{13}$ & $3.42 \cdot 10^{11}$ \\
+			 					& 30 & $1.34 \cdot 10^7$ & $4.98 \cdot 10^8$ & $4.96 \cdot 10^{11}$ & $1.54 \cdot 10^{11}$ \\
+		 						& 50 & $6.68 \cdot 10^6$ & $7.01 \cdot 10^8$ & $1.29 \cdot 10^{11}$ & $1.13 \cdot 10^{11}$ \\
+	\midrule
+	\CsTwo-c-200-d-/-f-/-T-1	& 10 & $8.95 \cdot 10^7$ & $6.42 \cdot 10^8$ & $1.82 \cdot 10^{13}$ & $3.55 \cdot 10^{11}$ \\
+			 					& 30 & - 				& $5.33 \cdot 10^8$ & $4.95 \cdot 10^{11}$ & $1.70 \cdot 10^{11}$ \\
+		 						& 50 & - 				& $7.67 \cdot 10^8$	& $1.32 \cdot 10^{11}$ & $1.18 \cdot 10^{11}$ \\
+	\midrule
+	\CsTwo-c-1-d-50-f-1.3-T-3	& 10 & $8.61 \cdot 10^7$ & $6.17 \cdot 10^8$ & $1.82 \cdot 10^{13}$ & $3.52 \cdot 10^{11}$ \\
+			 					& 30 & $1.42 \cdot 10^7$ & $5.06 \cdot 10^8$ & $4.89 \cdot 10^{11}$ & $1.63 \cdot 10^{11}$ \\
+		 						& 50 & $6.71 \cdot 10^6$ & $7.02 \cdot 10^8$ & $1.31 \cdot 10^{11}$ & $1.14 \cdot 10^{11}$ \\
+	\midrule
+	\CsTwo-c-5-d-25-f-1.2-T-15	& 10 & $8.85 \cdot 10^7$ & $6.32 \cdot 10^8$ & $1.98 \cdot 10^{13}$ & $3.62 \cdot 10^{11}$ \\
+			 					& 30 & $1.49 \cdot 10^7$ & $5.16 \cdot 10^8$ & $5.11 \cdot 10^{11}$ & $1.64 \cdot 10^{11}$ \\
+		 						& 50 & $6.91 \cdot 10^6$ & $7.18 \cdot 10^8$ & $1.41 \cdot 10^{11}$ & $1.19 \cdot 10^{11}$ \\
+	\midrule
+	\CsTwo-c-50-d-10-f-1.4-T-10	& 10 & $8.60 \cdot 10^7$ & $5.99 \cdot 10^8$ & $1.70 \cdot 10^{13}$ & $3.51 \cdot 10^{11}$ \\
+			 					& 30 & $1.36 \cdot 10^7$ & $5.02 \cdot 10^8$ & $4.93 \cdot 10^{11}$ & $1.61 \cdot 10^{11}$ \\
+		 						& 50 & $6.74 \cdot 10^6$ & $7.04 \cdot 10^8$ & $1.32 \cdot 10^{11}$ & $1.17 \cdot 10^{11}$ \\
+	\midrule
+	\CsTwo-c-100-d-5-f-1.1-T-4	& 10 & $8.93 \cdot 10^7$ & $6.40 \cdot 10^8$ & $1.80 \cdot 10^{13}$ & $3.51 \cdot 10^{11}$ \\
+			 					& 30 & $1.48 \cdot 10^7$ & $5.26 \cdot 10^8$ & $5.01 \cdot 10^{11}$ & $1.64 \cdot 10^{11}$ \\
+		 						& 50 & - 				& $7.49 \cdot 10^8$ & $1.31 \cdot 10^{11}$ & $1.18 \cdot 10^{11}$ \\
+	\bottomrule
+\end{tabular}
+\caption{Durchschnittliche Kosten der Algorithmen für $k \in \{ 10, 30, 50 \}$ (je kleiner, desto besser). Bei den
+Kernmengen-Algorithmen wurde anschließend der $k$-means-Algorithmus ausgeführt.}
+\label{tbl:experiment-coresets-costs-kmeans}
+\end{table}
+\newpage
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}cccccc@{}} \toprule
+	\textbf{Algorithmus} & $k$ & \multicolumn{4}{c}{\textbf{Datensatz}} \\
+	\cmidrule(r){3-6} & 		& Spambase 				& NYSK 				& Intrusion 			& Covertype \\ \toprule
+	\Skmpp 						& 10 & $3.2$ 			& $4.1$ 			& $71.6$ 				& $241.8$ \\
+		 						& 30 & $16.1$ 			& $20.2$ 			& $98.1$ 				& $381.7$ \\
+		 						& 50 & $44.1$ 			& $67.3$ 			& $230.3$ 				& $529.0$ \\
+	\midrule
+	BICO 						& 10 & $0.1$ 			& $1.5$ 			& $15.2$ 				& $25.2$ \\
+			 					& 30 & $0.1$ 			& $2.0$ 			& $17.1$ 				& $45.7$ \\
+		 						& 50 & $0.1$ 			& $2.4$ 			& $20.5$ 				& $42.3$ \\
+	\midrule
+	\kmpp 						& 10 & $1.2$ 			& $2.9$ 			& $23.8$ 				& $181.2$ \\
+			 					& 30 & $5.7$ 			& $10.2$ 			& $897.3$ 				& $2024.7$ \\
+		 						& 50 & $13.3$ 			& $28.3$ 			& $644.0$ 				& $6922.9$ \\
+	\midrule
+	\CsTwo-c-200-d-/-f-/-T-1	& 10 & $3.1$			& $7.2$				& $48.4$ 				& $381.2$ \\
+			 					& 30 & - 				& $21.1$			& $1574.1$ 				& $4003.3$ \\
+		 						& 50 & - 				& $58.6$			& $1309.2$ 				& $12372.3$ \\
+	\midrule
+	\CsTwo-c-1-d-50-f-1.3-T-3	& 10 & $2.0$ 			& $5.8$ 			& $40.9$ 				& $321.9$ \\
+			 					& 30 & $11.4$ 			& $19.7$ 			& $1703.3$ 				& $3321.6$ \\
+		 						& 50 & $25.7$ 			& $55.4$ 			& $1122.1$ 				& $11242.1$ \\
+	\midrule
+	\CsTwo-c-5-d-25-f-1.2-T-15	& 10 & $1.9$ 			& $5.1$ 			& $40.3$ 				& $299.7$ \\
+			 					& 30 & $10.7$ 			& $15.7$ 			& $1603.8$ 				& $2812.7$ \\
+		 						& 50 & $24.3$ 			& $44.2$ 			& $1078.1$ 				& $9659.8$ \\
+	\midrule
+	\CsTwo-c-50-d-10-f-1.4-T-10	& 10 & $1.6$ 			& $3.0$ 			& $35.3$ 				& $239.0$ \\
+			 					& 30 & $8.2$ 			& $13.5$ 			& $1237.9$ 				& $2044.4$ \\
+		 						& 50 & $17.8$ 			& $38.2$ 			& $851.2$ 				& $7831.1$ \\
+	\midrule
+	\CsTwo-c-100-d-5-f-1.1-T-4	& 10 & $2.1$ 			& $17.2$ 			& $41.1$ 				& $331.0$ \\
+			 					& 30 & $9.8$ 			& $16.9$			& $1787.7$ 				& $3912.7$ \\
+		 						& 50 & - 				& $24.7$ 			& $1129.5$ 				& $10265.0$ \\
+	\bottomrule
+\end{tabular}
+\caption{Durchschnittliche Laufzeiten der Algorithmen für $k \in \{ 10, 30, 50 \}$ in Sekunden. Bei den Kernmengen-Algorithmen
+wurde anschließend der $k$-means-Algorithmus ausgeführt.}
+\label{tbl:experiment-coresets-runtime-kmeans}
+\end{table}
+Der Kostenübersicht in Tabelle~\ref{tbl:experiment-coresets-costs-kmeans} können wir entnehmen, dass die Datenstromalgorithmen
+mit Ausnahme von Covertype geringere Kosten erzielen als \kmpp. Auf Covertype sind die Kosten jedoch nur geringfügig größer.
+Im Schnitt erzielt \Skmpp{} etwa 2-3\% geringere Kosten, während BICO bis zu 5\% geringere Kosten erzielt. \CsTwo{} hingegen
+erreicht in drei Parametrisierungen rund 3\% höhere Kosten. Die besten Werte werden bei $c=1, d=50$ und $c=50, d=10$ erzielt.
+Bei letzteren ist \CsTwo{} etwa 2\% besser als \kmpp{} aber noch leicht über den Werten von \Skmpp.
+Bei den Laufzeiten in Tabelle~\ref{tbl:experiment-coresets-runtime-kmeans} ist die Ordnung der Algorithmen gleich.
+Wir können jedoch insbesondere bei den Datenstromalgorithmen einen massiven Unterschied von einigen Größenordnungen in der
+Laufzeit ausmachen. Die Datenstromalgorithmen sind deutlich schneller als \kmpp{} und die Kernmengenkonstruktion.
+\CsTwo{} erzielt hier die geringsten Laufzeiten bei $c=50, d=10$, ist jedoch im Schnitt immer noch ca. 10-15\% langsamer als \kmpp.
+
+Wir betrachten als nächstes die Ergebnisse Kernmengen-Algorithmen bei anschließender Ausführung von \kmpp.
 \begin{table}[h]
 \centering
 \begin{tabular}{@{}cccccc@{}} \toprule
@@ -1121,8 +1225,9 @@ Dies deuten wir mit der Notation "`/"' an.
 		 						& 50 & - 				& $6.97 \cdot 10^8$ & $1.28 \cdot 10^{11}$ & $1.12 \cdot 10^{11}$ \\
 	\bottomrule
 \end{tabular}
-\caption{Durchschnittliche Kosten der Algorithmen für $k \in \{ 10, 30, 50 \}$ (je kleiner, desto besser).}
-\label{tbl:experiment-coresets-costs}
+\caption{Durchschnittliche Kosten der Algorithmen für $k \in \{ 10, 30, 50 \}$ (je kleiner, desto besser). Bei den
+Kernmengen-Algorithmen wurde anschließend der \kmpp-Algorithmus ausgeführt.}
+\label{tbl:experiment-coresets-costs-kmpp}
 \end{table}
 \newpage
 \begin{table}[h]
@@ -1163,25 +1268,115 @@ Dies deuten wir mit der Notation "`/"' an.
 		 						& 50 & - 				& $24.7$ 			& $554.3$ 				& $5322.1$ \\
 	\bottomrule
 \end{tabular}
-\caption{Durchschnittliche Laufzeiten der Algorithmen für $k \in \{ 10, 30, 50 \}$ in Sekunden.}
-\label{tbl:experiment-coresets-runtime}
+\caption{Durchschnittliche Laufzeiten der Algorithmen für $k \in \{ 10, 30, 50 \}$ in Sekunden. Bei den
+Kernmengen-Algorithmen wurde anschließend der \kmpp-Algorithmus ausgeführt.}
+\label{tbl:experiment-coresets-runtime-kmpp}
 \end{table}
-Tabelle~\ref{tbl:experiment-coresets-costs} ist zu entnehmen, dass unsere Konstruktion mit allen Parametrisierungen bessere
+Mit der anschließenden Ausführung von \kmpp{} erzielen sämtliche Kernmengen-Algorithmen bezüglich $k$-means-Kosten und
+Laufzeiten bessere Ergebnisse. Die Verbesserung reicht bei den Kosten von 5-10\% und bei den Laufzeiten bis zu einer Halbierung
+der Laufzeiten.
+Tabelle~\ref{tbl:experiment-coresets-costs-kmpp} ist zu entnehmen, dass unsere Konstruktion mit allen Parametrisierungen bessere
 $k$-means-Kosten erzielt als \kmpp. In der Spitze sind Verbesserungen von bis zu 10\% zu verzeichnen. Andererseits erzielen
 die Datenstromalgorithmen \Skmpp und BICO durchweg noch geringere Kosten (in der Spitze bis rund 20\% weniger im Vergleich
-zu \kmpp). Bei den Laufzeiten in Tabelle~\ref{tbl:experiment-coresets-runtime} ist deutlich zu erkennen, dass unsere
+zu \kmpp). Bei den Laufzeiten in Tabelle~\ref{tbl:experiment-coresets-runtime-kmpp} ist erneut deutlich zu erkennen, dass unsere
 Kernmengenkonstruktion, die intensiven Gebrauch der $D^2$-Gewichtung macht, um einige Größenordnungen langsamer ist als die
 state-of-the-art Datenstromalgorithmen. Die Läufe mit den geringsten Kosten und Laufzeiten sind jeweils bei $c = 50$ und
 $d = 10$ und verbessern die Laufzeit von \kmpp{} um bis zu 40\%. Dies ist eine beachtliche Verbesserung.
 Die dementsprechende Wahl der Parameter scheint empirisch sowohl für die Kosten als auch für die Laufzeit am besten geeignet
 zu sein. 
 \absatz
-Es ist abzusehen, dass wir mit unserer Konstruktion keine
-Laufzeiten in der Größenordnung der Datenstromalgorithmen erzielen können. Wir wollen stattdessen versuchen,
-auch für die Kernmengenkonstruktion die Kernel Methode für alle Distanzberechnungen anzuwenden, um die erzielten Kosten zu
-optimieren. Dazu setzen wir wieder einen Gauss-/RBF-Kernel mit $\sigma = 0.1$ ein. Für die Kernelvariante von \CsTwo{} schreiben
-wir \KCsTwo.
-
+Es ist abzusehen, dass wir mit unserer Konstruktion keine Laufzeiten in der Größenordnung der Datenstromalgorithmen erzielen
+können. Wir wollen stattdessen versuchen, auch für die Kernmengenkonstruktion die Kernel Methode für alle Distanzberechnungen
+anzuwenden, um die erzielten Kosten zu optimieren. Dazu setzen wir wieder einen Gauss-/RBF-Kernel mit $\sigma = 0.1$ ein.
+Für die Kernelvariante von \CsTwo{} schreiben wir \KCsTwo. Wir beginnen wieder damit, im Anschluss an die Kernmengen-Algorithmen
+den $k$-means-Algorithmus auszuführen.
+\newpage
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}cccccc@{}} \toprule
+	\textbf{Algorithmus} & $k$ & \multicolumn{4}{c}{\textbf{Datensatz}} \\
+	\cmidrule(r){3-6} & 		& Spambase 				& NYSK 				& Intrusion 			& Covertype \\ \toprule
+	\Skmpp 						& 10 & $8.44 \cdot 10^7$ & $5.93 \cdot 10^8$ & $1.58 \cdot 10^{13}$ & $3.77 \cdot 10^{11}$ \\
+		 						& 30 & $1.33 \cdot 10^7$ & $4.76 \cdot 10^8$ & $4.63 \cdot 10^{11}$ & $1.72 \cdot 10^{11}$ \\
+		 						& 50 & $6.57 \cdot 10^6$ & $6.63 \cdot 10^8$ & $1.22 \cdot 10^{11}$ & $1.29 \cdot 10^{11}$ \\
+	\midrule
+	BICO 						& 10 & $7.21 \cdot 10^7$ & $5.71 \cdot 10^8$ & $1.37 \cdot 10^{13}$ & $3.56 \cdot 10^{11}$ \\
+			 					& 30 & $1.29 \cdot 10^7$ & $4.45 \cdot 10^8$ & $4.48 \cdot 10^{11}$ & $1.59 \cdot 10^{11}$ \\
+		 						& 50 & $6.33 \cdot 10^6$ & $6.32 \cdot 10^8$ & $1.18 \cdot 10^{11}$ & $1.15 \cdot 10^{11}$ \\
+	\midrule
+	\kmpp 						& 10 & $8.71 \cdot 10^7$ & $6.09 \cdot 10^8$ & $1.75 \cdot 10^{13}$ & $3.42 \cdot 10^{11}$ \\
+			 					& 30 & $1.34 \cdot 10^7$ & $4.98 \cdot 10^8$ & $4.96 \cdot 10^{11}$ & $1.54 \cdot 10^{11}$ \\
+		 						& 50 & $6.68 \cdot 10^6$ & $7.01 \cdot 10^8$ & $1.29 \cdot 10^{11}$ & $1.13 \cdot 10^{11}$ \\
+	\midrule
+	\KCsTwo-c-200-d-/-f-/-T-1	& 10 & $8.63 \cdot 10^7$ & $5.94 \cdot 10^8$ & $1.58 \cdot 10^{13}$ & $3.29 \cdot 10^{11}$ \\
+			 					& 30 & - 				& $4.82 \cdot 10^8$ & $4.77 \cdot 10^{11}$ & $1.48 \cdot 10^{11}$ \\
+		 						& 50 & - 				& $6.85 \cdot 10^8$	& $1.20 \cdot 10^{11}$ & $1.07 \cdot 10^{11}$ \\
+	\midrule
+	\KCsTwo-c-1-d-50-f-1.3-T-3	& 10 & $8.21 \cdot 10^7$ & $5.83 \cdot 10^8$ & $1.50 \cdot 10^{13}$ & $3.25 \cdot 10^{11}$ \\
+			 					& 30 & $1.28 \cdot 10^7$ & $4.76 \cdot 10^8$ & $4.66 \cdot 10^{11}$ & $1.42 \cdot 10^{11}$ \\
+		 						& 50 & $6.51 \cdot 10^6$ & $6.72 \cdot 10^8$ & $1.17 \cdot 10^{11}$ & $1.03 \cdot 10^{11}$ \\
+	\midrule
+	\KCsTwo-c-5-d-25-f-1.2-T-15	& 10 & $8.14 \cdot 10^7$ & $5.71 \cdot 10^8$ & $1.35 \cdot 10^{13}$ & $3.33 \cdot 10^{11}$ \\
+			 					& 30 & $1.29 \cdot 10^7$ & $4.32 \cdot 10^8$ & $4.42 \cdot 10^{11}$ & $1.49 \cdot 10^{11}$ \\
+		 						& 50 & $6.44 \cdot 10^6$ & $6.25 \cdot 10^8$ & $1.19 \cdot 10^{11}$ & $1.07 \cdot 10^{11}$ \\
+	\midrule
+	\KCsTwo-c-50-d-10-f-1.4-T-10& 10 & $7.83 \cdot 10^7$ & $5.58 \cdot 10^8$ & $1.22 \cdot 10^{13}$ & $3.25 \cdot 10^{11}$ \\
+			 					& 30 & $1.23 \cdot 10^7$ & $4.19 \cdot 10^8$ & $4.27 \cdot 10^{11}$ & $1.44 \cdot 10^{11}$ \\
+		 						& 50 & $6.27 \cdot 10^6$ & $5.99 \cdot 10^8$ & $1.07 \cdot 10^{11}$ & $1.03 \cdot 10^{11}$ \\
+	\midrule
+	\KCsTwo-c-100-d-5-f-1.1-T-4	& 10 & $8.52 \cdot 10^7$ & $5.97 \cdot 10^8$ & $1.68 \cdot 10^{13}$ & $3.36 \cdot 10^{11}$ \\
+			 					& 30 & $1.30 \cdot 10^7$ & $4.91 \cdot 10^8$ & $4.88 \cdot 10^{11}$ & $1.51 \cdot 10^{11}$ \\
+		 						& 50 & - 				& $6.90 \cdot 10^8$ & $1.24 \cdot 10^{11}$ & $1.10 \cdot 10^{11}$ \\
+	\bottomrule
+\end{tabular}
+\caption{Durchschnittliche Kosten der Algorithmen für $k \in \{ 10, 30, 50 \}$ (je kleiner, desto besser). Bei den Kernmengen-Algorithmen
+wurde anschließend der $k$-means-Algorithmus ausgeführt.}
+\label{tbl:experiment-coresets-kernel-costs-kmeans}
+\end{table}
+\newpage
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}cccccc@{}} \toprule
+	\textbf{Algorithmus} & $k$ & \multicolumn{4}{c}{\textbf{Datensatz}} \\
+	\cmidrule(r){3-6} & 		& Spambase 				& NYSK 				& Intrusion 			& Covertype \\ \toprule
+	\Skmpp 						& 10 & $3.2$ 			& $4.1$ 			& $71.6$ 				& $241.8$ \\
+		 						& 30 & $16.1$ 			& $20.2$ 			& $98.1$ 				& $381.7$ \\
+		 						& 50 & $44.1$ 			& $67.3$ 			& $230.3$ 				& $529.0$ \\
+	\midrule
+	BICO 						& 10 & $0.1$ 			& $1.5$ 			& $15.2$ 				& $25.2$ \\
+			 					& 30 & $0.1$ 			& $2.0$ 			& $17.1$ 				& $45.7$ \\
+		 						& 50 & $0.1$ 			& $2.4$ 			& $20.5$ 				& $42.3$ \\
+	\midrule
+	\kmpp 						& 10 & $1.2$ 			& $2.9$ 			& $23.8$ 				& $181.2$ \\
+			 					& 30 & $5.7$ 			& $10.2$ 			& $897.3$ 				& $2024.7$ \\
+		 						& 50 & $13.3$ 			& $28.3$ 			& $644.0$ 				& $6922.9$ \\
+	\midrule
+	\KCsTwo-c-200-d-/-f-/-T-1	& 10 & $1.4$			& $3.3$				& $24.7$ 				& $217.5$ \\
+			 					& 30 & - 				& $11.1$			& $922.1$ 				& $2007.0$ \\
+		 						& 50 & - 				& $29.6$			& $673.3$ 				& $6536.7$ \\
+	\midrule
+	\KCsTwo-c-1-d-50-f-1.3-T-3	& 10 & $1.3$ 			& $2.8$ 			& $23.0$ 				& $171.1$ \\
+			 					& 30 & $6.1$ 			& $9.9$ 			& $880.8$ 				& $1911.4$ \\
+		 						& 50 & $13.8$ 			& $28.1$ 			& $607.9$ 				& $6072.1$ \\
+	\midrule
+	\KCsTwo-c-5-d-25-f-1.2-T-15	& 10 & $1.1$ 			& $2.6$ 			& $21.7$ 				& $164.3$ \\
+			 					& 30 & $5.8$ 			& $8.9$ 			& $816.9$ 				& $1721.7$ \\
+		 						& 50 & $12.9$ 			& $25.0$ 			& $578.2$ 				& $5649.1$ \\
+	\midrule
+	\KCsTwo-c-50-d-10-f-1.4-T-10& 10 & $1.0$ 			& $2.0$ 			& $19.9$ 				& $135.8$ \\
+			 					& 30 & $4.6$ 			& $8.2$ 			& $702.1$ 				& $1281.9$ \\
+		 						& 50 & $10.7$ 			& $22.2$ 			& $478.5$ 				& $4649.2$ \\
+	\midrule
+	\KCsTwo-c-100-d-5-f-1.1-T-4	& 10 & $1.1$ 			& $9.2$ 			& $22.9$ 				& $180.1$ \\
+			 					& 30 & $5.5$ 			& $8.9$				& $872.2$ 				& $1993.5$ \\
+		 						& 50 & - 				& $26.9$ 			& $612.1$ 				& $5911.8$ \\
+	\bottomrule
+\end{tabular}
+\caption{Durchschnittliche Laufzeiten der Algorithmen für $k \in \{ 10, 30, 50 \}$ in Sekunden. Bei den Kernmengen-Algorithmen
+wurde anschließend der $k$-means-Algorithmus ausgeführt.}
+\label{tbl:experiment-coresets-kernel-runtime-kmeans}
+\end{table}
+\newpage
 \begin{table}[h]
 \centering
 \begin{tabular}{@{}cccccc@{}} \toprule
@@ -1221,7 +1416,7 @@ wir \KCsTwo.
 	\bottomrule
 \end{tabular}
 \caption{Durchschnittliche Kosten der Algorithmen für $k \in \{ 10, 30, 50 \}$ (je kleiner, desto besser).}
-\label{tbl:experiment-coresets-kernelk-costs}
+\label{tbl:experiment-coresets-kernel-costs-kmpp}
 \end{table}
 \newpage
 \begin{table}[h]
@@ -1263,9 +1458,10 @@ wir \KCsTwo.
 	\bottomrule
 \end{tabular}
 \caption{Durchschnittliche Laufzeiten der Algorithmen für $k \in \{ 10, 30, 50 \}$ in Sekunden.}
-\label{tbl:experiment-coresets-kernel-runtime}
+\label{tbl:experiment-coresets-kernel-runtime-kmpp}
 \end{table}
 
+\subsubsection{Graphpartitionierung mit der Kernmengenkonstruktion}
 \KCsTwo{} erzielt mit $c=50$ und $d=10$ durchweg Ergebnisse, die um einige Prozentpunkte besser sind als die für \kmpp{}
 gemessenen Werte. Es ist naheliegend, dass wir somit unter Einsatz von \KCsTwo{} noch einmal eine Leistungssteigerung
 in der Graphpartitionierung erreichen können.

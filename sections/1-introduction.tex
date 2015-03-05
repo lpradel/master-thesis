@@ -33,11 +33,11 @@ die Eingabedatenmenge sehr große bis gigantische Größenordnungen annimmt.
 In dieser Arbeit beschäftigen wir uns unter anderem mit einem weit verbreiteten Clusteringmodell, in dem das Ähnlichkeitsmaß die
 (quadrierte) geometrische Distanz ist. Die Eingabe besteht demnach aus einer Menge $P$ von Punkten aus dem euklidischen Raum
 $\Rd$. Neben der Punktmenge $P$ enthält unsere Eingabe zusätzlich eine positive ganze Zahl $k$, welche die Anzahl an Clustern
-angibt, in welche die Punkte unterteilt werden sollen. Dieses Modell ist unter dem Namen "`$k$-means-Problem"' bekannt. Den
-Algorithmen für das $k$-means-Problem, die wir betrachten wollen, ist gemein, dass sie eine initiale Auswahl
-von Clustern und zugehörigen \emph{Zentren} iterativ weiter verbessern, bis eine zumindest lokal optimale Lösung ermittelt wurde.
-Die eigentliche Aufgabe besteht dann darin, die Summe der
-(quadrierten) Distanzen der Punkte eines Clusters zu ihrem Clusterzentrum zu minimieren.
+angibt, in welche die Punkte unterteilt werden sollen. Die eigentliche Aufgabe besteht darin, die Summe der
+(quadrierten) euklidischen Distanzen der Punkte eines Clusters zu ihrem Clusterzentrum zu minimieren.
+Dieses Problem ist unter dem Namen "`$k$-means-Problem"' bekannt. Den Algorithmen für das $k$-means-Problem, die wir betrachten
+wollen, ist gemein, dass sie eine initiale Auswahl von Clustern und zugehörigen \emph{Zentren} iterativ weiter verbessern,
+bis eine zumindest lokal optimale Lösung ermittelt wurde.
 
 Da das $k$-means-Problem schon für $k = 2$ NP-hart ist~\cite{AloiseDHP09}, sind für praktische Zwecke insbesondere
 Heuristiken, also Algorithmen ohne feste Schranken für Laufzeit oder Qualität der Lösung, und
@@ -96,9 +96,8 @@ vereinigt. Da jede Vereinigung einen zusätzlichen Fehler verursacht, darf dies 
 Merge-and-Reduce-Technik ein, die in einer Baum-Struktur bottom-up die Kernmengen einer Partition miteinander vereinigt.
 Mit der Technik wird insbesondere sichergestellt, dass jeder einzelne Punkt der Eingabe nur in $\log \left|P\right|$ vielen
 Reduktionsschritten verwendet wird, wobei $\left|P\right|$ die Anzahl an bisher betrachteten Eingabepunkten ist.
-Die Anwendung von Kernmengen im Bereich von
-Datenstromalgorithmen ist Gegenstand gegenwärtiger Forschung und hat bereits erste Ergebnisse erbracht, wie wir später noch
-sehen werden.
+Die Anwendung von Kernmengen im Bereich von Datenstromalgorithmen ist Gegenstand gegenwärtiger Forschung und hat bereits
+gute Ergebnisse erbracht, wie wir später noch sehen werden.
 
 Schließlich können wir Kernmengen mit einer ähnlichen Idee einsetzen, um Clusteringalgorithmen parallel verteilt auszuführen.
 Wenn die Eingabepunktmenge verteilt vorliegt, berechnen wir auf den Partitionen verteilt oder parallel Kernmengen, übermitteln die
@@ -122,11 +121,11 @@ von denen einige im Hauptspeicher gecached werden. Ein gutes Clustering führt i
 Clusters, dem ein angefragtes Datum zugeordnet ist, zudem relevante Daten liefert, die für ähnliche zukünftige Anfragen
 erforderlich sind.
 
-\paragraph{Verwandte Arbeiten.} Der Algorithmus von Lloyd~\cite{Lloyd82} ist eine schon früh entwickelte Heuristik für das
-$k$-means-Problem, die bis heute von praktischer Relevanz ist, da sie im Allgemeinen gute Clusterings produziert, obwohl
-der Algorithmus keine Approximationsgüte garantiert. Wir betrachten in dieser Arbeit insbesondere die Verbesserung von
-Lloyds Algorithmus durch Arthur und Vassilvitskii~\citep{ArthurV07}, die eine $\BigO{\log k}$-Approximation für das
-$k$-means-Problem ist.
+\paragraph{Verwandte Arbeiten.} Der Algorithmus von Lloyd~\cite{Lloyd82} ist eine schon in den Fünfzigerjahren entwickelte
+Heuristik für das $k$-means-Problem, die bis heute von praktischer Relevanz ist, da sie im Allgemeinen gute Clusterings
+produziert, obwohl der Algorithmus keine Approximationsgüte garantiert. Wir betrachten in dieser Arbeit insbesondere die
+Verbesserung von Lloyds Algorithmus durch Arthur und Vassilvitskii~\citep{ArthurV07}, die eine $\BigO{\log k}$-Approximation
+für das $k$-means-Problem ist.
 
 Das heutige Konzept von \emph{starken} Kernmengen wurde in~\cite{HarPeledM04} vorgestellt. Wir beschäftigen uns in dieser Arbeit
 hauptsächlich mit der Konstruktion aus~\cite{FeldmanSS13,Schmidt14}.
@@ -144,7 +143,7 @@ Distanzberechnungen im Kernel-Raum möglich sind. Zudem beweisen wir, dass auch 
 $\mathcal{O}(\log k)$-Approximation für das $k$-means-Problem ist. Weiterhin nutzen wir den \kkmpp-Algorithmus, um das
 Graclus-Framework zu erweitern. In~\cite{Swierkot08} wurde die Kernmengenkonstruktion von \Skmpp{} für die Clusteranalyse von
 Graphen verwendet. Wir setzen hingegen die Konstruktion von~\cite{FeldmanSS13} ein und wenden zudem die Kernel Methode auf
-diese an.
+diese an. Zudem haben wir die Konstruktion von~\cite{FeldmanSS13} implementiert und experimentell evaluiert.
 \absatz
 Die Arbeit ist folgendermaßen gegliedert. In Kapitel~\ref{section:basics} definieren wir die wichtigsten Begriffe und
 Konzepte, die wir im Rahmen dieser Arbeit benötigen. Außerdem stellen wir die Algorithmen vor, die wir als Grundlage verwenden

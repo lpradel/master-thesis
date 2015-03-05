@@ -269,7 +269,7 @@ gewählten Zentren $c_i$:
 \[ D(x) = \min_{i = 1 \dots l} \EuclidSquared{x}{c_i} \]
 Wenden wir die Kernel Methode an, berechnet sich $D(\phi(x))$ dementsprechend folgendermaßen:
 \[ D(\phi(x)) = \min_{i = 1 \dots l} \EuclidSquared{\phi(x)}{\phi(c_i)} \]
-Wir können die hier $\phi(c_i)$ berechnen, da diese im \kkmpp-Algorithmus stets Eingabepunkt sind. Im Allgemeinen ist dies
+Wir können hier die $\phi(c_i)$ berechnen, da diese im \kkmpp-Algorithmus stets Eingabepunkt sind. Im Allgemeinen ist dies
 nicht möglich.
 Es genügt, zu zeigen, dass wir $\EuclidSquared{\phi(x)}{\phi(c_i)}$ ausschließlich mit der Kernelfunktion berechnen
 können.
@@ -720,9 +720,10 @@ gemäß $D^2$-Gewichtung und prüfen in Zeile 6 die modifizierte Abbruchbedingun
 Bezüglich der Laufzeit müssen wir jeden Punkt der Dimension $d$ mindestens einmal betrachten. Damit erhalten wir eine
 Mindestlaufzeit von $\mathcal{O}(nd)$. Hinzu kommt ein Faktor für die Anzahl an Punkten der Kernmenge, die wir anhand der
 $D^2$-Gewichtung aus der Eingabepunktmenge beziehungsweise deren Partitionen auswählen. Dies sind in der initialen
-Partitionierung $c \cdot k$ viele. In der rekursiven Partitionierung kommen $\mathcal{O}( (dk - g)^T )$ viele hinzu, wobei
-$g$ die Anzahl abgebrochener Partitionierungen in jeder Stufe ist. Insgesamt erhalten wir damit eine Laufzeit von
-$\mathcal{O}\left( nd \cdot \left( ck + \left( dk - g \right)^T \right) \right)$.
+Partitionierung $c \cdot k$ viele. In der rekursiven Partitionierung kommen maximal $\mathcal{O}( (dk)^T )$ viele hinzu, wenn
+bis zur maximalen Rekursionstiefe $T$ in jeder Ebene und jeder Teilmenge weiter partitioniert wird.
+Insgesamt erhalten wir damit eine obere Laufzeit-Schranke von
+$\mathcal{O}\left( nd \cdot \left( ck + \left( dk \right)^T \right) \right)$.
 \absatz
 Wir können bei unserer Variante der Kernmengenkonstruktion keine Garantien für die Qualität der berechneten
 Kernmenge mehr geben. Es ist daher unerlässlich, die Konstruktion empirisch auszuwerten. Diese Auswertung wollen wir in
