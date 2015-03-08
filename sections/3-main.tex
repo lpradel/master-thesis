@@ -314,21 +314,25 @@ Der Algorithmus \kkmpp{} wird damit die logische Weiterentwicklung von \kmpp{} a
 \end{algorithm}
 Wir zeigen nun, dass auch \kkmpp{} eine $\BigO{\log k}$-Approximation für das $k$-means-Problem ist. Strukturell gehen
 wir dabei analog zu dem Papier von Arthur und Vassilvitskii~\cite{ArthurV07} vor, da sich durch die Kernel Methode keine
-wesentlichen Änderungen ergeben. Für ein Clustering $C = \{ C_1, \dots, C_k \}$ mit den jeweiligen Clusterzentren
-$c_1, \dots, c_k$ bezeichnen wir mit dem \emph{Potenzial} $\theta$ den Zielfunktionswert des Clusterings bezüglich der
-Kernel-$k$-means-Zielfunktion, das heißt
-\[ \theta(C) = \sum_{i=1}^k \theta(C_i) = \sum_{i=1}^k \sum_{p \in C_i} \EuclidSquared{\phi(p)}{c_i} \]
-Das Potenzial des optimalen Clusterings $C_\textrm{OPT}$ notieren wir mit $\optpot$. Bevor wir mit der Analyse beginnen,
-benötigen wir folgendes Lemma, das einen beliebigen Punkt mit einer Punktmenge und ihrem Zentroiden in Relation setzt:
+wesentlichen Änderungen ergeben. Für eine Zentrenmenge $C = \{ c_1, \dots, c_k \}$ bezeichnen wir mit dem \emph{Potenzial}
+$\theta$ den Zielfunktionswert des Clusterings bezüglich der Kernel-$k$-means-Zielfunktion, das heißt
+%\[ \theta(C) = \sum_{i=1}^k \theta(C_i) = \sum_{i=1}^k \sum_{p \in C_i} \EuclidSquared{\phi(p)}{c_i} \]
+\[ \theta(C) = \sum_{p \in P} \min_{c \in C} \EuclidSquared{\phi(p)}{c} \]
+Das Potenzial des optimalen Clusterings $C_\textrm{OPT}$ notieren wir mit $\optpot$.
+Allgemeiner bezeichnen wir mit dem Potenzial für eine Punktmenge $A \subset P$:
+$\theta(A) = \sum_{p \in A} \min_{c \in C} \EuclidSquared{\phi(p)}{c} $.
+Bevor wir mit der Analyse beginnen, benötigen wir folgendes Lemma, das einen beliebigen Punkt mit einer Punktmenge
+und ihrem Zentroiden in Relation setzt:
 
 \begin{lemma}
 \label{lemma:point-centroid}
 	Sei $V$ ein euklidischer Vektorraum und $S \subset V$ eine Vektormenge mit dem geometrischen
-	Zentroiden $z(S) = \frac{1}{\left|S\right|} \sum_{\vect{x} \in P} \vect{x}$.
+	Zentroiden $z(S) = \frac{1}{\left|S\right|} \sum_{\vect{x} \in S} \vect{x}$.
 	Weiterhin sei $\vect{q} \in V$ ein beliebiger Vektor aus $V$. Es gilt:
 	\[ \sum_{\vect{x} \in S} \EuclidSquared{\vect{x}}{\vect{q}} - \sum_{\vect{x} \in S} \EuclidSquared{\vect{x}}{z(S)}
 		= \left|S\right| \cdot \EuclidSquared{z(S)}{\vect{q}} \]
 \end{lemma}
+Ein Beweis von Lemma~\ref{lemma:point-centroid} findet sich beispielsweise in~\cite[Lemma 2.4.1, S. 25]{Schmidt14}.
 Wir zeigen nun das eigentliche Ergebnis.
 
 \begin{satz}[\kkmpp{} ist $\BigO{\log k}$-kompetitiv]
@@ -355,7 +359,7 @@ der $D^2$-Gewichtung gewählt werden. Im dritten und letzten Schritt beweisen wi
 		&= \frac{1}{\left|A\right|} \sum_{\vect{p} \in A} \left( \sum_{\vect{p}' \in A} \EuclidSquared{\phi(\vect{p}')}{z(A)} 
 			+ \left|A\right| \cdot \EuclidSquared{\phi(\vect{p})}{z(A)} \right) \\
 		&= 2 \sum_{\vect{p} \in A} \EuclidSquared{\phi(\vect{p})}{z(A)} \\
-		&= E[\theta(A)]
+		&= 2 E[\theta(A)]
 	\end{align*}
 \end{proof}
 Wir zeigen nun, dass die Approximationseigenschaft auch für die übrigen Zentren, die gemäß der $D^2$-Gewichtung gewählt werden,
@@ -369,19 +373,19 @@ gilt.
 \begin{proof}
 	Ein Punkt $\vect{p} \in A$ wird mit der Wahrscheinlichkeit
 	\[ \frac{D(\phi(\vect{p}))^2}{\sum_{\vect{p}' \in A} D(\phi(\vect{p}'))^2} \]
-	als Zentrum gewählt. Wenn der Punkt $\vect{p}$ als Zentrum gewählt wird, beträgt der Potenzial-Wert eines Punktes $\vect{p'}$,
-	der dem Zentrum $\vect{p}$ zugeordnet ist, genau
+	als Zentrum gewählt. Wenn der Punkt $\vect{p}$ als Zentrum gewählt wird, beträgt der Potenzial-Wert eines Punktes $\vect{p'}$
+	der dem Zentrum $\vect{p}$ zugeordnet ist, vor dem Hinzufügen von $p$ genau
 	\[ \min \{ D(\phi(\vect{p}')), \EuclidSquared{\phi(\vect{p}')}{\phi(\vect{p})} \} \]
 	Der Erwartungswert für das Potenzial des gesamten Clusters $A$ ist dementsprechend:
 	\[  E[\theta(A)] = \sum_{\vect{p} \in A} \frac{D(\phi(\vect{p}))^2}{\sum_{\vect{p}' \in A} D(\phi(\vect{p}'))^2}
 		\sum_{\vect{p}' \in A} \min \{ D(\phi(\vect{p}')), \EuclidSquared{\phi(\vect{p}')}{\phi(\vect{p})} \} \]
 	Für die Berechnung von $D(\phi(\vect{p}'))$ und der Distanzen $\Euclid{\phi(\vect{p}')}{\phi(\vect{p})}$ verwenden
-	wir im \kkmpp-Algorithmus die Kernelfunktion $\kappa$. Wenn die Kernelfunktion, beziehungsweise die zugehörige
-	Kernelmatrix \emph{positiv definit} ist (für Details siehe beispielsweise~\cite{Shawe-TaylorC04}), gilt für diese die
+	wir im \kkmpp-Algorithmus die Kernelfunktion $\kappa$. Die Kernelfunktion beziehungsweise die zugehörige
+	Kernelmatrix ist \emph{positiv definit} (für Details siehe beispielsweise~\cite{Shawe-TaylorC04}), daher gilt für diese die
 	Cauchy-Schwarz-Ungleichung, also $\left|\kappa(x,y)\right|^2 \leq \kappa(x,x) \cdot \kappa(y,y)$.
 	Aus der Cauchy-Schwarz-Ungleichung folgen die Dreiecks-Ungleichung, sowie die Power-Mean-Ungleichung bezüglich der
-	Kernelfunktion. Die üblichen Kernelfunktionen wie beispielsweise in Tabelle~\ref{tbl:kernel-functions} sowie die
-	in unseren Experimenten eingesetzten Kernel haben eine positiv definite zugehörige Kernelmatrix. Wir können daher an
+	Kernelfunktion. Letztere besagt für reelle Zahlen $a_1, \dots, a_m$:
+	$\sum a_i^2 \geq \frac{1}{m} \left( \sum_{a_i} \right)^2$. Wir können daher an
 	dieser Stelle die Dreiecks-Ungleichung anwenden und erhalten für alle $\vect{p}, \vect{p}'$:
 	\[ D(\phi(\vect{p})) \leq D(\phi(\vect{p}')) + \Euclid{\phi(\vect{p}')}{\phi(\vect{p})} \]
 	Für die $D^2$-Gewichtung gilt zudem mit der Power-Mean-Ungleichung:
@@ -409,7 +413,7 @@ gilt.
 Aus den Lemmas~\ref{lemma:kkmpp-first-center-approx} und~\ref{lemma:kkmpp-remaining-center-approx} folgt, dass
 die Wahl der Zentren von \kkmpp{} der Approximationseigenschaft genügt, solange der Algorithmus Zentren aus jedem Cluster
 des optimalen Clusterings $C_\textrm{OPT}$ auswählt. Im dritten und letzten Schritt unserer Analyse zeigen wir nun,
-dass der entstehende Fehler im anderen Fall nach oben insgesamt durch $\BigO{\log k}$ beschränkt ist.
+dass der entstehende Fehler im anderen Fall im Erwartungswert nach oben insgesamt durch $\BigO{\log k}$ beschränkt ist.
 
 \begin{lemma}
 \label{lemma:kkmpp-error}
@@ -442,13 +446,13 @@ dass der entstehende Fehler im anderen Fall nach oben insgesamt durch $\BigO{\lo
 	Zentrum wählen.
 	\begin{enumerate}
 		\item[(a)] 	Wir nehmen an, das erste gewählte Zentrum stammt aus einem abgedeckten Cluster. Analog zum Induktionsanfang
-					ist die Wahrscheinlichkeit dafür $\frac{\theta(P_c)}{\theta(C)}$. Da das Zentrum aus einem abgedeckten
+					ist die Wahrscheinlichkeit dafür $\frac{\theta(P_c)}{\theta(C)}$. Da das neue Zentrum aus einem abgedeckten
 					Cluster stammt, kann es $\theta(C)$ nicht vergrößern. Wir verwenden die Induktionsannahme mit $t-1$.
 					Folglich tragen wir erwartet höchstens den folgenden Betrag zu $E[\theta'(C)]$ bei:
 					\[ \frac{\theta(P_c)}{\theta(C)} \cdot \left( \left( \theta(P_c) + 8 \optpot(P_u) \right)
 						\cdot (1 + H_{t-1}) + \frac{u - (t-1)}{u} \cdot \theta(P_u) \right) \]
-		\item[(b)] 	Wir nehmen an, das erste gewählte Zentrum stammt aus einem freien Cluster $A$. Auch hier ist die
-					Wahrscheinlichkeit für dieses Ereignis $\frac{\theta(A)}{\theta(C)}$. Für alle $a \in A$ sei
+		\item[(b)] 	Wir nehmen an, das erste gewählte Zentrum stammt aus einem freien Cluster $A$. Die
+					Wahrscheinlichkeit für dieses Ereignis ist $\frac{\theta(A)}{\theta(C)}$. Für alle $a \in A$ sei
 					$p_a$ die Wahrscheinlichkeit, dass wir $a$ als Zentrum wählen. Weiterhin sei $\theta_a$ das Potenzial
 					$\theta(A)$, nachdem $a$ als Zentrum gewählt wurde. Wir wenden wieder die Induktionsannahme an, setzen
 					jedoch $t = t-1$, $u = u-1$ und fügen $A$ zur Menge der abgedeckten Cluster hinzu. Dann tragen wir
