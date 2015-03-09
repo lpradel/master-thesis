@@ -1474,11 +1474,452 @@ besser sind als die für \kmpp{} gemessenen Werte. In der Spitze ist \KCsTwo{} b
 Datenstromalgorithmen sind jedoch über alle Konfigurationen hinweg durchgehend um einige Größenordnungen schneller.
 
 \subsubsection{Graphpartitionierung mit der Kernmengenkonstruktion}
-Es ist naheliegend, dass wir somit unter Einsatz von \KCsTwo{} noch einmal eine Leistungssteigerung in der Graphpartitionierung
+Es ist naheliegend, dass wir unter Einsatz von \KCsTwo{} noch einmal eine Leistungssteigerung in der Graphpartitionierung
 erreichen können, da \KCsTwo{} bessere $k$-means-Lösungen produziert als \kmpp.
-Dies lässt sich in den folgenden beiden Tabellen~\ref{tbl:experiment-coreset-ncut-128}
-und~\ref{tbl:experiment-coreset-ncut-runtime-128} für den Normalized Cut erkennen.
-Die durchschnittliche Verbesserung beträgt hier in etwa 5-10\%.
+Wir wollen daher auch für \KCsTwo{} die Experimente zur Graphpartitionierung durchführen. Dazu verwenden wir wieder
+die Datensätze in Tabelle~\ref{tbl:experiment-kkmpp-datasets}. Wie zuvor werden jeweils 128 und 512 Partitionierungen berechnet.
+Dadurch ist es nötig, die Parameter von \KCsTwo{} leicht zu modifizieren, damit wir wieder eine Kernmenge der Größe
+$200k$ erhalten. Für $k = 128$ wurde \KCsTwo{} mit $c = 45, d = 20, f = 1.5, T = 10$ parametrisiert. Für $k = 512$ wurde
+$c = 50, d = 30, f = 1.3, T = 12$ gewählt. Bei den Experimenten haben wir wiederum 100 Durchläufe pro Algorithmus durchgeführt
+und geben in den Ergebnistabellen jeweils den durchschnittlichen Wert an.
+Wir betrachten zunächst die Werte und Laufzeiten für die Ratio Association.
+\absatz
+Bezüglich der Zielfunktionswerte für die Ratio Association erreichen wir mit \KCsTwo{} in etwa die Qualität des spektralen
+Algorithmus. Auf einigen Datensätzen erzielt \KCsTwo{} geringfügig bessere Werte, auf AUTO und BCSSTK31 hingegen leicht schlechtere
+Werte. Insgesamt ist \KCsTwo{} geringfügig schlechter als der spektrale Algorithmus. Dafür ist die Kernmengenkonstruktion
+mindestens gleichauf mit METIS und verbessert \kkmpp{} insgesamt um durchschnittlich 5\%. Bei den Laufzeiten in
+den Tabellen~\ref{tbl:experiment-coreset-ratioassoc-runtime-128} und~\ref{tbl:experiment-coreset-ratioassoc-runtime-512}
+ist eine zusätzliche Beschleunigung von rund 10\% gegenüber \kkmpp{} zu erkennen. Damit erhalten wir einen Speedup im Vergleich
+zum spektralen Algorithmus von mehr als zwei. METIS ist im Schnitt etwas weniger als einen Faktor zwei langsamer.
+Bei $k = 512$ ist der Speedup gegenüber dem spektralen Algorithmus wie schon zuvor bei \kkmpp{} auf einigen Datensätzen sogar
+noch größer.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CORESET - RASSOC
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}
+		[grid=major,height=7.5cm,width=14cm,
+		 legend style={legend pos=north west,font=\tiny,legend columns=2,at={(0.65,-0.12)}},
+		 xlabel=Datensatz,ylabel={Ratio Association (log.)},
+		 x label style={align=center},
+		 y label style={align=center},
+		 ybar,
+		 ymode=log,
+		 symbolic x coords={BCSSTK31,T60K,598A,144,M14B,AUTO},xtick=data]
+			\addplot[fill=red!40!white,postaction={pattern=north west lines}]
+				coordinates {
+				(BCSSTK31,4150)
+				(T60K,365)
+				(598A,1523)
+				(144,1717)
+				(M14B,1854)
+				(AUTO,1760)
+			};
+			\addlegendentry{METIS}
+			\addplot[fill=green!40!white,postaction={pattern=crosshatch}]
+				coordinates {
+				(BCSSTK31,4422)
+				(T60K,403)
+				(598A,1827)
+				(144,1908)
+				(M14B,2155)
+				(AUTO,3052)
+			};
+			\addlegendentry{Spektral}
+			\addplot[fill=gray!40!white,postaction={pattern=crosshatch dots}]
+				coordinates {
+				(BCSSTK31,4199)
+				(T60K,378)
+				(598A,1707)
+				(144,1902)
+				(M14B,2255)
+				(AUTO,2988)
+			};
+			\addlegendentry{\kkmpp}
+			\addplot[fill=orange!40!white,postaction={pattern=north east lines}]
+				coordinates {
+				(BCSSTK31,4289)
+				(T60K,390)
+				(598A,1765)
+				(144,1910)
+				(M14B,2271)
+				(AUTO,3005)
+			};
+			\addlegendentry{\KCsTwo}
+		\end{axis}
+	\end{tikzpicture}
+\caption{Durchschnittliche Ratio Association Werte der Algorithmen für $k = 128$ (je größer, desto besser).}
+\label{fig:experiment-coreset-ratioassoc-128}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}
+		[grid=major,height=7.5cm,width=14cm,
+		 legend style={legend pos=north west,font=\tiny,legend columns=2,at={(0.65,-0.12)}},
+		 xlabel=Datensatz,ylabel={Ratio Association (log.)},
+		 x label style={align=center},
+		 y label style={align=center},
+		 ybar,
+		 ymode=log,
+		 symbolic x coords={BCSSTK31,T60K,598A,144,M14B,AUTO},xtick=data]
+			\addplot[fill=red!40!white,postaction={pattern=north west lines}]
+				coordinates {
+				(BCSSTK31,11984)
+				(T60K,1386)
+				(598A,5502)
+				(144,6236)
+				(M14B,6927)
+				(AUTO,6610)
+			};
+			\addlegendentry{METIS}
+			\addplot[fill=green!40!white,postaction={pattern=crosshatch}]
+				coordinates {
+				(BCSSTK31,13002)
+				(T60K,1527)
+				(598A,5899)
+				(144,6899)
+				(M14B,7832)
+				(AUTO,7603)
+			};
+			\addlegendentry{Spektral}
+			\addplot[fill=gray!40!white,postaction={pattern=crosshatch dots}]
+				coordinates {
+				(BCSSTK31,12873)
+				(T60K,1620)
+				(598A,5755)
+				(144,6133)
+				(M14B,8052)
+				(AUTO,6922)
+			};
+			\addlegendentry{\kkmpp}
+			\addplot[fill=orange!40!white,postaction={pattern=north east lines}]
+				coordinates {
+				(BCSSTK31,12910)
+				(T60K,1642)
+				(598A,5832)
+				(144,6477)
+				(M14B,8122)
+				(AUTO,7264)
+			};
+			\addlegendentry{\KCsTwo}
+		\end{axis}
+	\end{tikzpicture}
+\caption{Durchschnittliche Ratio Association Werte der Algorithmen für $k = 512$ (je größer, desto besser).}
+\label{fig:experiment-coreset-ratioassoc-512}
+\end{figure}
+\newpage
+\begin{table}[h!]
+\centering
+\begin{tabular}{@{}cccccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{Zufall} & \textbf{METIS} & \textbf{Spektral} & \textbf{\kkmpp{}} & \textbf{\KCsTwo{}} \\ \midrule
+	BCSSTK31 	& 3265 & 4150 & 4422 & 4199 & 4289 \\
+	T60K 		& 263 & 365 & 403 & 378 & 390 \\
+	598A 		& 1144 & 1523 & 1827 & 1707 & 1765  \\
+	144 		& 1223 & 1717 & 1908 & 1902 & 1910  \\
+	M14B 		& 1022 & 1854 & 2155 & 2255 & 2271  \\
+	AUTO 		& 1197 & 1760 & 3052 & 2988 & 3005  \\
+	\bottomrule
+\end{tabular}
+\caption{Durchschnittliche Ratio Association Werte der Algorithmen für $k = 128$ (je größer, desto besser).}
+\label{tbl:experiment-coreset-ratioassoc-128}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{@{}cccccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{Zufall} & \textbf{METIS} & \textbf{Spektral} & \textbf{\kkmpp{}} & \textbf{\KCsTwo{}} \\ \midrule
+	BCSSTK31 	& 8522 & 11984 & 13002 & 12873 & 12910 \\
+	T60K 		& 875 & 1386 & 1527 & 1620 & 1642  \\
+	598A 		& 4003 & 5502 & 5899 & 5755 & 5832 \\
+	144 		& 4833 & 6236 & 6899 & 6133 & 6477 \\
+	M14B 		& 4687 & 6927 & 7832 & 8052 & 8122 \\
+	AUTO 		& 5498 & 6610 & 7603 & 6922 & 7264 \\
+	\bottomrule
+\end{tabular}
+\caption{Durchschnittliche Ratio Association Werte der Algorithmen für $k = 512$ (je größer, desto besser).}
+\label{tbl:experiment-coreset-ratioassoc-512}
+\end{table}
+
+\newpage
+
+\begin{figure}[ht!]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}
+		[grid=major,height=7.5cm,width=14cm,
+		 legend style={legend pos=north west,font=\tiny,legend columns=2,at={(0.65,-0.12)}},
+		 xlabel=Datensatz,ylabel={Laufzeit [s] (log.)},
+		 x label style={align=center},
+		 y label style={align=center},
+		 %ybar,
+		 ymode=log,
+		 symbolic x coords={BCSSTK31,T60K,598A,144,M14B,AUTO},xtick=data]
+			\addplot
+				coordinates {
+				(BCSSTK31,0.38)
+				(T60K,0.18)
+				(598A,0.98)
+				(144,1.4)
+				(M14B,2)
+				(AUTO,4.5)
+			};
+			\addlegendentry{METIS}
+			\addplot
+				coordinates {
+				(BCSSTK31,0.5)
+				(T60K,0.2)
+				(598A,1.3)
+				(144,2.1)
+				(M14B,3)
+				(AUTO,6)
+			};
+			\addlegendentry{Spektral}
+			\addplot
+				coordinates {
+				(BCSSTK31,0.1)
+				(T60K,0.1)
+				(598A,0.6)
+				(144,0.7)
+				(M14B,1)
+				(AUTO,2.7)
+			};
+			\addlegendentry{\kkmpp}
+			\addplot
+				coordinates {
+				(BCSSTK31,0.1)
+				(T60K,0.1)
+				(598A,0.59)
+				(144,0.68)
+				(M14B,0.9)
+				(AUTO,2.62)
+			};
+			\addlegendentry{\KCsTwo}
+		\end{axis}
+	\end{tikzpicture}
+\caption{Durchschnittliche Laufzeiten der Algorithmen für Ratio Association mit $k = 128$.}
+\label{fig:experiment-coreset-ratioassoc-runtime-128}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}
+		[grid=major,height=7.5cm,width=14cm,
+		 legend style={legend pos=north west,font=\tiny,legend columns=2,at={(0.65,-0.12)}},
+		 xlabel=Datensatz,ylabel={Laufzeit [s] (log.)},
+		 x label style={align=center},
+		 y label style={align=center},
+		 %ybar,
+		 ymode=log,
+		 symbolic x coords={BCSSTK31,T60K,598A,144,M14B,AUTO},xtick=data]
+			\addplot
+				coordinates {
+				(BCSSTK31,0.98)
+				(T60K,0.48)
+				(598A,2.83)
+				(144,3.7)
+				(M14B,5.8)
+				(AUTO,12.3)
+			};
+			\addlegendentry{METIS}
+			\addplot
+				coordinates {
+				(BCSSTK31,1.22)
+				(T60K,0.87)
+				(598A,6.43)
+				(144,7.72)
+				(M14B,12.11)
+				(AUTO,26.32)
+			};
+			\addlegendentry{Spektral}
+			\addplot
+				coordinates {
+				(BCSSTK31,0.5)
+				(T60K,0.33)
+				(598A,1.58)
+				(144,1.63)
+				(M14B,3.01)
+				(AUTO,6.98)
+			};
+			\addlegendentry{\kkmpp}
+			\addplot
+				coordinates {
+				(BCSSTK31,0.44)
+				(T60K,0.28)
+				(598A,1.45)
+				(144,1.52)
+				(M14B,2.93)
+				(AUTO,6.57)
+			};
+			\addlegendentry{\KCsTwo}
+		\end{axis}
+	\end{tikzpicture}
+\caption{Durchschnittliche Laufzeiten der Algorithmen für Ratio Association mit $k = 512$.}
+\label{fig:experiment-coreset-ratioassoc-runtime-512}
+\end{figure}
+\newpage
+\begin{table}[t!]
+\centering
+\begin{tabular}{@{}cccccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{Zufall} & \textbf{METIS} & \textbf{Spektral} & \textbf{\kkmpp{}} & \textbf{\KCsTwo{}} \\ \midrule
+	BCSSTK31 	& 0.1 & 0.38 & 0.51 & 0.1 & 0.1  \\
+	T60K 		& 0.1 & 0.18 & 0.25 & 0.1 & 0.1  \\
+	598A 		& 0.51 & 0.98 & 1.35 & 0.63 & 0.59  \\
+	144 		& 0.62 & 1.43 & 2.16 & 0.74 & 0.68  \\
+	M14B 		& 0.95 & 2.0 & 3 & 1.0 & 0.9  \\
+	AUTO 		& 2.13 & 4.5 & 6 & 2.72 & 2.62  \\
+	\bottomrule
+\end{tabular}
+\caption{Durchschnittliche Laufzeiten der Algorithmen für Ratio Association mit $k = 128$.}
+\label{tbl:experiment-coreset-ratioassoc-runtime-128}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{@{}cccccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{Zufall} & \textbf{METIS} & \textbf{Spektral} & \textbf{\kkmpp{}} & \textbf{\KCsTwo{}} \\ \midrule
+	BCSSTK31 	& 0.42 & 0.98 & 1.22 & 0.5 & 0.44  \\
+	T60K 		& 0.21 & 0.48 & 0.87 & 0.33 & 0.28  \\
+	598A 		& 1.35 & 2.83 & 6.43 & 1.58 & 1.45  \\
+	144 		& 1.47 & 3.7 & 7.72 & 1.63 & 1.52  \\
+	M14B 		& 2.73 & 5.8 & 12.11 & 3.01 & 2.93  \\
+	AUTO 		& 6.25 & 12.3 & 26.32 & 6.98 & 6.57  \\
+	\bottomrule
+\end{tabular}
+\caption{Durchschnittliche Laufzeiten der Algorithmen für Ratio Association mit $k = 512$.}
+\label{tbl:experiment-coreset-ratioassoc-runtime-512}
+\end{table}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CORESET - NCUT
+
+Wir betrachten nun die Ergebnisse für die Normalized Cut Zielfunktion.
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}
+		[grid=major,height=7.5cm,width=14cm,
+		 legend style={legend pos=north west,font=\tiny,legend columns=2,at={(0.65,-0.12)}},
+		 xlabel=Datensatz,ylabel={Normalized Cut (log.)},
+		 x label style={align=center},
+		 y label style={align=center},
+		 ybar,
+		 ymode=log,
+		 symbolic x coords={BCSSTK31,T60K,598A,144,M14B,AUTO},xtick=data]
+			\addplot[fill=red!40!white,postaction={pattern=north west lines}]
+				coordinates {
+				(BCSSTK31,21.5)
+				(T60K,5.4)
+				(598A,14.3)
+				(144,12.9)
+				(M14B,21)
+				(AUTO,9.9)
+			};
+			\addlegendentry{METIS}
+			\addplot[fill=green!40!white,postaction={pattern=crosshatch}]
+				coordinates {
+				(BCSSTK31,19.8)
+				(T60K,4.8)
+				(598A,12.4)
+				(144,10.3)
+				(M14B,18.7)
+				(AUTO,8.2)
+			};
+			\addlegendentry{Spektral}
+			\addplot[fill=gray!40!white,postaction={pattern=crosshatch dots}]
+				coordinates {
+				(BCSSTK31,22)
+				(T60K,5.8)
+				(598A,13.5)
+				(144,12.7)
+				(M14B,21.7)
+				(AUTO,9.5)
+			};
+			\addlegendentry{\kkmpp}
+			\addplot[fill=orange!40!white,postaction={pattern=north east lines}]
+				coordinates {
+				(BCSSTK31,20.7)
+				(T60K,5.0)
+				(598A,12.4)
+				(144,11.9)
+				(M14B,20.2)
+				(AUTO,8.8)
+			};
+			\addlegendentry{\KCsTwo}
+		\end{axis}
+	\end{tikzpicture}
+\caption{Durchschnittliche Normalized Cut Werte der Algorithmen für $k = 128$ (je kleiner, desto besser).}
+\label{fig:experiment-coreset-ncut-128}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}
+		[grid=major,height=7.5cm,width=14cm,
+		 legend style={legend pos=north west,font=\tiny,legend columns=2,at={(0.65,-0.12)}},
+		 xlabel=Datensatz,ylabel={Normalized Cut (log.)},
+		 x label style={align=center},
+		 y label style={align=center},
+		 ybar,
+		 ymode=log,
+		 symbolic x coords={BCSSTK31,T60K,598A,144,M14B,AUTO},xtick=data]
+			\addplot[fill=red!40!white,postaction={pattern=north west lines}]
+				coordinates {
+				(BCSSTK31,160.4)
+				(T60K,46.9)
+				(598A,99.3)
+				(144,94)
+				(M14B,81)
+				(AUTO,69.8)
+			};
+			\addlegendentry{METIS}
+			\addplot[fill=green!40!white,postaction={pattern=crosshatch}]
+				coordinates {
+				(BCSSTK31,132.4)
+				(T60K,37.3)
+				(598A,87.5)
+				(144,81.3)
+				(M14B,72.7)
+				(AUTO,62.5)
+			};
+			\addlegendentry{Spektral}
+			\addplot[fill=gray!40!white,postaction={pattern=crosshatch dots}]
+				coordinates {
+				(BCSSTK31,172.3)
+				(T60K,48.7)
+				(598A,95.2)
+				(144,93.3)
+				(M14B,80.1)
+				(AUTO,70)
+			};
+			\addlegendentry{\kkmpp}
+			\addplot[fill=orange!40!white,postaction={pattern=north east lines}]
+				coordinates {
+				(BCSSTK31,165.5)
+				(T60K,45.6)
+				(598A,89.2)
+				(144,88.6)
+				(M14B,73.5)
+				(AUTO,65.7)
+			};
+			\addlegendentry{\KCsTwo}
+		\end{axis}
+	\end{tikzpicture}
+\caption{Durchschnittliche Normalized Cut Werte der Algorithmen für $k = 512$ (je kleiner, desto besser).}
+\label{fig:experiment-coreset-ncut-512}
+\end{figure}
+
+\newpage
 
 \begin{table}[h]
 \centering
@@ -1499,6 +1940,142 @@ Die durchschnittliche Verbesserung beträgt hier in etwa 5-10\%.
 \begin{table}[h]
 \centering
 \begin{tabular}{@{}cccccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{Zufall} & \textbf{METIS} & \textbf{Spektral} & \textbf{\kkmpp{}} & \textbf{\KCsTwo{}} \\ \midrule
+	BCSSTK31 	& 200.3 & 160.4 & 132.4 & 172.3 & 165.5 \\
+	T60K 		& 58.2 & 46.9 & 37.3 & 48.7 & 45.6  \\
+	598A 		& 124.7 & 99.3 & 87.5 & 95.2 & 89.2  \\
+	144 		& 122.5 & 94 & 81.3 & 93.3 & 88.6  \\
+	M14B 		& 112.6 & 81 & 72.7 & 80.1 & 73.5  \\
+	AUTO 		& 98.3 & 69.8 & 62.5 & 70 & 65.7  \\
+	\bottomrule
+\end{tabular}
+\caption{Durchschnittliche Normalized Cut Werte der Algorithmen für $k = 512$ (je kleiner, desto besser).}
+\label{tbl:experiment-coreset-ncut-512}
+\end{table}
+
+\newpage
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}
+		[grid=major,height=7.5cm,width=14cm,
+		 legend style={legend pos=north west,font=\tiny,legend columns=2,at={(0.65,-0.12)}},
+		 xlabel=Datensatz,ylabel={Laufzeit [s] (log.)},
+		 x label style={align=center},
+		 y label style={align=center},
+		 %ybar,
+		 ymode=log,
+		 symbolic x coords={BCSSTK31,T60K,598A,144,M14B,AUTO},xtick=data]
+			\addplot
+				coordinates {
+				(BCSSTK31,0.33)
+				(T60K,0.18)
+				(598A,0.97)
+				(144,1.3)
+				(M14B,2)
+				(AUTO,4.2)
+			};
+			\addlegendentry{METIS}
+			\addplot
+				coordinates {
+				(BCSSTK31,0.6)
+				(T60K,0.3)
+				(598A,1.5)
+				(144,2.6)
+				(M14B,3.8)
+				(AUTO,7.3)
+			};
+			\addlegendentry{Spektral}
+			\addplot
+				coordinates {
+				(BCSSTK31,0.1)
+				(T60K,0.1)
+				(598A,0.5)
+				(144,0.6)
+				(M14B,1.1)
+				(AUTO,2.9)
+			};
+			\addlegendentry{\kkmpp}
+			\addplot
+				coordinates {
+				(BCSSTK31,0.1)
+				(T60K,0.1)
+				(598A,0.5)
+				(144,0.5)
+				(M14B,1.0)
+				(AUTO,2.7)
+			};
+			\addlegendentry{\KCsTwo}
+		\end{axis}
+	\end{tikzpicture}
+\caption{Durchschnittliche Laufzeiten der Algorithmen für Normalized Cut mit $k = 128$.}
+\label{fig:experiment-coreset-ncut-runtime-128}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}
+		[grid=major,height=7.5cm,width=14cm,
+		 legend style={legend pos=north west,font=\tiny,legend columns=2,at={(0.65,-0.12)}},
+		 xlabel=Datensatz,ylabel={Laufzeit [s] (log.)},
+		 x label style={align=center},
+		 y label style={align=center},
+		 %ybar,
+		 ymode=log,
+		 symbolic x coords={BCSSTK31,T60K,598A,144,M14B,AUTO},xtick=data]
+			\addplot
+				coordinates {
+				(BCSSTK31,1)
+				(T60K,0.59)
+				(598A,3.1)
+				(144,4.2)
+				(M14B,6.2)
+				(AUTO,11.5)
+			};
+			\addlegendentry{METIS}
+			\addplot
+				coordinates {
+				(BCSSTK31,1.63)
+				(T60K,1.05)
+				(598A,8.33)
+				(144,10.23)
+				(M14B,16.73)
+				(AUTO,31.29)
+			};
+			\addlegendentry{Spektral}
+			\addplot
+				coordinates {
+				(BCSSTK31,0.5)
+				(T60K,0.33)
+				(598A,1.65)
+				(144,1.93)
+				(M14B,3.52)
+				(AUTO,7.63)
+			};
+			\addlegendentry{\kkmpp}
+			\addplot
+				coordinates {
+				(BCSSTK31,0.46)
+				(T60K,0.27)
+				(598A,1.44)
+				(144,1.70)
+				(M14B,3.13)
+				(AUTO,7.16)
+			};
+			\addlegendentry{\KCsTwo}
+		\end{axis}
+	\end{tikzpicture}
+\caption{Durchschnittliche Laufzeiten der Algorithmen für Normalized Cut mit $k = 512$.}
+\label{fig:experiment-coreset-ncut-runtime-512}
+\end{figure}
+
+\newpage
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}cccccc@{}} \toprule
 	\textbf{Datensatz} & \textbf{Zufall} & \textbf{METIS} & \textbf{Spektral} & \textbf{\kkmpp{}} &  \textbf{\KCsTwo{}} \\ \midrule
 	BCSSTK31 	& 0.1 & 0.33 & 0.6 & 0.1 & 0.1 \\
 	T60K 		& 0.1 & 0.18 & 0.3 & 0.1 & 0.1 \\
@@ -1511,3 +2088,33 @@ Die durchschnittliche Verbesserung beträgt hier in etwa 5-10\%.
 \caption{Durchschnittliche Laufzeiten der Algorithmen für Normalized Cut mit $k = 128$.}
 \label{tbl:experiment-coreset-ncut-runtime-128}
 \end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}cccccc@{}} \toprule
+	\textbf{Datensatz} & \textbf{Zufall} & \textbf{METIS} & \textbf{Spektral} & \textbf{\kkmpp{}} & \textbf{\KCsTwo{}} \\ \midrule
+	BCSSTK31 	& 0.45 & 1.0 & 1.63 & 0.5 & 0.46  \\
+	T60K 		& 0.27 & 0.59 & 1.05 & 0.33 & 0.27  \\
+	598A 		& 1.42 & 3.1 & 8.33 & 1.65 & 1.44  \\
+	144 		& 1.59 & 4.2 & 10.23 & 1.93 & 1.70  \\
+	M14B 		& 2.81 & 6.2 & 16.73 & 3.52 & 3.13 \\
+	AUTO 		& 6.06 & 11.5 & 31.29 & 7.63 & 7.16 \\
+	\bottomrule
+\end{tabular}
+\caption{Durchschnittliche Laufzeiten der Algorithmen für Normalized Cut mit $k = 512$.}
+\label{tbl:experiment-coreset-ncut-runtime-512}
+\end{table}
+Bezüglich der Normalized Cut Zielfunktionswerte erzielt \KCsTwo{} eine etwas größere Verbesserung als bei der Ratio Association.
+Wir können den Tabellen~\ref{tbl:experiment-coreset-ncut-128} und ~\ref{tbl:experiment-coreset-ncut-512} entnehmen, dass die
+Kernmengenkonstruktion beispielsweise im Vergleich zu \kkmpp{} durchschnittlich etwa 10\% bessere Ergebnisse erzielt. Bei
+der Ratio Association lag die Verbesserung nur bei etwa 5\%. Im Vergleich zum spektralen Algorithmus sind die
+Zielfunktionswerte von \KCsTwo{} beim Normalized Cut jedoch immer noch etwas schlechter. Mit Ausnahme des Datensatzes 598A
+erzielt die Kernmengenkonstruktion im Schnitt etwa 7\% schlechtere Werte als der spektrale Algorithmus. METIS hingegen
+ist im Durchschnitt wiederum etwa 5\% schlechter als \KCsTwo.
+
+Bei den Laufzeiten in den Tabellen~\ref{tbl:experiment-coreset-ncut-runtime-128} und~\ref{tbl:experiment-coreset-ncut-runtime-512}
+zeichnet sich ein ähnliches Bild wie bei der Ratio Association. Für $k=128$ erzielt \KCsTwo{} einen Speedup von rund 10\%
+im Vergleich zu \kkmpp. Bei $k=512$ ist der Speedup mit durchschnittlich 12\% sogar noch etwas größer. Im Vergleich zum
+spektralen Algorithmus und METIS ist der Speedup beim Normalized Cut noch etwas größer als bei der Ratio Association.
+METIS ist insgesamt etwa einen Faktor $2,5$ langsamer, der spektrale Algorithmus insbesondere bei $k=512$ sogar noch deutlich
+langsamer.
