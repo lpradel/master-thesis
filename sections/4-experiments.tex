@@ -1064,7 +1064,7 @@ UCI Machine Learning Repository.
 \paragraph{Kernmengen-Größe.}
 Eine asymptotische Größe von $\mathcal{O}(k)$ ist eine natürliche untere Schranke für die Größe einer Kernmenge, die wir
 erreichen wollen. Wir orientieren uns in unseren Experimenten an~\cite{AckermannMRSLS12,FichtenbergerGSSS13}. In beiden Papieren
-wurden in der experimentellen Auswertungen Kernmengen der Größe $200k$ konstruiert. Für die beiden Datensätze Spambase und
+wurden in den experimentellen Auswertungen Kernmengen der Größe $200k$ konstruiert. Für die beiden Datensätze Spambase und
 NYSK würden die Kernmengen bei einer Größe von $200k$ mehr Punkte enthalten als die Ursprungsmenge. Bei diesen beiden Datensätzen
 haben wir daher Kernmengen der Größe $20k$ berechnet, um mehr Testwerte für einen umfassenderen Vergleich zu generieren, sofern
 die Wahl der Parameter dies zulässt (insbesondere $c \leq 20$).
@@ -1082,7 +1082,7 @@ jeweils mit $k \in \{ 10, 30, 50 \}$ aus.
 Wir geben bei den Ergebnistabellen immer den durchschnittlichen Wert für Kosten und Laufzeit von zehn Ausführungen
 des $k$-means-Algorithmus beziehungsweise des \kmpp-Algorithmus für je zehn Ausführungen der Kernmengen-Algorithmen an.
 Bei den Kernmengen-Algorithmen beziehen sich diese Werte auf die Ausführung von $k$-means beziehungsweise \kmpp{} unter
-Eingabe der Kernmenge und bei $k$-means beziehungsweise \kmpp{} selbst auf die 100 Ausführungen auf der gesamten Punktmenge $P$.
+Eingabe der Kernmenge und bei \kmpp{} selbst auf die 100 Ausführungen auf der gesamten Punktmenge $P$.
 Für \CsTwo{} geben wir die jeweiligen Parameter im Namen des Algorithmus an. Beispielsweise schreiben wir für
 $c = 200$, $d=/$, $f=/$ und $T=1$: \CsTwo-c-200-d-/-f-/-T-1.
 Die Wahl von $d$ und $f$ ist hier irrelevant, da wegen $T$ nur initial partitioniert wird. Dies deuten wir mit der
@@ -1186,7 +1186,7 @@ Wir können jedoch insbesondere bei den Datenstromalgorithmen einen massiven Unt
 Laufzeit ausmachen. Die Datenstromalgorithmen sind deutlich schneller als \kmpp{} und die Kernmengenkonstruktion.
 \CsTwo{} erzielt hier die geringsten Laufzeiten bei $c=50, d=10$, ist jedoch im Schnitt immer noch ca. 10-15\% langsamer als \kmpp.
 
-Wir betrachten als nächstes die Ergebnisse Kernmengen-Algorithmen bei anschließender Ausführung von \kmpp.
+Wir betrachten als nächstes die Ergebnisse der Kernmengen-Algorithmen bei anschließender Ausführung von \kmpp.
 \begin{table}[h]
 \centering
 \begin{tabular}{@{}cccccc@{}} \toprule
@@ -1469,7 +1469,7 @@ wurde anschließend der \kmpp-means-Algorithmus ausgeführt.}
 \end{table}
 Wie erwartet erbringt \KCsTwo{} die besten Ergebnisse bezüglich $k$-means-Kosten und Laufzeit, wenn auf die berechnete Kernmenge
 der \kmpp-Algorithmus angewandt wird. \KCsTwo{} erzielt mit $c=50$ und $d=10$ durchweg Ergebnisse, die um einige Prozentpunkte
-besser sind als die für \kmpp{} gemessenen Werte. In der Spitze ist \KCsTwo{} bei den $k$-means-Kosten in etwa gleich auf mit
+besser sind als die für \kmpp{} gemessenen Werte. In der Spitze ist \KCsTwo{} bei den $k$-means-Kosten in etwa gleichauf mit
 \Skmpp{} und wenige Prozentpunkte teurer als BICO. Bei den Laufzeiten ist \KCsTwo{} bis zu 10\% schneller als \kmpp{}. Die
 Datenstromalgorithmen sind jedoch über alle Konfigurationen hinweg durchgehend um einige Größenordnungen schneller.
 
@@ -1490,7 +1490,7 @@ Werte. Insgesamt ist \KCsTwo{} geringfügig schlechter als der spektrale Algorit
 mindestens gleichauf mit METIS und verbessert \kkmpp{} insgesamt um durchschnittlich 5\%. Bei den Laufzeiten in
 den Tabellen~\ref{tbl:experiment-coreset-ratioassoc-runtime-128} und~\ref{tbl:experiment-coreset-ratioassoc-runtime-512}
 ist eine zusätzliche Beschleunigung von rund 10\% gegenüber \kkmpp{} zu erkennen. Damit erhalten wir einen Speedup im Vergleich
-zum spektralen Algorithmus von mehr als zwei. METIS ist im Schnitt etwas weniger als einen Faktor zwei langsamer.
+zum spektralen Algorithmus von mehr als zwei. METIS ist im Schnitt etwas weniger als einen Faktor Zwei langsamer.
 Bei $k = 512$ ist der Speedup gegenüber dem spektralen Algorithmus wie schon zuvor bei \kkmpp{} auf einigen Datensätzen sogar
 noch größer.
 
